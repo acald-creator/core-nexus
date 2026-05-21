@@ -138,6 +138,21 @@ The current lab profile includes:
 
 Pi-hole, Portainer, and Vault dev mode are local lab conveniences. They are not the final production security architecture.
 
+## Local-Only and Deprecated Direction
+
+The current Docker lab preserves several components because they are useful for learning, debugging, and standalone local experimentation. They should not be treated as production targets.
+
+| Component | Status | Direction |
+| --- | --- | --- |
+| Portainer CE | Local-only | Keep for Docker lab visibility; replace with Argo CD for production-like GitOps. |
+| Pi-hole | Local-only | Keep for lab DNS filtering; use Kubernetes DNS, network policy, and Istio for cluster and service traffic control. |
+| Vault dev mode | Local-only | Keep for learning and local workflows; replace with Vault HA or an equivalent production secrets design. |
+| Privileged Docker-in-Docker image | Local-only | Keep for the bootstrap lab; avoid as the production runtime model. |
+| Sysbox image | Experimental | Keep as an alternate lab runtime until its role is revalidated. |
+| Docker Swarm bootstrap | Deprecated direction | Keep only while needed by the legacy script; prefer Kubernetes for future orchestration. |
+| Hard-coded lab IPs and default credentials | Deprecated direction | Replace with profile configuration, generated secrets, and documented access patterns. |
+| Long-form command output in README | Deprecated direction | Move durable supply-chain examples and scan output into `supply-chain/` or generated reports. |
+
 ## Build Images
 
 Image build assets are split by type:
