@@ -25,7 +25,7 @@ To pull the latest Underground Nexus image.
 UPDATE: 
   - Added Visual Studio Code, there were issues with hardware acceleration when it is deployed via ARM64 distro.
   - Minio has been added back again, and the port has been fixed.
-  - ~~There is a bash script now, and I took away the workbench.sh script for now.~~ Scratch that, it's added back in the Dockerfile.
+  - ~~There is a bash script now, and I took away the workbench.sh script for now.~~ Scratch that, it is added back in the Dockerfile.
   - Docker Swarm is initialized last at the end of the script to avoid conflicts with existing services.
 
 1. ~~Minio is not being used right now because Minio has a conflicting port 9000 with Portainer. Future plan to redirect port usage or take away port 9000 on Portainer.~~
@@ -41,7 +41,7 @@ UPDATE:
 
 **Information**
 
-The default Dockerfile has the original `docker:dind` base image to build the Underground Nexus from. The GitHub Action will build the main Dockerfile with `dagger`. Please note, there are two Dockerfiles. One is using `nestybox/alpine-supervisord-docker:latest` which is an alternate version of Docker-in-Docker (dind).
+The default Dockerfile at `images/docker/Dockerfile` has the original `docker:dind` base image to build the Underground Nexus from. The GitHub Action will build the image with `dagger`. Please note, there are two Dockerfiles. One is using `nestybox/alpine-supervisord-docker:latest` which is an alternate version of Docker-in-Docker (dind).
 
 Before, I had multiple steps to build and load the newly built Docker images. I was able to change the Dagger actions to build with the Dockerfile contents.
 
@@ -71,7 +71,7 @@ docker run -itd --name=Underground-Nexus \
     -v nexus-bucket:/nexus-bucket pyrrhus/nexus0:latest
 ```
 
-Execute the `deploy-olympiad.sh` script
+Execute the `deploy/scripts/deploy-olympiad.sh` script
 
 `docker exec Underground-Nexus sh deploy-olympiad.sh`
 

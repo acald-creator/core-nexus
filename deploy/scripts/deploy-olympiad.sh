@@ -2,6 +2,19 @@
 
 set -e
 
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+REPO_ROOT=$(CDPATH= cd -- "$SCRIPT_DIR/../.." 2>/dev/null && pwd || pwd)
+COMPOSE_DIR="$REPO_ROOT/deploy/compose"
+WORKBENCH_SCRIPT="$REPO_ROOT/deploy/scripts/workbench.sh"
+
+if [ ! -f "$COMPOSE_DIR/docker-compose.yml" ]; then
+    COMPOSE_DIR="/"
+fi
+
+if [ ! -f "$WORKBENCH_SCRIPT" ]; then
+    WORKBENCH_SCRIPT="/nexus-bucket/workbench.sh"
+fi
+
 export PIHOLE_IMAGE=pihole/pihole:latest
 export PORTAINER_IMAGE=portainer/portainer-ce:2.14.0
 export MINIO_IMAGE=quay.io/minio/minio
@@ -47,7 +60,7 @@ if docker ps --format "{{.Names}}" | grep -w $PIHOLE;
 then
     echo "Inner-DNS-Control is already created."
 else
-    docker compose -f docker-compose.yml up -d
+    docker compose -f "$COMPOSE_DIR/docker-compose.yml" up -d
 fi
 
 echo "Build Olympiad0 Portainer node"
@@ -60,7 +73,7 @@ if docker volume ls | grep -w portainer_data;
 then
     echo "Portainer data volume exists"
 else
-    docker compose -f portainer-deploy.yml up -d
+    docker compose -f "$COMPOSE_DIR/portainer-deploy.yml" up -d
 fi
 
 echo "Build Cyber Life Torpedo"
@@ -225,7 +238,7 @@ wget https://raw.githubusercontent.com/acald-creator/underground-nexus/main/Prod
 
 sleep 5
 
-sh ./nexus-bucket/workbench.sh
+sh "$WORKBENCH_SCRIPT"
 
 echo "Deploy KuberNexus"
 
@@ -258,6 +271,6 @@ k3d cluster create KuberNexus \
     -p 10254:10254@loadbalancer \
     -p 31896:31896@loadbalancer
 
-docker compose -f portainer-deploy.yml up -d
+docker compose -f "$COMPOSE_DIR/portainer-deploy.yml" up -d
 
 echo "Completed."

@@ -5,9 +5,9 @@ import (
 	"universe.dagger.io/docker"
 )
 
-#DindBuild: docker.#Dockerfile & {
+#SysboxBuild: docker.#Dockerfile & {
 	dockerfile: contents: """
-		FROM docker:dind
+		FROM nestybox/alpine-supervisord-docker:latest
 		ARG VERSION
 		ENV VERSION $VERSION
 		LABEL description="Custom Underground Nexus copy-paste script data center deployment."
@@ -15,11 +15,11 @@ import (
 		RUN apk update && apk upgrade
 		RUN apk add bash nano curl wget docker-compose
 		WORKDIR /nexus-bucket
-		COPY workbench.sh /nexus-bucket/
+		COPY deploy/scripts/workbench.sh /nexus-bucket/
 		WORKDIR /
-		COPY deploy-olympiad.sh /
-		COPY docker-compose.yml /
-		COPY portainer-deploy.yml /
+		COPY deploy/scripts/deploy-olympiad.sh /
+		COPY deploy/compose/docker-compose.yml /
+		COPY deploy/compose/portainer-deploy.yml /
 		EXPOSE 22 53 80 443 1000 2375 2376 2377 9010 9443 18443
 		"""
 }
@@ -28,16 +28,16 @@ dagger.#Plan & {
 	client: network: "unix:///var/run/docker.sock": connect: dagger.#Socket
 	client: filesystem: ".": read: contents: dagger.#FS
 	client: env: {
-		REGISTRY_DOCKERIO_USER: string | "_token_"
+		REGISTRY_DOCKERIO_USER: string | *"_token_"
 		OFFICIAL_REGISTRY_USER: string | *"_token_"
 		REGISTRY_DOCKERIO_PASS: dagger.#Secret
 	}
 
 	actions: versions: {
 		latest:   _
-		"v1.3.6": _
+		"v1.2.6": _
 		[tag=string]: {
-			build: #DindBuild & {
+			build: #SysboxBuild & {
 				source: client.filesystem.".".read.contents
 				auth: "index.docker.io": {
 					username: client.env.REGISTRY_DOCKERIO_USER
@@ -46,7 +46,7 @@ dagger.#Plan & {
 			}
 			push: _op: docker.#Push & {
 				image: build.output
-				dest:  "\(client.env.OFFICIAL_REGISTRY_USER)/core-nexus:\(tag)"
+				dest:  "\(client.env.REGISTRY_DOCKERIO_USER)/core-nexus:\(tag)-sysbox"
 			}
 		}
 	}

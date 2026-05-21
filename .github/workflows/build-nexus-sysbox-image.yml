@@ -51,7 +51,7 @@ jobs:
         with:
           cmds: |
             project update
-            do --plan build-sysbox.cue versions
+            do --plan images/cue/build-sysbox.cue versions
 
       # Sign image with cosign
       - name: Sign image
