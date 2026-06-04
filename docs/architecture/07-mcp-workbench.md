@@ -37,7 +37,7 @@ The workbench is the environment where analysts, data scientists, and security e
 - Review model evaluation results before promotion.
 - Maintain runbooks and investigation notes.
 
-In the current architecture, this maps to `nexus-webtop-workbench`. In the Zevn target architecture, it can become a secured JupyterLab or VS Code Server environment authenticated through Zevn Auth.
+In the current Phase 1 architecture, this maps to `nexus-workbench` (implemented as a secure JupyterLab container on a Chainguard base). In the Zevn target architecture, this environment will be authenticated through Zevn Auth.
 
 ## 3. MLOps Workflow
 

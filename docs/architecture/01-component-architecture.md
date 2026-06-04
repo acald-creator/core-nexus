@@ -61,8 +61,8 @@ graph LR
 | MinIO | Lab object storage for `/nexus-bucket` artifacts | Retain for artifacts, evidence, datasets, and backups if object storage is needed; do not use as the primary SOC event store |
 | Vault dev mode | Development secrets service | Replace with Vault HA or another platform secret management design |
 | `nexus-webtop-soc` | All-in-one SOC desktop with Suricata | Split into Wazuh SOC services, dedicated sensors, and optional webtop client |
-| `nexus-athena` | Kali red-team container | Keep as isolated lab traffic generator |
-| `nexus-webtop-workbench` | Analyst/admin desktop | Keep as workbench and dashboard client |
+| `nexus-athena` | Kali red-team container | Custom local build; keep as isolated lab traffic generator |
+| `nexus-workbench` | Analyst/admin desktop | JupyterLab environment on Chainguard Python base; keep as workbench and dashboard client |
 | Code server | Development editor | Optional developer tool; decide whether it belongs in workbench or as a separate service |
 | Docker Swarm | Overlay networking experiment | De-emphasize for future architecture unless a specific lab requires it |
 | k3d / KuberNexus | Local Kubernetes sandbox | Keep as local Kubernetes test path before full production deployment |
@@ -111,14 +111,14 @@ Refinement goals:
 
 ### Workbench
 
-`nexus-webtop-workbench` should remain the analyst and administration desktop.
+`nexus-workbench` should remain the analyst and administration desktop.
 
 Refinement goals:
 
-- Provide browser access to Wazuh, Grafana, documentation, and runbooks.
+- Provide browser access to Wazuh, Grafana, documentation, and runbooks using JupyterLab.
 - Keep Terraform or Pulumi tooling here by default.
 - Treat QEMU/KVM/libvirt as an optional privileged profile.
-- Avoid host Docker socket mounts in the default profile.
+- Avoid host Docker socket mounts in the default profile, running as unprivileged `nonroot` (UID `65532`) on a secure Chainguard base.
 - Keep red-team tooling in Athena instead of the workbench.
 
 ## 4. Event and Logging Architecture
@@ -235,10 +235,10 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 | SOC platform | Wazuh manager, indexer, dashboard, agents, plus hybrid Suricata/runtime sensor | `nexus-webtop-soc` |
 | Security event store | Wazuh indexer | `nexus-webtop-soc` |
 | Platform log store | Loki, with Vector aggregation | Core Nexus |
-| Workbench default profile | Unprivileged analyst/admin desktop | `nexus-webtop-workbench` |
-| Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-webtop-workbench` |
+| Workbench default profile | Unprivileged analyst/admin desktop | `nexus-workbench` |
+| Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-workbench` |
 | Athena default profile | Isolated red-team lab container without SSH or Docker socket | `nexus-athena` |
-| Athena elevated profile | Explicit packet-capture or exploit-lab capabilities | `nexus-athena` |
+| Athena elevated profile | Explicit packet-capture or exploit-lab capabilities | `nexus-athena-elevated` |
 | Secrets manager | Vault HA for production-like deployments; Vault dev mode for local learning only | Core Nexus |
 | UDS role | Platform baseline and Zarf delivery, not the secrets backend | Core Nexus |
 | MinIO role | Object storage for artifacts, evidence, datasets, backups, and package archives | Core Nexus |
@@ -253,8 +253,8 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 ### Milestone 2: Refine Component Images
 
 - Convert `nexus-webtop-soc` into separate SOC services and sensors.
-- Keep `nexus-athena` focused on isolated red-team lab scenarios.
-- Keep `nexus-webtop-workbench` focused on analyst and admin workflows.
+- Keep `nexus-athena` and `nexus-athena-elevated` focused on isolated red-team lab scenarios.
+- Keep `nexus-workbench` focused on analyst and admin workflows.
 - Define image signing, SBOM, and version pinning standards across repos.
 
 ### Milestone 3: Add Kubernetes Workload Definitions

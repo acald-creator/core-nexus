@@ -73,9 +73,9 @@ graph LR
     E --> F[SOC, Athena, and AI Workloads]
 ```
 
-### Developer Jumpbox: `nexus-webtop-workbench`
+### Developer Jumpbox: `nexus-workbench`
 
-**Role:** A containerized, ephemeral workspace with the MATE desktop environment, Pulumi or Terraform, and optional Git tooling.
+**Role:** A containerized, secure JupyterLab workspace running on a Chainguard Python base, with standard data analysis libraries, Pulumi or Terraform, and optional Git tooling.
 
 **Security+ alignment:** **Domain 4.1, Secure Baselines.** A standardized workbench reduces environment drift compared with unmanaged personal laptops.
 

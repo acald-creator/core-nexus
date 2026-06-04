@@ -210,7 +210,7 @@ Historical key-based Cosign verification notes should move into `supply-chain/` 
 - The bootstrap script is useful but should become more idempotent and profile-aware.
 - Portainer remains lab-only; Argo CD is the production-like GitOps direction.
 - Vault dev mode is local-only; production-like deployments should use a proper Vault HA design.
-- Kubernetes/UDS assets are placeholders until the production-like deployment path is implemented.
+- Kubernetes/UDS SOC, AI Inference, Workbench, and Athena assets are active and deployed in the local `kind` cluster, and we are working toward production GitOps and UDS delivery.
 - TerranoxOS, `kiln`, and Vertex are future Zevn targets, not current runtime dependencies.
 
 ## Roadmap

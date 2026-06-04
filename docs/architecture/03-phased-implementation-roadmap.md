@@ -19,8 +19,8 @@ TerranoxOS is still in early userspace development. It may render early UI eleme
 | Host OS | Hardened standard Linux distribution, such as Alpine or Ubuntu |
 | Execution | Docker containers, early `kiln` builds on Linux namespaces/cgroups, or both |
 | SOC platform | Phase 1 target baseline being built: Wazuh, Suricata, optional Zeek, Vector, Loki, Grafana |
-| Workbench | Current `nexus-webtop-workbench` refined into standard and privileged profiles |
-| Athena | Current `nexus-athena` refined into isolated lab profiles |
+| Workbench | `nexus-workbench` (JupyterLab) with standard and privileged profiles |
+| Athena | `nexus-athena` (Kali Linux build) with standard and elevated profiles |
 | Secrets | Vault dev mode for local learning; begin designing Vault HA for production-like paths |
 | Supply chain | Cosign, SBOMs, attestations, vulnerability scans, registry controls |
 

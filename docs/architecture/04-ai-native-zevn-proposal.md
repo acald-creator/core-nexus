@@ -34,7 +34,7 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 
 ### D. Command Center: Purple Team Workbench
 
-**Replaces:** `nexus-webtop-workbench` as a MATE desktop GUI with Terraform and GitHub tooling.
+**Replaces:** `nexus-workbench` (originally a MATE desktop GUI, now updated to JupyterLab in Phase 1) with Terraform and GitHub tooling.
 
 **What it is:** A secured JupyterLab or VS Code Server environment authenticated through Zevn Auth.
 
@@ -114,7 +114,7 @@ This proposal is a future architecture track. It does not replace the current ne
 | Wazuh SOC services | AI-SOC inference engine and MCP server |
 | Suricata sensor | Hybrid sensor: Suricata for network/protocol telemetry plus kernel/runtime telemetry |
 | `nexus-athena` Kali container | Athena adversary fuzzer |
-| `nexus-webtop-workbench` | Purple team JupyterLab or VS Code Server |
+| `nexus-workbench` (JupyterLab) | Purple team JupyterLab or VS Code Server |
 | UDS/Zarf platform option | Zevn platform execution and identity layer |
 
 Near-term work should continue refining the current components. This proposal can guide future design once the Zevn platform abstractions are concrete enough to implement.
