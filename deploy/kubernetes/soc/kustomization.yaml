@@ -7,3 +7,4 @@ resources:
   - wazuh-manager.yaml
   - wazuh-dashboard.yaml
   - webtop-analyst.yaml
+  - ai-inference.yaml
