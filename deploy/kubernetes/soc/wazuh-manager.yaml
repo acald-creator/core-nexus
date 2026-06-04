@@ -1,0 +1,110 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: wazuh-manager
+  namespace: soc
+spec:
+  serviceName: wazuh-manager
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wazuh-manager
+  template:
+    metadata:
+      labels:
+        app: wazuh-manager
+        zarf.dev/agent: skip
+    spec:
+      containers:
+      - name: wazuh-manager
+        image: wazuh/wazuh-manager:4.7.5
+        ports:
+        - containerPort: 1514
+          protocol: UDP
+          name: agent-udp
+        - containerPort: 1515
+          name: registration
+        - containerPort: 55000
+          name: api
+        env:
+        - name: INDEXER_URL
+          value: "https://wazuh-indexer:9200"
+        - name: INDEXER_USERNAME
+          value: "admin"
+        - name: INDEXER_PASSWORD
+          value: "admin"
+        - name: WAZUH_API_USER
+          value: "admin"
+        - name: WAZUH_API_PASSWORD
+          value: "admin"
+        - name: FILEBEAT_SSL_VERIFICATION_MODE
+          value: "none"
+        volumeMounts:
+        - name: wazuh-manager-data
+          mountPath: /var/ossec/data
+        - name: wazuh-manager-etc
+          mountPath: /var/ossec/etc
+        - name: wazuh-manager-logs
+          mountPath: /var/ossec/logs
+        - name: suricata-logs
+          mountPath: /var/log/suricata
+      - name: suricata-sensor
+        image: jasonish/suricata:7.0
+        args: ["-i", "eth0"]
+        securityContext:
+          capabilities:
+            add:
+              - NET_ADMIN
+              - SYS_NICE
+              - NET_RAW
+        volumeMounts:
+        - name: suricata-logs
+          mountPath: /var/log/suricata
+      volumes:
+      - name: suricata-logs
+        emptyDir: {}
+  volumeClaimTemplates:
+  - metadata:
+      name: wazuh-manager-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 2Gi
+  - metadata:
+      name: wazuh-manager-etc
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 500Mi
+  - metadata:
+      name: wazuh-manager-logs
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: "standard"
+      resources:
+        requests:
+          storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-manager
+  namespace: soc
+spec:
+  ports:
+  - port: 1514
+    protocol: UDP
+    targetPort: 1514
+    name: agent-udp
+  - port: 1515
+    targetPort: 1515
+    name: registration
+  - port: 55000
+    targetPort: 55000
+    name: api
+  selector:
+    app: wazuh-manager

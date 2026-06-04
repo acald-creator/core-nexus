@@ -68,6 +68,7 @@ The main architecture documents live in [docs/architecture/](docs/architecture/)
 8. [Athena Adversary Fuzzer](docs/architecture/08-athena-adversary-fuzzer.md)
 9. [Production Deployment Lifecycle](docs/architecture/09-production-deployment-lifecycle.md)
 10. [AI-Infused Security+ Labs](docs/architecture/10-ai-infused-security-plus-labs.md)
+11. [AI-Native Integration Principles](docs/architecture/11-ai-native-integration-principles.md)
 
 ## AI Collaboration
 

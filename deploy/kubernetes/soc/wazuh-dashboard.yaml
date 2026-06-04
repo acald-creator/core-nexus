@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: wazuh-dashboard-config
+  namespace: soc
+data:
+  opensearch_dashboards.yml: |
+    server.host: 0.0.0.0
+    server.port: 5601
+    opensearch.hosts: https://wazuh-indexer:9200
+    opensearch.ssl.verificationMode: none
+    opensearch.requestHeadersWhitelist: [ authorization,securitytenant ]
+    opensearch_security.multitenancy.enabled: false
+    opensearch_security.readonly_mode.roles: ["kibana_read_only"]
+    server.ssl.enabled: true
+    server.ssl.key: "/usr/share/wazuh-dashboard/config/certs/dashboard-key.pem"
+    server.ssl.certificate: "/usr/share/wazuh-dashboard/config/certs/dashboard.pem"
+    opensearch.ssl.certificateAuthorities: ["/usr/share/wazuh-dashboard/config/certs/root-ca.pem"]
+    uiSettings.overrides.defaultRoute: /app/wazuh
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-dashboard
+  namespace: soc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wazuh-dashboard
+  template:
+    metadata:
+      labels:
+        app: wazuh-dashboard
+        zarf.dev/agent: skip
+    spec:
+      containers:
+      - name: wazuh-dashboard
+        image: wazuh/wazuh-dashboard:4.7.5
+        ports:
+        - containerPort: 5601
+          name: web
+        env:
+        - name: INDEXER_URL
+          value: "https://wazuh-indexer:9200"
+        - name: INDEXER_USERNAME
+          value: "admin"
+        - name: INDEXER_PASSWORD
+          value: "admin"
+        - name: WAZUH_API_URL
+          value: "https://wazuh-manager:55000"
+        - name: SERVER_SSL_ENABLED
+          value: "false"
+        volumeMounts:
+        - name: config-volume
+          mountPath: /usr/share/wazuh-dashboard/config/opensearch_dashboards.yml
+          subPath: opensearch_dashboards.yml
+      volumes:
+      - name: config-volume
+        configMap:
+          name: wazuh-dashboard-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wazuh-dashboard
+  namespace: soc
+spec:
+  ports:
+  - port: 5601
+    targetPort: 5601
+    name: web
+  selector:
+    app: wazuh-dashboard
