@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webtop-workbench
+  namespace: soc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: webtop-workbench
+  template:
+    metadata:
+      labels:
+        app: webtop-workbench
+        zarf.dev/agent: skip
+    spec:
+      containers:
+      - name: webtop-workbench
+        image: phoenixvlabs/nexus-webtop-workbench:amd64-latest
+        ports:
+        - containerPort: 3000
+          name: web
+        env:
+        - name: PUID
+          value: "1000"
+        - name: PGID
+          value: "1000"
+        - name: TZ
+          value: "America/Chicago"
+        volumeMounts:
+        - name: workbench-config
+          mountPath: /config
+        - name: dshm
+          mountPath: /dev/shm
+      volumes:
+      - name: workbench-config
+        persistentVolumeClaim:
+          claimName: webtop-workbench-config-pvc
+      - name: dshm
+        emptyDir:
+          medium: Memory
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: webtop-workbench-config-pvc
+  namespace: soc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webtop-workbench
+  namespace: soc
+spec:
+  ports:
+  - port: 3000
+    targetPort: 3000
+    name: web
+  selector:
+    app: webtop-workbench
