@@ -11,3 +11,4 @@ resources:
   - nexus-workbench.yaml
   - nexus-athena.yaml
   - nexus-athena-elevated.yaml
+  - vault.yaml
