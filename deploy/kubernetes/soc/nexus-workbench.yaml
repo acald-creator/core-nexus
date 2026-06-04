@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-workbench
+  namespace: soc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-workbench
+  template:
+    metadata:
+      labels:
+        app: nexus-workbench
+        zarf.dev/agent: skip
+    spec:
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+      containers:
+      - name: nexus-workbench
+        image: local/nexus-workbench:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8888
+          name: jupyter
+        volumeMounts:
+        - name: workbench-config
+          mountPath: /home/nonroot/work
+      volumes:
+      - name: workbench-config
+        persistentVolumeClaim:
+          claimName: nexus-workbench-config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nexus-workbench-config-pvc
+  namespace: soc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-workbench
+  namespace: soc
+spec:
+  ports:
+  - port: 8888
+    targetPort: 8888
+    name: jupyter
+  selector:
+    app: nexus-workbench

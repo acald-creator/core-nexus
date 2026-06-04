@@ -8,4 +8,4 @@ resources:
   - wazuh-dashboard.yaml
   - webtop-analyst.yaml
   - ai-inference.yaml
-  - webtop-workbench.yaml
+  - nexus-workbench.yaml
