@@ -9,3 +9,5 @@ resources:
   - webtop-analyst.yaml
   - ai-inference.yaml
   - nexus-workbench.yaml
+  - nexus-athena.yaml
+  - nexus-athena-elevated.yaml

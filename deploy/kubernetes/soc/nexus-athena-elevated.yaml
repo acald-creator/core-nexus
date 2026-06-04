@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-athena-elevated
+  namespace: soc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-athena-elevated
+  template:
+    metadata:
+      labels:
+        app: nexus-athena-elevated
+        zarf.dev/agent: skip
+    spec:
+      containers:
+      - name: nexus-athena-elevated
+        image: local/nexus-athena:latest
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          privileged: false
+          runAsUser: 0 # Run as root inside the container to utilize the network capabilities
+          capabilities:
+            add:
+            - NET_ADMIN
+            - NET_RAW
+        volumeMounts:
+        - name: athena-home
+          mountPath: /home/kali
+      volumes:
+      - name: athena-home
+        persistentVolumeClaim:
+          claimName: nexus-athena-elevated-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nexus-athena-elevated-pvc
+  namespace: soc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: standard
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-athena-elevated
+  namespace: soc
+spec:
+  ports:
+  - port: 22
+    targetPort: 22
+    name: ssh
+  selector:
+    app: nexus-athena-elevated
