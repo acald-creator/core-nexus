@@ -42,3 +42,13 @@ In a traditional SOC, human analysts review raw event streams. In an AI-native S
 - **Persistent Vector Memory**: 
   - Using a vector database (e.g., ChromaDB or Milvus), every analyzed event, incident report, and executed command is embedded into a semantic memory store.
   - When a new event occurs, the AI performs a RAG (Retrieval-Augmented Generation) query to pull context from similar past incidents, allowing the agent's knowledge to compound and evolve over time.
+
+## 4. Multi-Project Security & Orchestration Layer
+
+Underground Nexus does not function solely as an isolated security workspace. It acts as an integration and orchestration layer across external projects and development targets.
+
+### Key Concepts
+
+- **Cross-Boundary Telemetry Ingestion**: The AI-SOC inference layer (`platform/ai-inference`) is exposed via secure gRPC/HTTPS interfaces to ingest telemetry (logs, network flows, process events) from other projects running outside the local namespace or cluster.
+- **Universal MCP Interface**: By exposing the Nexus workspace as an MCP Server gateway, external LLM agents and workflows in other projects can access the tools and security context hosted in the Nexus (e.g., executing fuzzer runs, retrieving analysis reports, querying indexed security states).
+- **Federated Attestation & Policy Enforcer**: The secure build pipelines and secrets boundaries within the Nexus secure software factory can broker trust and attestations for external software bundles, creating a centralized security assurance service for your entire project ecosystem.
