@@ -18,6 +18,8 @@ Use these documents as the source of truth, in order:
 | 8 | `docs/architecture/08-athena-adversary-fuzzer.md` | Controlled adversarial data generation |
 | 9 | `docs/architecture/09-production-deployment-lifecycle.md` | Future Zevn bare-metal lifecycle |
 | 10 | `docs/architecture/10-ai-infused-security-plus-labs.md` | Security+ lab scenarios |
+| 11 | `docs/architecture/11-ai-native-integration-principles.md` | AI-native design and integration principles |
+| 12 | `docs/architecture/12-vault-environments-specification.md` | Dev, Test, and Prod Vault environments |
 
 When documents conflict, prefer the lower-numbered practical architecture documents for near-term implementation and the higher-numbered Zevn documents for future-state concepts.
 

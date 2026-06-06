@@ -13,6 +13,8 @@ Read the planning documents in this order:
 9. `docs/architecture/08-athena-adversary-fuzzer.md`
 10. `docs/architecture/09-production-deployment-lifecycle.md`
 11. `docs/architecture/10-ai-infused-security-plus-labs.md`
+12. `docs/architecture/11-ai-native-integration-principles.md`
+13. `docs/architecture/12-vault-environments-specification.md`
 
 `README.md` and `CHANGELOG.md` remain the public-facing project files.
 
