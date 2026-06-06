@@ -3,13 +3,10 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
-  - wazuh-secrets.yaml
-  - wazuh-indexer.yaml
-  - wazuh-manager.yaml
-  - wazuh-dashboard.yaml
   - webtop-analyst.yaml
   - ai-inference.yaml
   - nexus-workbench.yaml
   - nexus-athena.yaml
   - nexus-athena-elevated.yaml
   - vault.yaml
+  - github.com/acald-creator/nexus-webtop-soc/deploy/kubernetes/base
