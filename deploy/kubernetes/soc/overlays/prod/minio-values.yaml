@@ -1,0 +1,17 @@
+fullnameOverride: minio-ha
+auth:
+  rootUser: minioadmin
+  rootPassword: minioadmin
+
+mode: distributed
+
+replicaCount: 4
+
+persistence:
+  enabled: true
+  size: 50Gi
+
+service:
+  type: ClusterIP
+  port: 9000
+  consolePort: 9001

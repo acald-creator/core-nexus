@@ -1,0 +1,13 @@
+$patch: delete
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: minio
+  namespace: soc
+---
+$patch: delete
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: soc

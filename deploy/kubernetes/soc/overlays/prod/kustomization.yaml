@@ -24,6 +24,24 @@ patches:
     target:
       kind: Service
       name: vault
+  - patch: |-
+      $patch: delete
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: minio
+    target:
+      kind: StatefulSet
+      name: minio
+  - patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: minio
+    target:
+      kind: Service
+      name: minio
 
 helmGlobals:
   chartHome: /tmp/charts
@@ -35,3 +53,9 @@ helmCharts:
     releaseName: vault
     namespace: soc
     valuesFile: vault-values.yaml
+  - name: minio
+    repo: https://charts.bitnami.com/bitnami
+    version: 14.6.0
+    releaseName: minio
+    namespace: soc
+    valuesFile: minio-values.yaml

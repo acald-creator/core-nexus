@@ -8,5 +8,7 @@ resources:
   - nexus-workbench.yaml
   - nexus-athena.yaml
   - nexus-athena-elevated.yaml
+  - minio.yaml
+  - minio-pvc.yaml
   - vault.yaml
   - github.com/acald-creator/nexus-webtop-soc/deploy/kubernetes/base
