@@ -14,4 +14,4 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/build ./build
 ENV NODE_ENV=production
 EXPOSE 3001
-CMD ["npm", "start"]
+CMD ["build/index.js"]
