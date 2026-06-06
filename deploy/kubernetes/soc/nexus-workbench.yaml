@@ -20,6 +20,8 @@ spec:
         fsGroup: 65532
       containers:
       - name: nexus-workbench
+        securityContext:
+          allowPrivilegeEscalation: false
         image: local/nexus-workbench:latest
         imagePullPolicy: IfNotPresent
         ports:

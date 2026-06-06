@@ -23,6 +23,7 @@ spec:
         - name: VAULT_DEV_ROOT_TOKEN_ID
           value: "myroot"
         securityContext:
+          allowPrivilegeEscalation: false
           capabilities:
             add:
             - IPC_LOCK

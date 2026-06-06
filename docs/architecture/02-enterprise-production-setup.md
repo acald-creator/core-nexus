@@ -109,6 +109,7 @@ The following guidelines outline non-negotiable workload security practices for 
 * **DO manage secrets centrally via HashiCorp Vault**: Read and write credentials programmatically using Vault APIs (e.g. `hvac` Python client) or Vault agent sidecar injectors. 
 * **DO label test namespaces/pods to bypass Zarf webhook**: Add `zarf.dev/agent: skip` to namespace or pod metadata during local development to prevent the Zarf agent from hijacking public image pulls.
 * **DO enforce directory permissions for non-root volumes**: Use `securityContext.fsGroup` matching the container user (e.g., `65532` or `1000`) to guarantee that mounted PersistentVolumes are writable by non-root containers.
+* **DO disable privilege escalation explicitly**: Always set container-level `securityContext.allowPrivilegeEscalation: false` in all container specifications to block processes from utilizing setuid/setgid binaries to escalate privileges.
 
 ### DON'Ts
 * **DON'T mount the host Docker socket (`/var/run/docker.sock`) by default**: Standard analyst desktops, database indices, and triage APIs must run with absolute socket isolation. Only mount the docker socket on explicitly approved, elevated testing profiles in isolated namespaces.

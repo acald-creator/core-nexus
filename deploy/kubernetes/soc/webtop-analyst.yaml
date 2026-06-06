@@ -18,7 +18,8 @@ spec:
       - name: webtop-analyst
         image: linuxserver/webtop:amd64-ubuntu-xfce
         securityContext:
-          privileged: true
+          privileged: false
+          allowPrivilegeEscalation: false
         ports:
         - containerPort: 3000
           name: web

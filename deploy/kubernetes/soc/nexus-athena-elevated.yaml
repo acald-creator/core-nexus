@@ -20,6 +20,7 @@ spec:
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
+          allowPrivilegeEscalation: false
           runAsUser: 0 # Run as root inside the container to utilize the network capabilities
           capabilities:
             add:

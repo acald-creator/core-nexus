@@ -16,6 +16,8 @@ spec:
     spec:
       containers:
       - name: ai-inference
+        securityContext:
+          allowPrivilegeEscalation: false
         image: local/ai-inference:latest
         imagePullPolicy: IfNotPresent
         ports:

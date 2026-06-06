@@ -36,6 +36,8 @@ spec:
     spec:
       containers:
       - name: wazuh-dashboard
+        securityContext:
+          allowPrivilegeEscalation: false
         image: wazuh/wazuh-dashboard:4.7.5
         ports:
         - containerPort: 5601

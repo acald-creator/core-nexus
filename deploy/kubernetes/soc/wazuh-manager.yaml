@@ -17,6 +17,8 @@ spec:
     spec:
       containers:
       - name: wazuh-manager
+        securityContext:
+          allowPrivilegeEscalation: false
         image: wazuh/wazuh-manager:4.7.5
         ports:
         - containerPort: 1514
@@ -58,6 +60,7 @@ spec:
         image: jasonish/suricata:7.0
         args: ["-i", "eth0"]
         securityContext:
+          allowPrivilegeEscalation: false
           capabilities:
             add:
               - NET_ADMIN

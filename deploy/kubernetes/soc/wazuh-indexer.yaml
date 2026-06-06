@@ -17,6 +17,8 @@ spec:
     spec:
       containers:
       - name: wazuh-indexer
+        securityContext:
+          allowPrivilegeEscalation: false
         image: wazuh/wazuh-indexer:4.7.5
         resources:
           limits:
