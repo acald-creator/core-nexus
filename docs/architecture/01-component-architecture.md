@@ -60,10 +60,10 @@ graph LR
 | Portainer | Manual container management UI | Lab-only; production path should use GitOps and dashboards |
 | MinIO | Lab object storage for `/nexus-bucket` artifacts | Retain for artifacts, evidence, datasets, and backups if object storage is needed; do not use as the primary SOC event store |
 | Vault dev mode | Development secrets service | Replace with Vault HA or another platform secret management design |
-| `nexus-webtop-soc` | All-in-one SOC desktop with Suricata | Split into Wazuh SOC services, dedicated sensors, and optional webtop client |
+| `nexus-webtop-soc` | Legacy SOC desktop with Suricata | Split into dedicated Wazuh SOC services and sensors; legacy webtop client removed |
 | `nexus-athena` | Kali red-team container | Custom local build; keep as isolated lab traffic generator |
-| `nexus-workbench` | Analyst/admin desktop | JupyterLab environment on Chainguard Python base; keep as workbench and dashboard client |
-| Code server | Development editor | Optional developer tool; decide whether it belongs in workbench or as a separate service |
+| `nexus-workbench` | Agentic Workspace | JupyterLab environment serving as the unified analyst client |
+| Code server | Development editor | Merged into Agentic Workspace concepts (JupyterLab / VS Code) |
 | Docker Swarm | Overlay networking experiment | De-emphasize for future architecture unless a specific lab requires it |
 | k3d / KuberNexus | Local Kubernetes sandbox | Keep as local Kubernetes test path before full production deployment |
 
@@ -232,10 +232,10 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 
 | Decision | Recommended default | Component docs |
 | --- | --- | --- |
-| SOC platform | Wazuh manager, indexer, dashboard, agents, plus hybrid Suricata/runtime sensor | `nexus-webtop-soc` |
-| Security event store | Wazuh indexer | `nexus-webtop-soc` |
+| SOC platform | Wazuh manager, indexer, dashboard, agents, plus hybrid Suricata/runtime sensor | `nexus-webtop-soc` (headless services) |
+| Security event store | Wazuh indexer | `nexus-webtop-soc` (headless services) |
 | Platform log store | Loki, with Vector aggregation | Core Nexus |
-| Workbench default profile | Unprivileged analyst/admin desktop | `nexus-workbench` |
+| Workbench default profile | Unified Agentic Workspace (JupyterLab) | `nexus-workbench` |
 | Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-workbench` |
 | Athena default profile | Isolated red-team lab container without SSH or Docker socket | `nexus-athena` |
 | Athena elevated profile | Explicit packet-capture or exploit-lab capabilities | `nexus-athena-elevated` |
@@ -252,9 +252,9 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 
 ### Milestone 2: Refine Component Images
 
-- Convert `nexus-webtop-soc` into separate SOC services and sensors.
+- Convert `nexus-webtop-soc` into separate headless SOC services and sensors (legacy webtop client removed).
 - Keep `nexus-athena` and `nexus-athena-elevated` focused on isolated red-team lab scenarios.
-- Keep `nexus-workbench` focused on analyst and admin workflows.
+- Transition analyst workflows exclusively to the unified `nexus-workbench` Agentic Workspace.
 - Define image signing, SBOM, and version pinning standards across repos.
 
 ### Milestone 3: Add Kubernetes Workload Definitions
