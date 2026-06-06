@@ -8,3 +8,4 @@ resources:
 
 patches:
   - path: vault-patch.yaml
+  - path: athena-gvisor-patch.yaml

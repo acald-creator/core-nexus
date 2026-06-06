@@ -1,0 +1,9 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-athena
+  namespace: soc
+spec:
+  template:
+    spec:
+      runtimeClassName: gvisor

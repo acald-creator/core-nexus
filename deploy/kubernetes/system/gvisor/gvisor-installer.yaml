@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: gvisor-installer
+  namespace: kube-system
+  labels:
+    app: gvisor-installer
+spec:
+  selector:
+    matchLabels:
+      app: gvisor-installer
+  template:
+    metadata:
+      labels:
+        app: gvisor-installer
+    spec:
+      hostPID: true
+      hostNetwork: true
+      containers:
+      - name: gvisor-installer
+        image: alpine:latest
+        command:
+          - /bin/sh
+          - -c
+          - |
+            echo "Installing gVisor..."
+            wget -qO /usr/local/bin/runsc https://storage.googleapis.com/gvisor/releases/release/latest/x86_64/runsc
+            wget -qO /usr/local/bin/containerd-shim-runsc-v1 https://storage.googleapis.com/gvisor/releases/release/latest/x86_64/containerd-shim-runsc-v1
+            chmod a+rx /usr/local/bin/runsc /usr/local/bin/containerd-shim-runsc-v1
+            echo "Configuring containerd..."
+            cat <<EOF > /etc/containerd/config.toml
+            version = 2
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+              runtime_type = "io.containerd.runc.v2"
+            [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runsc]
+              runtime_type = "io.containerd.runsc.v1"
+            EOF
+            echo "Restarting containerd..."
+            # HostPID is true, we can send SIGHUP to containerd
+            kill -SIGHUP $(pidof containerd)
+            echo "Done. Sleeping forever."
+            sleep infinity
+        securityContext:
+          privileged: true
+        volumeMounts:
+        - name: bin
+          mountPath: /usr/local/bin
+        - name: containerd-conf
+          mountPath: /etc/containerd
+        - name: run-containerd
+          mountPath: /run/containerd
+      volumes:
+      - name: bin
+        hostPath:
+          path: /usr/local/bin
+      - name: containerd-conf
+        hostPath:
+          path: /etc/containerd
+      - name: run-containerd
+        hostPath:
+          path: /run/containerd
