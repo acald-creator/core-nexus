@@ -39,12 +39,12 @@ These roles are defaults, not hard rules. Any model may review any document, but
 - **Zevn:** Broader platform that may eventually provide compute, identity, control-plane, and execution boundaries.
 - **Zeld UI:** AI-enabled visual website/workload. It is not the destination for Nexus threat findings.
 - **TerranoxOS:** Long-horizon OS target. It is not assumed ready for current workloads.
-- **kiln:** Hermetic execution target. Its exact runtime role should be clarified before implementation.
+- **gVisor:** Hermetic execution target. Its exact runtime role should be clarified before implementation.
 - **Vertex:** Rust xDS control-plane server. Data-plane APIs perform runtime changes.
 - **Hybrid sensor:** Suricata for network/protocol telemetry plus runtime or kernel telemetry.
 - **Nexus MCP Server:** Interface layer for approved SOC/Nexus tools and context.
 - **Kubernetes production model:** Near-term production-like path using Kubernetes, Pulumi, Argo CD, and optionally UDS/Zarf.
-- **Future Zevn bare-metal production:** Long-horizon TerranoxOS, Vertex, and `kiln` deployment lifecycle.
+- **Future Zevn bare-metal production:** Long-horizon TerranoxOS, Vertex, and gVisor deployment lifecycle.
 
 ## 4. Non-Negotiable Architecture Decisions
 

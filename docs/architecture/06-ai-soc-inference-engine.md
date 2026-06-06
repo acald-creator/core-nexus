@@ -2,7 +2,7 @@
 
 The AI-SOC inference engine is the mathematical enrichment layer of Underground Nexus. Its job is to transform security telemetry into structured scores, labels, and explanations that can support triage and response.
 
-This component should evolve in phases. In the near term, it enriches events from Wazuh, Suricata, Vector, or exported datasets. In the long term, it can become a high-speed hermetic workload running inside `kiln`.
+This component should evolve in phases. In the near term, it enriches events from Wazuh, Suricata, Vector, or exported datasets. In the long term, it can become a high-speed hermetic workload running inside a gVisor sandbox.
 
 ## 1. Inference Evolution
 
@@ -10,7 +10,7 @@ This component should evolve in phases. In the near term, it enriches events fro
 | --- | --- | --- |
 | Phase 1: Bootstrap | Python/NumPy enrichment service | Score Wazuh and Suricata events while the SOC baseline matures. |
 | Phase 2: Hermetic migration | Stable model artifact, API boundary, and replayable datasets | Validate model behavior against standard SOC events and early TerranoxOS telemetry. |
-| Phase 3: High-assurance target | Rust or minimal runtime loading signed ONNX artifacts inside `kiln` | Provide low-latency AI-native inference from trusted telemetry streams. |
+| Phase 3: High-assurance target | Rust or minimal runtime loading signed ONNX artifacts inside a gVisor sandbox | Provide low-latency AI-native inference from trusted telemetry streams. |
 
 ## 2. Architectural Shift: From Text to Tensors
 
@@ -87,7 +87,7 @@ The inference engine should start simple and become more constrained as the runt
 | --- | --- | --- |
 | Phase 1 | Python, NumPy, scikit-learn only if needed | Best for fast experimentation and Security+ labs. |
 | Phase 2 | FastAPI or small service boundary plus signed model artifacts | Makes the model callable, replayable, and testable. |
-| Phase 3 | Rust service with ONNX Runtime or another minimal inference runtime | Better fit for `kiln`, memory safety, and reduced runtime dependencies. |
+| Phase 3 | Rust service with ONNX Runtime or another minimal inference runtime | Better fit for gVisor, memory safety, and reduced runtime dependencies. |
 
 ONNX is useful because models can be trained in Python and exported into a portable runtime artifact. The runtime should verify model identity and version before loading it.
 

@@ -88,7 +88,7 @@ graph TD
     subgraph "Zevn Platform"
         K[Zevn Auth]
         L[Vertex Rust xDS Control Plane]
-        M[kiln Workload]
+        M[gVisor Workload]
         J -->|Human / Policy Approved| K
         K --> L
         L --> M

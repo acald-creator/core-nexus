@@ -17,7 +17,7 @@ TerranoxOS is still in early userspace development. It may render early UI eleme
 | Area | Phase 1 approach |
 | --- | --- |
 | Host OS | Hardened standard Linux distribution, such as Alpine or Ubuntu |
-| Execution | Docker containers, early `kiln` builds on Linux namespaces/cgroups, or both |
+| Execution | Docker containers, early `gVisor` configurations on Linux namespaces/cgroups, or both |
 | SOC platform | Phase 1 target baseline being built: Wazuh, Suricata, optional Zeek, Vector, Loki, Grafana |
 | Workbench | `nexus-workbench` (JupyterLab) with standard and privileged profiles |
 | Athena | `nexus-athena` (Kali Linux build) with standard and elevated profiles |
@@ -77,7 +77,7 @@ graph TD
 
 **Status:** Beta target
 
-**Primary goal:** Move Zevn control-plane workloads and selected Nexus workloads from standard Linux assumptions toward TerranoxOS and `kiln`.
+**Primary goal:** Move Zevn control-plane workloads and selected Nexus workloads from standard Linux assumptions toward TerranoxOS and gVisor.
 
 This phase begins once TerranoxOS has stable enough networking, process management, and observability hooks to support real workloads or realistic subsystem tests.
 
@@ -86,7 +86,7 @@ This phase begins once TerranoxOS has stable enough networking, process manageme
 | Area | Phase 2 approach |
 | --- | --- |
 | Host OS | TerranoxOS for selected workloads; Linux remains available for fallback and comparison |
-| Execution | `kiln` becomes the preferred hermetic runtime for selected services |
+| Execution | gVisor becomes the preferred hermetic runtime for selected services |
 | Telemetry | Early TerranoxOS tracing, eBPF-like hooks, or equivalent kernel telemetry |
 | SOC platform | Wazuh and hybrid Suricata/runtime telemetry remain the known-good detection baseline while AI-native telemetry is validated |
 | AI triage | Starts consuming TerranoxOS telemetry alongside existing SOC events |
@@ -105,7 +105,7 @@ The AI-SOC starts monitoring early TerranoxOS telemetry while still relying on W
 
 ### Exit Criteria
 
-- `kiln` can execute at least one non-trivial Nexus workload repeatably.
+- gVisor can execute at least one non-trivial Nexus workload repeatably.
 - TerranoxOS telemetry can be exported in a documented schema.
 - AI triage can compare standard SOC events against TerranoxOS telemetry.
 - Workloads have signed artifacts and provenance from the secure software factory.
@@ -125,7 +125,7 @@ This is the long-horizon target where TerranoxOS is mature enough to host Zevn p
 | --- | --- |
 | Host OS | Mature TerranoxOS |
 | Verification | Kernel verification with tools such as Frama-C; userspace verification with tools such as Creusot where practical |
-| Execution | All core workloads run as hermetically sealed `kiln` workloads |
+| Execution | All core workloads run as hermetically sealed gVisor workloads |
 | Telemetry | Kernel-native telemetry feeds the AI-SOC inference engine |
 | Interface | Nexus MCP server exposes approved tools and context |
 | Response | Vertex Rust xDS control plane coordinates approved response actions; data-plane APIs perform the runtime changes |
@@ -136,7 +136,7 @@ This is the long-horizon target where TerranoxOS is mature enough to host Zevn p
 graph TD
     subgraph "TerranoxOS (High-Assurance Foundation)"
         A[Verified Kernel]
-        B[kiln: Hermetic Engine]
+        B[gVisor: Hermetic Sandbox]
         A --> B
     end
 
@@ -176,7 +176,7 @@ Underground Nexus becomes the AI-native security subsystem for Zevn. The AI-SOC 
 ### Exit Criteria
 
 - TerranoxOS can host the Zevn control plane and selected Nexus workloads.
-- `kiln` provides stable hermetic execution for production services.
+- gVisor provides stable hermetic execution for production services.
 - Kernel telemetry is documented, signed, and resistant to tampering.
 - MCP response actions require identity, authorization, and audit trails.
 - Model versions, telemetry schemas, training datasets, and inference outputs are signed and traceable.

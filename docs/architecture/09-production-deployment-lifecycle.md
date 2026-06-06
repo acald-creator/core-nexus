@@ -2,7 +2,7 @@
 
 This document describes a future Zevn bare-metal deployment lifecycle for hermetic workloads. It is a long-horizon production path, not the current Docker, Kubernetes, Argo CD, or UDS/Zarf deployment model.
 
-The core idea is a zero-trust supply chain: build artifacts are signed before distribution, and TerranoxOS nodes verify signatures locally before handing workloads to `kiln`.
+The core idea is a zero-trust supply chain: build artifacts are signed before distribution, and TerranoxOS nodes verify signatures locally before handing workloads to the gVisor RuntimeClass.
 
 ## 1. Deployment Architecture
 
@@ -11,7 +11,7 @@ The future production architecture has two physical domains.
 | Domain | Role |
 | --- | --- |
 | Global edge | Cloudflare Workers, artifact coordination, global state, identity-aware routing |
-| Bare-metal edge | TerranoxOS nodes, Vertex Rust xDS control plane, data-plane APIs, local verification, `kiln` execution, AI-SOC runtime monitoring |
+| Bare-metal edge | TerranoxOS nodes, Vertex Rust xDS control plane, data-plane APIs, local verification, gVisor execution, AI-SOC runtime monitoring |
 
 ## 2. Step-by-Step Production Flow
 
@@ -20,7 +20,7 @@ The future production architecture has two physical domains.
 3. **Update global state:** A Cloudflare Worker, published through Wrangler, updates the desired production version.
 4. **Synchronize nodes:** TerranoxOS nodes receive or poll desired state through the Vertex Rust xDS control plane.
 5. **Pull and verify:** A node downloads the artifact and verifies the signature, provenance, and policy requirements locally.
-6. **Execute:** If verification succeeds, the workload is handed to `kiln` for hermetic execution.
+6. **Execute:** If verification succeeds, the workload is handed to the gVisor RuntimeClass for hermetic execution.
 7. **Monitor:** Underground Nexus observes runtime behavior and reports deployment anomalies.
 8. **Reject and alert:** If verification fails, the node rejects the artifact and raises an alert.
 
@@ -45,7 +45,7 @@ graph TD
         G -->|Triggers Update| H[Local Verifier]
         H -->|Pulls Artifact| E
         H -->|Validates Signature and Policy| I{Valid?}
-        I -->|Yes| J[kiln: Hermetic Execution]
+        I -->|Yes| J[gVisor: Hermetic Sandbox]
         I -->|No| K[Reject and Alert]
         J --> L[TerranoxOS Kernel]
     end
@@ -89,7 +89,7 @@ Recommended checks:
 
 ## 6. Operational Summary
 
-In this target state, operators do not SSH into servers to deploy workloads. They publish signed artifacts and update desired state. TerranoxOS nodes verify artifacts locally, execute trusted workloads inside `kiln`, and report anomalies to Underground Nexus.
+In this target state, operators do not SSH into servers to deploy workloads. They publish signed artifacts and update desired state. TerranoxOS nodes verify artifacts locally, execute trusted workloads inside a gVisor sandbox, and report anomalies to Underground Nexus.
 
 ## 7. Guardrails
 

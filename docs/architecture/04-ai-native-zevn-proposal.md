@@ -2,7 +2,7 @@
 
 This document describes a long-horizon Underground Nexus architecture in which the Zevn platform provides compute, network, identity, and execution boundaries. It should be treated as a future concept, not as the current Docker, Kubernetes, UDS, or Wazuh implementation plan.
 
-In this model, Underground Nexus becomes an AI-driven security subsystem made of hermetic workloads executed by `kiln` on the TerranoxOS kernel.
+In this model, Underground Nexus becomes an AI-driven security subsystem made of hermetic workloads executed in a gVisor sandbox on the TerranoxOS kernel.
 
 ## 1. Core Components
 
@@ -20,7 +20,7 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 
 **Replaces:** Monolithic Python or shell-based triage scripts.
 
-**What it is:** A high-speed tensor-processing API, such as FastAPI with ONNX Runtime or a Rust service using `tch-rs`, executed inside `kiln`.
+**What it is:** A high-speed tensor-processing API, such as FastAPI with ONNX Runtime or a Rust service using `tch-rs`, executed inside a gVisor sandbox.
 
 **Function:** Ingests kernel/runtime telemetry in real time and applies custom neural-network weights trained from scratch to detect anomalies or malicious behavior in approved workloads. Claims about zero-day detection require evaluation evidence before they are treated as production capabilities.
 
@@ -46,7 +46,7 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 
 **What it is:** A headless automated red-team agent.
 
-**Function:** Continuously attacks designated sandbox environments inside `kiln`, generating the ground-truth malicious data needed to train and evaluate the AI-SOC inference engine.
+**Function:** Continuously attacks designated sandbox environments inside a gVisor sandbox, generating the ground-truth malicious data needed to train and evaluate the AI-SOC inference engine.
 
 ## 2. Visual Plot: Nexus Subsystem Within Zevn
 
@@ -54,7 +54,7 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 graph TD
     subgraph "The Zevn Platform (Infrastructure Layer)"
         Z1[TerranoxOS Kernel]
-        Z2[kiln: Hermetic Execution]
+        Z2[gVisor: Hermetic Sandbox]
         Z3[Vertex: Rust xDS Control Plane]
     end
 
@@ -123,7 +123,7 @@ Near-term work should continue refining the current components. This proposal ca
 
 - Which Zevn components already exist, and which are conceptual?
 - Is TerranoxOS an actual kernel target, a hardened OS profile, or a platform codename?
-- Is `kiln` a container runtime, sandbox runtime, build executor, or all three?
+- Is gVisor a container runtime, sandbox runtime, build executor, or all three?
 - What is the stable interface between Suricata's network/protocol telemetry and the kernel/runtime telemetry stream?
 - Does the MCP server trigger response actions directly, or only expose context to an approved operator?
 - How is ground-truth data validated so the adversary fuzzer does not poison model training?

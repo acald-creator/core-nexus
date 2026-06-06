@@ -15,7 +15,7 @@ The current architecture direction is:
 
 - Use the Docker lab for local experimentation and Security+ style learning.
 - Move production-like orchestration toward Kubernetes, Pulumi, Argo CD, and optionally UDS/Zarf.
-- Treat TerranoxOS, `kiln`, and Vertex as future Zevn platform targets.
+- Treat TerranoxOS, gVisor, and Vertex as future Zevn platform targets.
 - Keep Suricata as the network/protocol side of a hybrid sensor.
 - Use Wazuh as the near-term SOC event store.
 - Use MinIO for artifacts, evidence, datasets, backups, and package archives.
@@ -212,7 +212,7 @@ Historical key-based Cosign verification notes should move into `supply-chain/` 
 - Portainer remains lab-only; Argo CD is the production-like GitOps direction.
 - Vault dev mode is local-only; production-like deployments should use a proper Vault HA design.
 - Kubernetes/UDS SOC, AI Inference, Workbench, and Athena assets are active and deployed in the local `kind` cluster, and we are working toward production GitOps and UDS delivery.
-- TerranoxOS, `kiln`, and Vertex are future Zevn targets, not current runtime dependencies.
+- TerranoxOS, gVisor, and Vertex are future Zevn targets, not current runtime dependencies.
 
 ## Roadmap
 

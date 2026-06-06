@@ -12,7 +12,7 @@ The sensor should evolve in phases rather than jumping directly from the current
 | --- | --- | --- |
 | Phase 1: Bootstrap | Headless Suricata plus Wazuh telemetry | Establish a practical SOC baseline on Linux, Docker, Kubernetes, or UDS. |
 | Phase 2: Hermetic migration | Hybrid Suricata plus early TerranoxOS runtime telemetry | Validate the hybrid stream against known-good SOC signals. |
-| Phase 3: High-assurance target | Hybrid Suricata network telemetry plus kernel telemetry inside `kiln` | Feed AI-native inference from hardened, low-tamper telemetry streams. |
+| Phase 3: High-assurance target | Hybrid Suricata network telemetry plus kernel telemetry inside a gVisor sandbox | Feed AI-native inference from hardened, low-tamper telemetry streams. |
 
 ## 2. Dual Telemetry Model
 
@@ -128,7 +128,7 @@ Example categories:
 
 ## 7. Engineering Implementation for Zevn
 
-The future Zevn sensor workload can become a `kiln` execution bundle once the runtime is ready.
+The future Zevn sensor workload can become a gVisor sandbox once the runtime is ready.
 
 Potential bundle contents:
 
