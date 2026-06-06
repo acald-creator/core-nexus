@@ -129,8 +129,8 @@ The current lab profile includes:
 | --- | --- |
 | Pi-hole | Lab DNS filtering and local DNS control |
 | Portainer CE | Lab-only Docker management UI |
-| MinIO | Object storage for lab artifacts and evidence |
-| Vault dev server | Local learning and development secrets workflow |
+| MinIO | Kubernetes-native object storage for artifacts and evidence |
+| Vault | Local test Vault via StatefulSet |
 | Athena | Kali-based adversary emulation environment |
 | Workbench webtop | Operator desktop and development surface |
 | SOC webtop | Analyst desktop profile |
@@ -147,7 +147,8 @@ The current Docker lab preserves several components because they are useful for 
 | --- | --- | --- |
 | Portainer CE | Local-only | Keep for Docker lab visibility; replace with Argo CD for production-like GitOps. |
 | Pi-hole | Local-only | Keep for lab DNS filtering; use Kubernetes DNS, network policy, and Istio for cluster and service traffic control. |
-| Vault dev mode | Local-only | Keep for learning and local workflows; replace with Vault HA or an equivalent production secrets design. |
+| Legacy webtop-soc | Deprecated direction | Replaced with headless microservices and sensors in `platform/soc/`. |
+| Legacy Vault dev mode | Deprecated direction | Replaced with Kubernetes-native Vault (StatefulSet for test, Helm HA for prod). |
 | Privileged Docker-in-Docker image | Local-only | Keep for the bootstrap lab; avoid as the production runtime model. |
 | Sysbox image | Experimental | Keep as an alternate lab runtime until its role is revalidated. |
 | Docker Swarm bootstrap | Deprecated direction | Keep only while needed by the legacy script; prefer Kubernetes for future orchestration. |

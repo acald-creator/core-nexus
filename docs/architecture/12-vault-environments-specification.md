@@ -48,7 +48,7 @@ flowchart TD
 ```
 
 ### Specifications
-* **Persistence**: Backed by a Kubernetes `PersistentVolume` (`standard` storage class) to preserve state across pod restarts.
+* **Persistence**: Backed by a Kubernetes `PersistentVolume` (using the cluster's default storage class, e.g., `local-path` or `gp2`) to preserve state across pod restarts.
 * **Manual Init/Unseal**: Simulates real disaster recovery and initialization. Administrators must manually initialize Vault via `vault operator init` and unseal the node using Shamir's Secret Sharing keys (typically 3 out of 5 key shares).
 * **Configuration**: Declared in a `vault.hcl` configuration file mounted via a `ConfigMap`.
 * **Testing Scope**: Used to test authentication workflows, ACL policies, and bootstrap scripts before they are promoted to Production.

@@ -58,8 +58,8 @@ graph LR
 | Pi-hole | Lab DNS filtering and DNS control | Lab-only DNS filter; production Kubernetes DNS is handled by cluster DNS, while Istio handles service mesh traffic policy |
 | NGINX proxy | Lab HTTP routing | Replace with Kubernetes ingress or UDS/Istio gateways in production |
 | Portainer | Manual container management UI | Lab-only; production path should use GitOps and dashboards |
-| MinIO | Lab object storage for `/nexus-bucket` artifacts | Retain for artifacts, evidence, datasets, and backups if object storage is needed; do not use as the primary SOC event store |
-| Vault dev mode | Development secrets service | Replace with Vault HA or another platform secret management design |
+| MinIO | Lab object storage for `/nexus-bucket` artifacts | Kubernetes-native MinIO (`StatefulSet` for base, Helm Distributed cluster for prod) |
+| Vault dev mode | Development secrets service | Vault HA via Helm chart for prod; `StatefulSet` file backend for test |
 | `nexus-webtop-soc` | Legacy SOC desktop with Suricata | Split into dedicated Wazuh SOC services and sensors; legacy webtop client removed |
 | `nexus-athena` | Kali red-team container | Custom local build; keep as isolated lab traffic generator |
 | `nexus-workbench` | Agentic Workspace | JupyterLab environment serving as the unified analyst client |
@@ -161,8 +161,8 @@ Some current services are useful lab components but need clearer production role
 | Service | Lab role | Production question |
 | --- | --- | --- |
 | Pi-hole | DNS filtering and lab DNS | Keep as lab-only; do not treat Istio as a direct Pi-hole replacement |
-| MinIO | Local object storage for artifacts and datasets | Keep for object storage use cases; avoid using it as the primary SOC event store |
-| Vault | Dev secrets | Move to Vault HA or another secret manager? |
+| MinIO | Local object storage for artifacts and datasets | Migrated to Kubernetes-native StatefulSet (base) and Distributed Helm HA (prod) |
+| Vault | Dev secrets | Migrated to official HashiCorp Vault Helm chart (HA/Raft) for prod |
 | Portainer | Manual container UI | Keep only in Docker lab profile? |
 | Code server | Developer editor | Merge into workbench or keep as separate development service? |
 
@@ -172,8 +172,8 @@ Vault is the best fit for Underground Nexus if the broader secure software facto
 
 Recommended Vault roles:
 
-- **Local lab:** Run Vault dev mode only for learning, demos, and local integration testing.
-- **Production:** Run Vault HA with auto-unseal backed by a KMS or equivalent trusted key source.
+- **Local lab (`base` / `test`):** Run Vault dev mode or lightweight `StatefulSet` file backend for local integration testing.
+- **Production (`prod`):** Run Vault HA via the official HashiCorp Helm chart with Integrated Storage (Raft) and auto-unseal backed by a KMS or equivalent trusted key source.
 - **Build factory:** Store signing material, short-lived credentials, registry tokens, and pipeline secrets.
 - **Runtime platform:** Store SOC, Wazuh, MinIO, database, API, and service credentials.
 - **Deployment:** Feed Kubernetes secrets through an explicit sync or injection pattern rather than committing secrets to Git.
@@ -239,9 +239,9 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 | Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-workbench` |
 | Athena default profile | Isolated red-team lab container without SSH or Docker socket | `nexus-athena` |
 | Athena elevated profile | Explicit packet-capture or exploit-lab capabilities | `nexus-athena-elevated` |
-| Secrets manager | Vault HA for production-like deployments; Vault dev mode for local learning only | Core Nexus |
+| Secrets manager | Vault HA via Helm (prod); Vault `StatefulSet` (test/dev) | Core Nexus |
 | UDS role | Platform baseline and Zarf delivery, not the secrets backend | Core Nexus |
-| MinIO role | Object storage for artifacts, evidence, datasets, backups, and package archives | Core Nexus |
+| MinIO role | Kubernetes-native Object storage (StatefulSet / Distributed Helm) | Core Nexus |
 
 ### Milestone 1: Clarify Current Lab Profiles
 

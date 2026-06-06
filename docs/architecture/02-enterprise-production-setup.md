@@ -65,7 +65,7 @@ Important caveat: this only controls the lifecycle of the shared handoff volume.
 To automate the production architecture, Underground Nexus utilizes a combined **Flux CD** and **Argo CD** GitOps pipeline:
 
 * **Flux CD (Synchronization & Image Automation)**: Acting as the low-level sync engine, Flux monitors the Git repositories, Helm charts, and image registries. Its *Image Automation Controller* detects newly built images (e.g. `nexus-workbench:latest` or `ai-inference:latest`), automatically commits the updated tags back to Git, and syncs basic infrastructure manifests.
-* **Argo CD (Governance & visualization)**: Argo CD acts as the primary deployment orchestrator and dashboard. It pulls the updated manifests from Git, provides rich visual topology maps of application states, manages SSO authentication, and enforces RBAC policy control for the operational team.
+* **Argo CD (Governance & visualization)**: Argo CD acts as the primary deployment orchestrator and dashboard. It pulls the updated manifests from Git, dynamically inflates Helm charts (such as HashiCorp Vault and Bitnami MinIO) via Kustomize's `helmCharts` generator, provides rich visual topology maps of application states, manages SSO authentication, and enforces RBAC policy control for the operational team.
 
 ```mermaid
 flowchart TD
