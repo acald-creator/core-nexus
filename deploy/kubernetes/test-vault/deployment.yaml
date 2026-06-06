@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault-test
+  namespace: soc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: vault-test
+  template:
+    metadata:
+      labels:
+        app: vault-test
+        zarf.dev/agent: skip
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 100
+      containers:
+      - name: vault
+        image: hashicorp/vault:1.15.2
+        imagePullPolicy: IfNotPresent
+        command: ["vault", "server", "-config=/vault/config/vault.hcl"]
+        ports:
+        - containerPort: 8200
+          name: api
+        volumeMounts:
+        - name: config-volume
+          mountPath: /vault/config
+        - name: data-volume
+          mountPath: /vault/data
+      volumes:
+      - name: config-volume
+        configMap:
+          name: vault-test-config
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: vault-test-data-pvc
