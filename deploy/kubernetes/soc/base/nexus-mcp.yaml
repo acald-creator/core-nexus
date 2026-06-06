@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-mcp
+  namespace: soc
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-mcp
+  template:
+    metadata:
+      labels:
+        app: nexus-mcp
+    spec:
+      containers:
+      - name: nexus-mcp
+        image: local/nexus-mcp:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 3001
+          name: sse
+        env:
+        - name: AI_INFERENCE_URL
+          value: "http://ai-inference:8000"
+        resources:
+          limits:
+            cpu: "500m"
+            memory: 256Mi
+          requests:
+            cpu: "100m"
+            memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-mcp
+  namespace: soc
+spec:
+  ports:
+  - port: 3001
+    targetPort: 3001
+    name: sse
+  selector:
+    app: nexus-mcp

@@ -4,6 +4,7 @@ kind: Kustomization
 resources:
   - namespace.yaml
   - ai-inference.yaml
+  - nexus-mcp.yaml
   - nexus-workbench.yaml
   - nexus-athena.yaml
   - nexus-athena-elevated.yaml
