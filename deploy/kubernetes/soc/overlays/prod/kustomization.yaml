@@ -3,9 +3,35 @@ kind: Kustomization
 
 resources:
   - ../../base
-  - configmap.yaml
-  - pvc.yaml
 
 patches:
   - path: prod-patch.yaml
-  - path: vault-patch.yaml
+  - patch: |-
+      $patch: delete
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: vault
+    target:
+      kind: Deployment
+      name: vault
+  - patch: |-
+      $patch: delete
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: vault
+    target:
+      kind: Service
+      name: vault
+
+helmGlobals:
+  chartHome: /tmp/charts
+
+helmCharts:
+  - name: vault
+    repo: https://helm.releases.hashicorp.com
+    version: 0.28.0
+    releaseName: vault
+    namespace: soc
+    valuesFile: vault-values.yaml

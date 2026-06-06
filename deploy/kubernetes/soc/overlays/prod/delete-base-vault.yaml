@@ -1,0 +1,13 @@
+$patch: delete
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault
+  namespace: soc
+---
+$patch: delete
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault
+  namespace: soc
