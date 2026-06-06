@@ -32,11 +32,17 @@ spec:
         - name: INDEXER_USERNAME
           value: "admin"
         - name: INDEXER_PASSWORD
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: wazuh-secrets
+              key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
         - name: WAZUH_API_USER
           value: "admin"
         - name: WAZUH_API_PASSWORD
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: wazuh-secrets
+              key: WAZUH_API_PASSWORD
         - name: FILEBEAT_SSL_VERIFICATION_MODE
           value: "none"
         volumeMounts:

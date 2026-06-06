@@ -46,7 +46,10 @@ spec:
         - name: INDEXER_USERNAME
           value: "admin"
         - name: INDEXER_PASSWORD
-          value: "admin"
+          valueFrom:
+            secretKeyRef:
+              name: wazuh-secrets
+              key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
         - name: WAZUH_API_URL
           value: "https://wazuh-manager:55000"
         - name: SERVER_SSL_ENABLED

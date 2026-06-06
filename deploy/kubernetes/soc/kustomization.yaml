@@ -3,6 +3,7 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - wazuh-secrets.yaml
   - wazuh-indexer.yaml
   - wazuh-manager.yaml
   - wazuh-dashboard.yaml
