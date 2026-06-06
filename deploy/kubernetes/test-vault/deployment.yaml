@@ -19,6 +19,8 @@ spec:
         runAsUser: 100
       containers:
       - name: vault
+        securityContext:
+          allowPrivilegeEscalation: false
         image: hashicorp/vault:1.15.2
         imagePullPolicy: IfNotPresent
         command: ["vault", "server", "-config=/vault/config/vault.hcl"]
