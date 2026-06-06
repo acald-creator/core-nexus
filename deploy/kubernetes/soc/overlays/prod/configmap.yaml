@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-prod-config
+  namespace: soc
+data:
+  vault.hcl: |
+    storage "raft" {
+      path    = "/vault/data"
+      node_id = "vault-0"
+    }
+
+    listener "tcp" {
+      address     = "0.0.0.0:8200"
+      tls_disable = 1
+    }
+
+    disable_mlock = true
+    ui = true

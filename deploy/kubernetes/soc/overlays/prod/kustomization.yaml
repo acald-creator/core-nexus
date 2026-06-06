@@ -3,6 +3,9 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - configmap.yaml
+  - pvc.yaml
 
 patches:
   - path: prod-patch.yaml
+  - path: vault-patch.yaml

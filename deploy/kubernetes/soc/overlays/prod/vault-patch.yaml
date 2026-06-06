@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault
+  namespace: soc
+spec:
+  template:
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 100
+      containers:
+      - name: vault
+        command: ["vault", "server", "-config=/vault/config/vault.hcl"]
+        # Override the env variables from the base dev setup
+        env: []
+        volumeMounts:
+        - name: config-volume
+          mountPath: /vault/config
+        - name: data-volume
+          mountPath: /vault/data
+      volumes:
+      - name: config-volume
+        configMap:
+          name: vault-prod-config
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: vault-prod-data-pvc
