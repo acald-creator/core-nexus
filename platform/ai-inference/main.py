@@ -19,14 +19,18 @@ triage_model = TriageModel()
 # Mock RAG Vector Memory
 vector_memory: List[Dict[str, Any]] = []
 
+from pydantic import BaseModel, Field
+
 class EventPayload(BaseModel):
-    event_id: str
+    event_id: str = Field(default_factory=lambda: str(time.time()))
     timestamp: str = None
     alert: Dict[str, Any] = None
     dest_port: int = None
     rule: Dict[str, Any] = None
-    # Support other optional fields
     data: Dict[str, Any] = None
+    
+    class Config:
+        extra = "allow"
 
 class RAGQuery(BaseModel):
     query_text: str
