@@ -14,12 +14,23 @@ spec:
         app: ai-inference
         zarf.dev/agent: skip
     spec:
+      initContainers:
+      - name: preflight-cookbook
+        image: local/ai-inference:latest
+        imagePullPolicy: IfNotPresent
+        command: ["python", "preflight.py"]
+        volumeMounts:
+        - name: models-volume
+          mountPath: /models
       containers:
       - name: ai-inference
         securityContext:
           allowPrivilegeEscalation: false
         image: local/ai-inference:latest
         imagePullPolicy: IfNotPresent
+        volumeMounts:
+        - name: models-volume
+          mountPath: /models
         ports:
         - containerPort: 8000
           name: api
@@ -30,6 +41,9 @@ spec:
           requests:
             cpu: "250m"
             memory: 256Mi
+      volumes:
+      - name: models-volume
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service

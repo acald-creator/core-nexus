@@ -5,7 +5,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY main.py triage.py ./
+COPY main.py .
+COPY triage.py .
+COPY preflight.py .
 
 EXPOSE 8000
 
