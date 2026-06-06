@@ -1,32 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: vault-test
+  name: vault
   namespace: soc
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: vault-test
   template:
-    metadata:
-      labels:
-        app: vault-test
-        zarf.dev/agent: skip
     spec:
       securityContext:
         fsGroup: 1000
         runAsUser: 100
       containers:
       - name: vault
-        securityContext:
-          allowPrivilegeEscalation: false
-        image: hashicorp/vault:1.15.2
-        imagePullPolicy: IfNotPresent
         command: ["vault", "server", "-config=/vault/config/vault.hcl"]
-        ports:
-        - containerPort: 8200
-          name: api
+        # Override the env variables from the base dev setup
+        env: []
         volumeMounts:
         - name: config-volume
           mountPath: /vault/config

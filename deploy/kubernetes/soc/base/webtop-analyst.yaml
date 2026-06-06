@@ -16,7 +16,8 @@ spec:
     spec:
       containers:
       - name: webtop-analyst
-        image: linuxserver/webtop:amd64-ubuntu-xfce
+        image: phoenixvlabs/nexus-webtop-soc:amd64-latest
+        imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false
           allowPrivilegeEscalation: false
