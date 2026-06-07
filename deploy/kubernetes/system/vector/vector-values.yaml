@@ -9,7 +9,7 @@ customConfig:
   sources:
     kubernetes_logs:
       type: kubernetes_logs
-      extra_label_selector: "app.kubernetes.io/name=tetragon"
+      extra_label_selector: "app.kubernetes.io/name in (tetragon,suricata)"
 
   transforms:
     parse_tetragon:
@@ -17,9 +17,9 @@ customConfig:
       inputs:
         - kubernetes_logs
       source: |
-        # Parse the JSON string from Tetragon's stdout into a JSON object
-        .message = parse_json!(.message)
-        # We can extract it or just leave it inside .message
+        if is_string(.message) && starts_with(.message, "{") {
+          .message = parse_json(.message) ?? .message
+        }
 
   sinks:
     ai_inference:
@@ -32,3 +32,11 @@ customConfig:
         codec: "json"
       batch:
         max_events: 10
+    wazuh_indexer:
+      type: elasticsearch
+      inputs:
+        - parse_tetragon
+      endpoints:
+        - "http://wazuh-indexer.soc.svc.cluster.local:9200"
+      mode: "bulk"
+      index: "soc-events-%Y.%m.%d"

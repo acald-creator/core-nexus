@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: suricata-config
+data:
+  suricata.yaml: |
+    %YAML 1.1
+    ---
+    vars:
+      address-groups:
+        HOME_NET: "[10.0.0.0/8,172.16.0.0/12,192.168.0.0/16]"
+        EXTERNAL_NET: "!$HOME_NET"
+      port-groups:
+        HTTP_PORTS: "80"
+        SHELLCODE_PORTS: "!80"
+        ORACLE_PORTS: 1521
+        SSH_PORTS: 22
+        DNP3_PORTS: 20000
+        MODBUS_PORTS: 502
+        FILE_DATA_PORTS: "[$HTTP_PORTS,110,143]"
+        FTP_PORTS: 21
+
+    outputs:
+      - eve-log:
+          enabled: yes
+          filetype: regular
+          filename: eve.json
+          types:
+            - alert:
+                payload: yes
+                payload-printable: yes
+                packet: yes
+                http-body: yes
+            - http
+            - dns
+            - tls
+
+    af-packet:
+      - interface: eth0
+        cluster-id: 99
+        cluster-type: cluster_flow
+        defrag: yes
+        use-mmap: yes
+        tpacket-v3: yes
+
+    app-layer:
+      protocols:
+        tls:
+          enabled: yes
+          detection-ports:
+            dp: 443
+        dcerpc:
+          enabled: yes
+        dns:
+          tcp:
+            enabled: yes
+            detection-ports:
+              dp: 53
+          udp:
+            enabled: yes
+            detection-ports:
+              dp: 53
+        http:
+          enabled: yes
+
+    rule-files:
+      - /var/lib/suricata/rules/suricata.rules
+
+  update-rules.sh: |
+    #!/bin/sh
+    suricata-update --no-test

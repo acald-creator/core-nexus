@@ -6,6 +6,8 @@ resources:
   - ../../../system/tetragon
   - ../../../system/vector
   - ../../../system/kyverno
+  - ../../../system/suricata
+  - ../../wazuh
   - configmap.yaml
   - pvc.yaml
 
