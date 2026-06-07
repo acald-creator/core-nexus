@@ -28,12 +28,12 @@ echo y | docker network rm ingress || true
 docker network create --opt encrypted --driver overlay ingress || true
 
 # Prepare Firefox Homepage override
-wget https://raw.githubusercontent.com/acald-creator/underground-nexus/main/Production%20Artifacts/firefox-homepage.sh && \
-    sh firefox-homepage.sh || true
+# wget https://raw.githubusercontent.com/acald-creator/underground-nexus/main/Production%20Artifacts/firefox-homepage.sh && \
+#     sh firefox-homepage.sh || true
 
-if [ -f "$WORKBENCH_SCRIPT" ]; then
-    sh "$WORKBENCH_SCRIPT"
-fi
+# if [ -f "$WORKBENCH_SCRIPT" ]; then
+#     sh "$WORKBENCH_SCRIPT"
+# fi
 
 echo "Deploying KuberNexus (k3d)"
 
@@ -74,7 +74,7 @@ fi
 
 echo "Applying Kubernetes manifests via Kustomize..."
 if [ -d "$REPO_ROOT/deploy/kubernetes/soc/overlays/test" ]; then
-    kubectl apply -k "$REPO_ROOT/deploy/kubernetes/soc/overlays/test"
+    kubectl apply -k "$REPO_ROOT/deploy/kubernetes/soc/overlays/test" --enable-helm
 else
     echo "Kustomize overlay not found, skipping..."
 fi

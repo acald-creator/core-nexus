@@ -30,10 +30,6 @@ services:
     container_name: Inner-DNS-Control
     hostname: Inner-DNS-Control
     ports:
-      - "53:53/tcp"
-      - "53:53/udp"
-      - "67:67/udp"
-      - "443:443/tcp"
       - "8081:80/tcp"
     volumes:
       - "pihole_dns_data:/etc/dnsmasq.d"

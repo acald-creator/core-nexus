@@ -1,4 +1,3 @@
-import React from 'react';
 import './App.css';
 
 function App() {
@@ -7,31 +6,31 @@ function App() {
       title: 'Wazuh Dashboard',
       desc: 'Centralized SIEM and Security Event Management',
       icon: '🛡️',
-      link: 'https://wazuh.dashboard.local'
+      link: 'https://localhost:5601'
     },
     {
       title: 'MinIO Console',
       desc: 'Artifact, Evidence, and Dataset S3 Storage',
       icon: '🗄️',
-      link: 'http://minio.soc.local'
+      link: 'http://localhost:9001'
     },
     {
       title: 'Jupyter Workbench',
       desc: 'Agentic Workspace & Purple-Team Analytics',
       icon: '💻',
-      link: 'http://workbench.soc.local'
+      link: 'http://localhost:8888'
     },
     {
       title: 'Portainer',
       desc: 'Baseline Host Container Management',
       icon: '🐳',
-      link: 'https://portainer.local'
+      link: 'https://localhost:9443'
     },
     {
       title: 'Pi-Hole',
       desc: 'Network DNS Filter & Sinkhole Control',
       icon: '🎯',
-      link: 'http://pi.hole.home.lan/admin'
+      link: 'http://localhost:8081/admin'
     }
   ];
 
