@@ -50,18 +50,30 @@ def read_root():
         ]
     }
 
+from fastapi import FastAPI, HTTPException, Request
+
 @app.post("/v1/triage")
-def triage_event(payload: Dict[str, Any]):
+async def triage_event(request: Request):
+    raw_body = await request.body()
+    print("RAW_BODY_START:", raw_body, "RAW_BODY_END", flush=True)
     try:
-        triage_output = triage_model.triage_event(payload)
-        
-        # Save to mock RAG memory
+        import json
+        payload = json.loads(raw_body)
+    except Exception as e:
+        print("JSON parse error:", e, flush=True)
+        return {"status": "error", "reason": str(e)}
+
+    # Handle Vector batching (List of events) or single events
+    events = payload if isinstance(payload, list) else [payload]
+    
+    results = []
+    for event in events:
+        triage_output = triage_model.triage_event(event)
         triage_output["saved_at"] = time.time()
         vector_memory.append(triage_output)
-        
-        return triage_output
-    except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Error triaging event: {str(e)}")
+        results.append(triage_output)
+    
+    return results if isinstance(payload, list) else results[0]
 
 @app.get("/v1/hardware")
 def get_hardware_status():

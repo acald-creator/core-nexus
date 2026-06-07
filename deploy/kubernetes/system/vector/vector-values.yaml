@@ -1,0 +1,34 @@
+role: "Agent"
+
+customConfig:
+  data_dir: /vector-data-dir
+  api:
+    enabled: true
+    address: 127.0.0.1:8686
+
+  sources:
+    kubernetes_logs:
+      type: kubernetes_logs
+      extra_label_selector: "app.kubernetes.io/name=tetragon"
+
+  transforms:
+    parse_tetragon:
+      type: remap
+      inputs:
+        - kubernetes_logs
+      source: |
+        # Parse the JSON string from Tetragon's stdout into a JSON object
+        .message = parse_json!(.message)
+        # We can extract it or just leave it inside .message
+
+  sinks:
+    ai_inference:
+      type: http
+      inputs:
+        - parse_tetragon
+      uri: "http://ai-inference.soc.svc.cluster.local:8000/v1/triage"
+      method: "post"
+      encoding:
+        codec: "json"
+      batch:
+        max_events: 10
