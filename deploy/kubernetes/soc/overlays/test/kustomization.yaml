@@ -5,6 +5,7 @@ resources:
   - ../../base
   - ../../../system/tetragon
   - ../../../system/vector
+  - ../../../system/kyverno
   - configmap.yaml
   - pvc.yaml
 
