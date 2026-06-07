@@ -127,8 +127,9 @@ The current lab profile includes:
 
 | Service | Purpose |
 | --- | --- |
+| Nexus Console | Custom React dashboard serving as the primary platform UI and launchpad |
 | Pi-hole | Lab DNS filtering and local DNS control |
-| Portainer CE | Lab-only Docker management UI |
+| Portainer CE | Lab-only baseline host container management |
 | MinIO | Kubernetes-native object storage for artifacts and evidence |
 | Vault | Local test Vault via StatefulSet |
 | Athena | Kali-based adversary emulation environment |
@@ -145,7 +146,8 @@ The current Docker lab preserves several components because they are useful for 
 
 | Component | Status | Direction |
 | --- | --- | --- |
-| Portainer CE | Local-only | Keep for Docker lab visibility; replace with Argo CD for production-like GitOps. |
+| Nexus Console | Local-only | Currently built for the local Docker lab baseline; serves as the primary gateway UI. |
+| Portainer CE | Local-only | Relegated to baseline host visibility; replace with Argo CD for production-like GitOps. |
 | Pi-hole | Local-only | Keep for lab DNS filtering; use Kubernetes DNS, network policy, and Istio for cluster and service traffic control. |
 | Legacy webtop-soc | Deprecated direction | Replaced with headless microservices and sensors in `platform/soc/`. |
 | Legacy Vault dev mode | Deprecated direction | Replaced with Kubernetes-native Vault (StatefulSet for test, Helm HA for prod). |
