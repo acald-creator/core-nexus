@@ -15,5 +15,6 @@ patches:
   - path: vault-patch.yaml
   - path: athena-gvisor-patch.yaml
   - path: ai-inference-patch.yaml
+  - path: wazuh-dashboard-patch.yaml
 
 

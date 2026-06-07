@@ -90,6 +90,15 @@ if [ -d "$REPO_ROOT/deploy/kubernetes/soc/overlays/test" ]; then
       --dry-run=client -o yaml | kubectl apply -f -
 
     kubectl apply -k "$REPO_ROOT/deploy/kubernetes/soc/overlays/test" --enable-helm
+
+    echo "Waiting for wazuh-indexer to become ready for security initialization..."
+    kubectl wait --namespace nexus-soc --for=condition=ready pod -l app=wazuh-indexer --timeout=300s || true
+    
+    echo "Initializing OpenSearch security plugin on wazuh-indexer..."
+    INDEXER_POD=$(kubectl get pod -n nexus-soc -l app=wazuh-indexer -o jsonpath='{.items[0].metadata.name}')
+    if [ -n "$INDEXER_POD" ]; then
+        kubectl exec -n nexus-soc "$INDEXER_POD" -- bash -c "export OPENSEARCH_JAVA_HOME=/usr/share/wazuh-indexer/jdk && bash /usr/share/wazuh-indexer/plugins/opensearch-security/tools/securityadmin.sh -cd /usr/share/wazuh-indexer/opensearch-security/ -icl -nhnv -cacert /usr/share/wazuh-indexer/certs/root-ca.pem -cert /usr/share/wazuh-indexer/certs/admin.pem -key /usr/share/wazuh-indexer/certs/admin-key.pem -h 127.0.0.1 -p 9200 || true"
+    fi
 else
     echo "Kustomize overlay not found, skipping..."
 fi

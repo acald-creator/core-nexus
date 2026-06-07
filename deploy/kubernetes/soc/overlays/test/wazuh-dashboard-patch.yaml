@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-dashboard
+  namespace: nexus-soc
+spec:
+  template:
+    spec:
+      hostAliases:
+        - ip: "10.43.113.233"
+          hostnames:
+            - "wazuh.indexer"
