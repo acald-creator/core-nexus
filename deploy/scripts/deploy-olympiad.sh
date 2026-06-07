@@ -72,8 +72,23 @@ else
         -p 31896:31896@loadbalancer
 fi
 
+echo "Building and importing Workbench image..."
+docker build -t local/nexus-workbench:latest -f "$REPO_ROOT/platform/workbench/Dockerfile" "$REPO_ROOT/platform/workbench"
+k3d image import local/nexus-workbench:latest -c KuberNexus
+
 echo "Applying Kubernetes manifests via Kustomize..."
 if [ -d "$REPO_ROOT/deploy/kubernetes/soc/overlays/test" ]; then
+    # Create wazuh-auth secret if it doesn't exist
+    kubectl create namespace nexus-soc --dry-run=client -o yaml | kubectl apply -f -
+    kubectl create secret generic wazuh-auth -n nexus-soc \
+      --from-literal=indexer-username=admin \
+      --from-literal=indexer-password=admin \
+      --from-literal=dashboard-username=admin \
+      --from-literal=dashboard-password=admin \
+      --from-literal=api-username=wazuh-wui \
+      --from-literal=api-password=admin \
+      --dry-run=client -o yaml | kubectl apply -f -
+
     kubectl apply -k "$REPO_ROOT/deploy/kubernetes/soc/overlays/test" --enable-helm
 else
     echo "Kustomize overlay not found, skipping..."
