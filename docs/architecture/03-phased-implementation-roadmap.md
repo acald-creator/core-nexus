@@ -17,9 +17,10 @@ TerranoxOS is still in early userspace development. It may render early UI eleme
 | Area | Phase 1 approach |
 | --- | --- |
 | Host OS | Hardened standard Linux distribution, such as Alpine or Ubuntu |
-| Execution | Docker containers, early `gVisor` configurations on Linux namespaces/cgroups, or both |
-| SOC platform | Phase 1 target baseline being built: Wazuh, Suricata, optional Zeek, Vector, Loki, Grafana |
-| Workbench | `nexus-workbench` (JupyterLab) with standard and privileged profiles |
+| Execution | Docker Compose baseline (Nexus Console, Portainer) + KuberNexus (k3d) for workloads |
+| Primary UI | `nexus-console` (Custom React/Vite Launchpad Dashboard) |
+| SOC platform | Phase 1 target baseline built: Wazuh, Suricata, MinIO running in KuberNexus (k3d) |
+| Workbench | `nexus-workbench` (JupyterLab) providing the unified agentic workspace |
 | Athena | `nexus-athena` (Kali Linux build) with standard and elevated profiles |
 | Secrets | Vault dev mode for local learning; begin designing Vault HA for production-like paths |
 | Supply chain | Cosign, SBOMs, attestations, vulnerability scans, registry controls |
@@ -67,11 +68,12 @@ graph TD
 
 ### Exit Criteria
 
-- Current Docker lab profiles are documented.
-- SOC baseline exists with Wazuh and Suricata separated from the webtop.
-- Workbench and Athena have standard and elevated runtime profiles.
-- SBOM, signing, vulnerability scanning, and attestation workflows are documented.
-- Vault production direction is selected, even if only dev mode exists locally.
+- [x] Current Docker lab profiles are documented.
+- [x] SOC baseline exists with Wazuh and Suricata separated from the webtop, running on KuberNexus (k3d).
+- [x] Primary UI replaced with Custom Nexus Console Launchpad.
+- [ ] Workbench and Athena have standard and elevated runtime profiles.
+- [ ] SBOM, signing, vulnerability scanning, and attestation workflows are documented.
+- [ ] Vault production direction is selected, even if only dev mode exists locally.
 
 ## Phase 2: Hermetic Migration
 

@@ -57,7 +57,8 @@ graph LR
 | `Inner-Athena` Docker network | Shared lab network for containers | Map to Kubernetes namespaces, services, and network policies |
 | Pi-hole | Lab DNS filtering and DNS control | Lab-only DNS filter; production Kubernetes DNS is handled by cluster DNS, while Istio handles service mesh traffic policy |
 | NGINX proxy | Lab HTTP routing | Replace with Kubernetes ingress or UDS/Istio gateways in production |
-| Portainer | Manual container management UI | Lab-only; production path should use GitOps and dashboards |
+| Nexus Console | Primary Platform UI | Custom React/Vite dashboard serving as the unified launchpad for all Underground Nexus services |
+| Portainer | Manual host container UI | Lab-only; relegated to baseline container management, replaced by Nexus Console as primary UI |
 | MinIO | Lab object storage for `/nexus-bucket` artifacts | Kubernetes-native MinIO (`StatefulSet` for base, Helm Distributed cluster for prod) |
 | Vault dev mode | Development secrets service | Vault HA via Helm chart for prod; `StatefulSet` file backend for test |
 | `nexus-webtop-soc` | Legacy SOC desktop with Suricata | Split into dedicated Wazuh SOC services and sensors; legacy webtop client removed |
@@ -163,7 +164,8 @@ Some current services are useful lab components but need clearer production role
 | Pi-hole | DNS filtering and lab DNS | Keep as lab-only; do not treat Istio as a direct Pi-hole replacement |
 | MinIO | Local object storage for artifacts and datasets | Migrated to Kubernetes-native StatefulSet (base) and Distributed Helm HA (prod) |
 | Vault | Dev secrets | Migrated to official HashiCorp Vault Helm chart (HA/Raft) for prod |
-| Portainer | Manual container UI | Keep only in Docker lab profile? |
+| Nexus Console | Primary Platform UI | Custom React app serving as the launchpad for all Underground Nexus services |
+| Portainer | Manual container UI | Relegated to baseline host management only |
 | Code server | Developer editor | Merge into workbench or keep as separate development service? |
 
 ### Secrets Management
@@ -239,6 +241,7 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 | Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-workbench` |
 | Athena default profile | Isolated red-team lab container without SSH or Docker socket | `nexus-athena` |
 | Athena elevated profile | Explicit packet-capture or exploit-lab capabilities | `nexus-athena-elevated` |
+| Primary UI | Custom Nexus Console Launchpad | `nexus-console` |
 | Secrets manager | Vault HA via Helm (prod); Vault `StatefulSet` (test/dev) | Core Nexus |
 | UDS role | Platform baseline and Zarf delivery, not the secrets backend | Core Nexus |
 | MinIO role | Kubernetes-native Object storage (StatefulSet / Distributed Helm) | Core Nexus |
