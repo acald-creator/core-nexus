@@ -44,7 +44,10 @@ fi
 
 echo "Installing k3d..."
 if ! command -v k3d >/dev/null 2>&1; then
-    wget -q -O - https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+    curl -s -L "https://github.com/k3d-io/k3d/releases/download/v5.7.4/k3d-linux-amd64" -o /tmp/k3d
+    chmod +x /tmp/k3d
+    sudo install -o root -g root -m 0755 /tmp/k3d /usr/local/bin/k3d
+    rm /tmp/k3d
 fi
 
 # Create Kubernetes Cluster
