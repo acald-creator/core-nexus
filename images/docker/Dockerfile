@@ -27,8 +27,8 @@ WORKDIR /
 
 COPY deploy/scripts/deploy-olympiad.sh /
 
-COPY deploy/compose/docker-compose.yml /
+COPY deploy/ /deploy/
 
-COPY deploy/compose/portainer-deploy.yml /
+COPY platform/ /platform/
 
 EXPOSE 22 53 80 443 1000 2375 2376 2377 9010 9443 18443
