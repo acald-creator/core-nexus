@@ -203,36 +203,15 @@ The Underground Nexus lab is packaged as a self-contained container environment.
 Image build assets are split by type:
 
 - Dockerfiles: [images/docker/](images/docker/) (DinD and Sysbox variants)
-- Dagger CUE plans: [images/cue/](images/cue/) (For CI/CD automated builds)
 
-The Dockerfiles expect the repository root as the build context to successfully package the aforementioned directories:
-
-```sh
-docker build -f images/docker/Dockerfile .
-docker build -f images/docker/Dockerfile.sysbox.image .
-```
-
-The Dagger CUE plans are:
-
-```text
-images/cue/build-dind-image.cue
-images/cue/build-sysbox.cue
-```
-
-Set registry credentials before running the Dagger plans:
+The Dockerfiles expect the repository root as the build context:
 
 ```sh
-export REGISTRY_DOCKERIO_USER=<username>
-export REGISTRY_DOCKERIO_PASS=<password>
-export OFFICIAL_REGISTRY_USER=<namespace>
+docker build -t <username>/core-nexus:latest -f images/docker/Dockerfile .
+docker build -t <username>/core-nexus:latest-sysbox -f images/docker/Dockerfile.sysbox.image .
 ```
 
-Then run the selected plan from the repository root:
-
-```sh
-dagger do --plan images/cue/build-dind-image.cue versions
-dagger do --plan images/cue/build-sysbox.cue versions
-```
+The production builds and image publishing are fully automated via GitHub Actions (`.github/workflows/`), pushing directly to Docker Hub upon updates to the `main` branch.
 
 ## Supply Chain
 
