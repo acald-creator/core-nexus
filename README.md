@@ -198,12 +198,14 @@ The current Docker lab preserves several components because they are useful for 
 
 ## Build Images
 
+The Underground Nexus lab is packaged as a self-contained container environment. The build process recursively copies the `deploy/` and `platform/` directories into the image so that the local baseline stack (including the custom Nexus Console React UI and KuberNexus manifests) is natively available at runtime.
+
 Image build assets are split by type:
 
-- Dockerfiles: [images/docker/](images/docker/)
-- Dagger CUE plans: [images/cue/](images/cue/)
+- Dockerfiles: [images/docker/](images/docker/) (DinD and Sysbox variants)
+- Dagger CUE plans: [images/cue/](images/cue/) (For CI/CD automated builds)
 
-The Dockerfiles expect the repository root as the build context:
+The Dockerfiles expect the repository root as the build context to successfully package the aforementioned directories:
 
 ```sh
 docker build -f images/docker/Dockerfile .
