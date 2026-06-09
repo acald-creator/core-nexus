@@ -9,7 +9,7 @@ This component must remain isolated. It should never run against production syst
 | Phase | Athena model | Purpose |
 | --- | --- | --- |
 | Phase 1: Bootstrap | Isolated `nexus-athena` Kali container | Generate controlled lab traffic and validate Wazuh/Suricata detections. |
-| Phase 2: Hermetic migration | Programmatic adversary runner with scenario labels | Produce repeatable attack datasets and compare Linux/Kubernetes signals against TerranoxOS telemetry. |
+| Phase 2: Hermetic migration | Programmatic adversary runner with scenario labels | Produce repeatable attack datasets and compare Linux/Kubernetes signals against SecureOS telemetry. |
 | Phase 3: High-assurance target | Headless adversary fuzzer inside a gVisor sandbox | Continuously test designated sandbox workloads and feed signed ground-truth data into the AI-SOC loop. |
 
 ## 2. Architectural Shift: Continuous ML Data Generation

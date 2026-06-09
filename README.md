@@ -1,21 +1,21 @@
 # Underground Nexus
 
-Underground Nexus is an AI-assisted security lab, SOC planning workspace, and secure software factory companion for the broader Zevn platform.
+Underground Nexus is an AI-assisted security lab, SOC planning workspace, and secure software factory companion for the broader Enterprise Platform platform.
 
 The repository currently serves two purposes:
 
 - Maintain the existing Docker-based Underground Nexus lab profile.
-- Define the next architecture for a production-like Kubernetes/UDS path and a future Zevn/TerranoxOS security subsystem.
+- Define the next architecture for a production-like Kubernetes/UDS path and a future Enterprise Platform/SecureOS security subsystem.
 
 ## Current Status
 
-Underground Nexus is in a Phase 1 bootstrap state. The Docker lab exists today, while the Kubernetes/UDS production-like path and future Zevn/TerranoxOS deployment model are being refined in the architecture documents.
+Underground Nexus is in a Phase 1 bootstrap state. The Docker lab exists today, while the Kubernetes/UDS production-like path and future Enterprise Platform/SecureOS deployment model are being refined in the architecture documents.
 
 The current architecture direction is:
 
 - Use the Docker lab for local experimentation and Security+ style learning.
 - Move production-like orchestration toward Kubernetes, Pulumi, Argo CD, and optionally UDS/Zarf.
-- Treat TerranoxOS, gVisor, and Vertex as future Zevn platform targets.
+- Treat SecureOS, gVisor, and Control Plane as future Enterprise Platform platform targets.
 - Keep Suricata as the network/protocol side of a hybrid sensor.
 - Use Wazuh as the near-term SOC event store.
 - Use MinIO for artifacts, evidence, datasets, backups, and package archives.
@@ -41,8 +41,8 @@ graph TD
         RedTeam[Athena Emulator]
     end
 
-    subgraph "Layer 3: Future Zevn/TerranoxOS Target"
-        OS[TerranoxOS Microkernel]
+    subgraph "Layer 3: Future Enterprise Platform/SecureOS Target"
+        OS[SecureOS Microkernel]
         gVisor[gVisor Hermetic Sandboxes]
     end
 
@@ -100,7 +100,7 @@ The main architecture documents live in [docs/architecture/](docs/architecture/)
 1. [Component Architecture](docs/architecture/01-component-architecture.md)
 2. [Enterprise Production Setup](docs/architecture/02-enterprise-production-setup.md)
 3. [Phased Implementation Roadmap](docs/architecture/03-phased-implementation-roadmap.md)
-4. [AI-Native Zevn Proposal](docs/architecture/04-ai-native-zevn-proposal.md)
+4. [AI-Native Enterprise Platform Proposal](docs/architecture/04-ai-native-enterprise platform-proposal.md)
 5. [Sensor Deep Dive](docs/architecture/05-sensor-deep-dive.md)
 6. [AI-SOC Inference Engine](docs/architecture/06-ai-soc-inference-engine.md)
 7. [MCP Workbench](docs/architecture/07-mcp-workbench.md)
@@ -253,7 +253,7 @@ Historical key-based Cosign verification notes should move into `supply-chain/` 
 - Portainer remains lab-only; Argo CD is the production-like GitOps direction.
 - Vault dev mode is local-only; production-like deployments should use a proper Vault HA design.
 - Kubernetes/UDS SOC, AI Inference, Workbench, and Athena assets are active and deployed in the local `kind` cluster, and we are working toward production GitOps and UDS delivery.
-- TerranoxOS, gVisor, and Vertex are future Zevn targets, not current runtime dependencies.
+- SecureOS, gVisor, and Control Plane are future Enterprise Platform targets, not current runtime dependencies.
 
 ## Roadmap
 
@@ -262,8 +262,8 @@ Use [docs/architecture/03-phased-implementation-roadmap.md](docs/architecture/03
 High-level phases:
 
 1. **Phase 1:** Preserve and refine the Linux/Docker/Kubernetes bridge.
-2. **Phase 2:** Begin migration toward hermetic runtime patterns and TerranoxOS-compatible telemetry.
-3. **Phase 3:** Mature the future Zevn/TerranoxOS high-assurance target.
+2. **Phase 2:** Begin migration toward hermetic runtime patterns and SecureOS-compatible telemetry.
+3. **Phase 3:** Mature the future Enterprise Platform/SecureOS high-assurance target.
 
 ## License
 

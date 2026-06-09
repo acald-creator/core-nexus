@@ -6,7 +6,7 @@ Read the planning documents in this order:
 2. `docs/architecture/01-component-architecture.md`
 3. `docs/architecture/02-enterprise-production-setup.md`
 4. `docs/architecture/03-phased-implementation-roadmap.md`
-5. `docs/architecture/04-ai-native-zevn-proposal.md`
+5. `docs/architecture/04-ai-native-enterprise platform-proposal.md`
 6. `docs/architecture/05-sensor-deep-dive.md`
 7. `docs/architecture/06-ai-soc-inference-engine.md`
 8. `docs/architecture/07-mcp-workbench.md`

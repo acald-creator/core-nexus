@@ -1,8 +1,8 @@
 # Underground Nexus: AI-Native Component Proposal
 
-This document describes a long-horizon Underground Nexus architecture in which the Zevn platform provides compute, network, identity, and execution boundaries. It should be treated as a future concept, not as the current Docker, Kubernetes, UDS, or Wazuh implementation plan.
+This document describes a long-horizon Underground Nexus architecture in which the Enterprise Platform platform provides compute, network, identity, and execution boundaries. It should be treated as a future concept, not as the current Docker, Kubernetes, UDS, or Wazuh implementation plan.
 
-In this model, Underground Nexus becomes an AI-driven security subsystem made of hermetic workloads executed in a gVisor sandbox on the TerranoxOS kernel.
+In this model, Underground Nexus becomes an AI-driven security subsystem made of hermetic workloads executed in a gVisor sandbox on the SecureOS kernel.
 
 ## 1. Core Components
 
@@ -12,7 +12,7 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 
 **Replaces:** `nexus-webtop-soc` as a heavy Suricata desktop.
 
-**What it is:** A lightweight, headless data collector. Instead of passively sniffing virtual networks only, it uses TerranoxOS-native tracing or eBPF-like kernel hooks once those interfaces exist.
+**What it is:** A lightweight, headless data collector. Instead of passively sniffing virtual networks only, it uses SecureOS-native tracing or eBPF-like kernel hooks once those interfaces exist.
 
 **Function:** Streams system-call and network telemetry to the AI engine through zero-copy memory access or gRPC.
 
@@ -30,15 +30,15 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 
 **What it is:** A TypeScript Model Context Protocol server.
 
-**Function:** Translates AI-SOC findings into actionable tools and context. It allows Zevn Auth to verify security commands and exposes threat data to approved Nexus/SOC clients. Zeld UI is a separate AI-enabled visual website and should not be treated as the destination for threat findings.
+**Function:** Translates AI-SOC findings into actionable tools and context. It allows Enterprise Platform Auth to verify security commands and exposes threat data to approved Nexus/SOC clients. Platform UI is a separate AI-enabled visual website and should not be treated as the destination for threat findings.
 
 ### D. Command Center: Purple Team Workbench
 
 **Replaces:** `nexus-workbench` (originally a MATE desktop GUI, now updated to JupyterLab in Phase 1) with Terraform and GitHub tooling.
 
-**What it is:** A secured JupyterLab or VS Code Server environment authenticated through Zevn Auth.
+**What it is:** A secured JupyterLab or VS Code Server environment authenticated through Enterprise Platform Auth.
 
-**Function:** Allows data scientists and security engineers to analyze predictions, tune neural-network weights, and push updated models through the Zevn secure software factory pipeline.
+**Function:** Allows data scientists and security engineers to analyze predictions, tune neural-network weights, and push updated models through the Enterprise Platform secure software factory pipeline.
 
 ### E. Sparring Partner: Athena Adversary Fuzzer
 
@@ -48,14 +48,14 @@ The proposed Nexus subsystem is composed of five specialized micro-workloads.
 
 **Function:** Continuously attacks designated sandbox environments inside a gVisor sandbox, generating the ground-truth malicious data needed to train and evaluate the AI-SOC inference engine.
 
-## 2. Visual Plot: Nexus Subsystem Within Zevn
+## 2. Visual Plot: Nexus Subsystem Within Enterprise Platform
 
 ```mermaid
 graph TD
-    subgraph "The Zevn Platform (Infrastructure Layer)"
-        Z1[TerranoxOS Kernel]
+    subgraph "The Enterprise Platform Platform (Infrastructure Layer)"
+        Z1[SecureOS Kernel]
         Z2[gVisor: Hermetic Sandbox]
-        Z3[Vertex: Rust xDS Control Plane]
+        Z3[Control Plane: Rust xDS Control Plane]
     end
 
     subgraph "Underground Nexus (Security Workload)"
@@ -92,7 +92,7 @@ graph TD
 
 ## 3. Security+ SY0-701 Value Proposition
 
-If Zevn owns the OS, networking, execution, and identity layers, Underground Nexus can focus on:
+If Enterprise Platform owns the OS, networking, execution, and identity layers, Underground Nexus can focus on:
 
 - **Domain 4:** Security Operations
 - **Domain 2:** Threats, Vulnerabilities, and Mitigations
@@ -109,20 +109,20 @@ The resulting system is a closed-loop AI security workflow:
 
 This proposal is a future architecture track. It does not replace the current near-term refinement plan.
 
-| Current refinement track | AI-native Zevn track |
+| Current refinement track | AI-native Enterprise Platform track |
 | --- | --- |
 | Wazuh SOC services | AI-SOC inference engine and MCP server |
 | Suricata sensor | Hybrid sensor: Suricata for network/protocol telemetry plus kernel/runtime telemetry |
 | `nexus-athena` Kali container | Athena adversary fuzzer |
 | `nexus-workbench` (JupyterLab) | Purple team JupyterLab or VS Code Server |
-| UDS/Zarf platform option | Zevn platform execution and identity layer |
+| UDS/Zarf platform option | Enterprise Platform platform execution and identity layer |
 
-Near-term work should continue refining the current components. This proposal can guide future design once the Zevn platform abstractions are concrete enough to implement.
+Near-term work should continue refining the current components. This proposal can guide future design once the Enterprise Platform platform abstractions are concrete enough to implement.
 
 ## 5. Open Questions
 
-- Which Zevn components already exist, and which are conceptual?
-- Is TerranoxOS an actual kernel target, a hardened OS profile, or a platform codename?
+- Which Enterprise Platform components already exist, and which are conceptual?
+- Is SecureOS an actual kernel target, a hardened OS profile, or a platform codename?
 - Is gVisor a container runtime, sandbox runtime, build executor, or all three?
 - What is the stable interface between Suricata's network/protocol telemetry and the kernel/runtime telemetry stream?
 - Does the MCP server trigger response actions directly, or only expose context to an approved operator?

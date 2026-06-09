@@ -1,16 +1,16 @@
 # Underground Nexus: Phased Implementation Roadmap
 
-Building a from-scratch, high-assurance operating system such as TerranoxOS is a multi-year engineering effort. To keep Underground Nexus useful during that lifecycle, the Zevn platform and Nexus security workloads should evolve through phases.
+Building a from-scratch, high-assurance operating system such as SecureOS is a multi-year engineering effort. To keep Underground Nexus useful during that lifecycle, the Enterprise Platform platform and Nexus security workloads should evolve through phases.
 
-This roadmap connects the current Linux-based bootstrap environment, the practical Kubernetes/UDS architecture, and the long-horizon AI-native Zevn target state.
+This roadmap connects the current Linux-based bootstrap environment, the practical Kubernetes/UDS architecture, and the long-horizon AI-native Enterprise Platform target state.
 
 ## Phase 1: Bootstrap
 
 **Status:** Current state
 
-**Primary goal:** Secure the software supply chain and protect ongoing development of Zevn, TerranoxOS, Zeld UI, and the secure software factory.
+**Primary goal:** Secure the software supply chain and protect ongoing development of Enterprise Platform, SecureOS, Platform UI, and the secure software factory.
 
-TerranoxOS is still in early userspace development. It may render early UI elements such as a top bar or terminal, but it is not ready to host the Zevn control plane or Underground Nexus AI-SOC workloads.
+SecureOS is still in early userspace development. It may render early UI elements such as a top bar or terminal, but it is not ready to host the Enterprise Platform control plane or Underground Nexus AI-SOC workloads.
 
 ### Architecture
 
@@ -27,7 +27,7 @@ TerranoxOS is still in early userspace development. It may render early UI eleme
 
 ### Underground Nexus Role
 
-Underground Nexus acts as the guardian of the factory. It monitors build servers, artifact pipelines, package outputs, approved test environments, and developer workflow anomalies. Zeld UI may be one workload under development, but it is not the destination for Nexus threat findings.
+Underground Nexus acts as the guardian of the factory. It monitors build servers, artifact pipelines, package outputs, approved test environments, and developer workflow anomalies. Platform UI may be one workload under development, but it is not the destination for Nexus threat findings.
 
 ### Security+ Alignment
 
@@ -41,7 +41,7 @@ Underground Nexus acts as the guardian of the factory. It monitors build servers
 graph TD
     subgraph "Standard Linux Infrastructure (Current Base)"
         A[Hardened Linux OS]
-        B[Zevn SSF and Artifact Pipeline]
+        B[Enterprise Platform SSF and Artifact Pipeline]
         A --> B
     end
 
@@ -54,7 +54,7 @@ graph TD
     end
 
     subgraph "Target Platform In Development"
-        F[TerranoxOS Alpha Build]
+        F[SecureOS Alpha Build]
         G[Early Userspace Milestones]
         F --> G
         E -.->|Compiles and Tests| F
@@ -79,25 +79,25 @@ graph TD
 
 **Status:** Beta target
 
-**Primary goal:** Move Zevn control-plane workloads and selected Nexus workloads from standard Linux assumptions toward TerranoxOS and gVisor.
+**Primary goal:** Move Enterprise Platform control-plane workloads and selected Nexus workloads from standard Linux assumptions toward SecureOS and gVisor.
 
-This phase begins once TerranoxOS has stable enough networking, process management, and observability hooks to support real workloads or realistic subsystem tests.
+This phase begins once SecureOS has stable enough networking, process management, and observability hooks to support real workloads or realistic subsystem tests.
 
 ### Architecture
 
 | Area | Phase 2 approach |
 | --- | --- |
-| Host OS | TerranoxOS for selected workloads; Linux remains available for fallback and comparison |
+| Host OS | SecureOS for selected workloads; Linux remains available for fallback and comparison |
 | Execution | gVisor becomes the preferred hermetic runtime for selected services |
-| Telemetry | Early TerranoxOS tracing, eBPF-like hooks, or equivalent kernel telemetry |
+| Telemetry | Early SecureOS tracing, eBPF-like hooks, or equivalent kernel telemetry |
 | SOC platform | Wazuh and hybrid Suricata/runtime telemetry remain the known-good detection baseline while AI-native telemetry is validated |
-| AI triage | Starts consuming TerranoxOS telemetry alongside existing SOC events |
-| Workbench | Moves toward secured JupyterLab or VS Code Server if Zevn Auth is ready |
+| AI triage | Starts consuming SecureOS telemetry alongside existing SOC events |
+| Workbench | Moves toward secured JupyterLab or VS Code Server if Enterprise Platform Auth is ready |
 | Athena | Begins moving from Kali container workflows to controlled adversary automation |
 
 ### Underground Nexus Role
 
-The AI-SOC starts monitoring early TerranoxOS telemetry while still relying on Wazuh and Suricata network/protocol telemetry for comparison. The goal is to evolve Suricata into the network side of a hybrid sensor rather than discard it.
+The AI-SOC starts monitoring early SecureOS telemetry while still relying on Wazuh and Suricata network/protocol telemetry for comparison. The goal is to evolve Suricata into the network side of a hybrid sensor rather than discard it.
 
 ### Security+ Alignment
 
@@ -108,8 +108,8 @@ The AI-SOC starts monitoring early TerranoxOS telemetry while still relying on W
 ### Exit Criteria
 
 - gVisor can execute at least one non-trivial Nexus workload repeatably.
-- TerranoxOS telemetry can be exported in a documented schema.
-- AI triage can compare standard SOC events against TerranoxOS telemetry.
+- SecureOS telemetry can be exported in a documented schema.
+- AI triage can compare standard SOC events against SecureOS telemetry.
 - Workloads have signed artifacts and provenance from the secure software factory.
 - Fallback to the Linux/Kubernetes baseline remains available.
 
@@ -119,32 +119,32 @@ The AI-SOC starts monitoring early TerranoxOS telemetry while still relying on W
 
 **Primary goal:** Merge formal verification, hermetic execution, and AI-native security operations.
 
-This is the long-horizon target where TerranoxOS is mature enough to host Zevn platform services and Underground Nexus security workloads.
+This is the long-horizon target where SecureOS is mature enough to host Enterprise Platform platform services and Underground Nexus security workloads.
 
 ### Architecture
 
 | Area | Phase 3 approach |
 | --- | --- |
-| Host OS | Mature TerranoxOS |
+| Host OS | Mature SecureOS |
 | Verification | Kernel verification with tools such as Frama-C; userspace verification with tools such as Creusot where practical |
 | Execution | All core workloads run as hermetically sealed gVisor workloads |
 | Telemetry | Kernel-native telemetry feeds the AI-SOC inference engine |
 | Interface | Nexus MCP server exposes approved tools and context |
-| Response | Vertex Rust xDS control plane coordinates approved response actions; data-plane APIs perform the runtime changes |
+| Response | Rust xDS control plane coordinates approved response actions; data-plane APIs perform the runtime changes |
 
 ### Visual Plot
 
 ```mermaid
 graph TD
-    subgraph "TerranoxOS (High-Assurance Foundation)"
+    subgraph "SecureOS (High-Assurance Foundation)"
         A[Verified Kernel]
         B[gVisor: Hermetic Sandbox]
         A --> B
     end
 
-    subgraph "Zevn Platform"
-        C[Vertex Rust xDS Control Plane]
-        D[Zevn Auth and SSF]
+    subgraph "Enterprise Platform Platform"
+        C[Rust xDS Control Plane]
+        D[Enterprise Platform Auth and SSF]
         B --> C
         B --> D
     end
@@ -167,7 +167,7 @@ graph TD
 
 ### Underground Nexus Role
 
-Underground Nexus becomes the AI-native security subsystem for Zevn. The AI-SOC consumes kernel-native telemetry, the MCP server exposes approved response tools, and the workbench supports purple-team model refinement.
+Underground Nexus becomes the AI-native security subsystem for Enterprise Platform. The AI-SOC consumes kernel-native telemetry, the MCP server exposes approved response tools, and the workbench supports purple-team model refinement.
 
 ### Security+ Alignment
 
@@ -177,7 +177,7 @@ Underground Nexus becomes the AI-native security subsystem for Zevn. The AI-SOC 
 
 ### Exit Criteria
 
-- TerranoxOS can host the Zevn control plane and selected Nexus workloads.
+- SecureOS can host the Enterprise Platform control plane and selected Nexus workloads.
 - gVisor provides stable hermetic execution for production services.
 - Kernel telemetry is documented, signed, and resistant to tampering.
 - MCP response actions require identity, authorization, and audit trails.
@@ -186,7 +186,7 @@ Underground Nexus becomes the AI-native security subsystem for Zevn. The AI-SOC 
 ## Roadmap Guardrails
 
 - Keep Suricata as the network/protocol side of the hybrid sensor while AI-native runtime telemetry matures.
-- Keep lab, production, and future Zevn tracks explicitly separate.
+- Keep lab, production, and future Enterprise Platform tracks explicitly separate.
 - Treat autonomous response as a later capability; start with human-approved actions.
 - Sign and attest model artifacts with the same care as container images.
 - Keep Athena-style adversarial generation isolated from production systems.

@@ -9,7 +9,7 @@ This component should evolve in phases. In the near term, it enriches events fro
 | Phase | Inference model | Purpose |
 | --- | --- | --- |
 | Phase 1: Bootstrap | Python/NumPy enrichment service | Score Wazuh and Suricata events while the SOC baseline matures. |
-| Phase 2: Hermetic migration | Stable model artifact, API boundary, and replayable datasets | Validate model behavior against standard SOC events and early TerranoxOS telemetry. |
+| Phase 2: Hermetic migration | Stable model artifact, API boundary, and replayable datasets | Validate model behavior against standard SOC events and early SecureOS telemetry. |
 | Phase 3: High-assurance target | Rust or minimal runtime loading signed ONNX artifacts inside a gVisor sandbox | Provide low-latency AI-native inference from trusted telemetry streams. |
 
 ## 2. Architectural Shift: From Text to Tensors
@@ -20,7 +20,7 @@ The AI-native approach converts system behavior into numerical features.
 
 Pipeline stages:
 
-1. **Input:** Events arrive from the sensor layer, Wazuh, Suricata, Vector, replay datasets, or future TerranoxOS telemetry.
+1. **Input:** Events arrive from the sensor layer, Wazuh, Suricata, Vector, replay datasets, or future SecureOS telemetry.
 2. **Feature extraction:** Raw events are converted into stable fields such as ports, protocols, process names, syscall categories, timing windows, and frequency counts.
 3. **Vectorization:** Features are normalized into numerical tensors.
 4. **Inference:** A model calculates a score or label.

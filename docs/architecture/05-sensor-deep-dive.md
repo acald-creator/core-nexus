@@ -11,7 +11,7 @@ The sensor should evolve in phases rather than jumping directly from the current
 | Phase | Sensor model | Purpose |
 | --- | --- | --- |
 | Phase 1: Bootstrap | Headless Suricata plus Wazuh telemetry | Establish a practical SOC baseline on Linux, Docker, Kubernetes, or UDS. |
-| Phase 2: Hermetic migration | Hybrid Suricata plus early TerranoxOS runtime telemetry | Validate the hybrid stream against known-good SOC signals. |
+| Phase 2: Hermetic migration | Hybrid Suricata plus early SecureOS runtime telemetry | Validate the hybrid stream against known-good SOC signals. |
 | Phase 3: High-assurance target | Hybrid Suricata network telemetry plus kernel telemetry inside a gVisor sandbox | Feed AI-native inference from hardened, low-tamper telemetry streams. |
 
 ## 2. Dual Telemetry Model
@@ -40,16 +40,16 @@ The long-term sensor design should use two telemetry streams.
 
 **Near-term implementation:** Use proven Linux runtime sensors such as Falco, Wazuh agents, audit telemetry, or eBPF-based tooling where appropriate.
 
-**Future implementation:** Use TerranoxOS-native tracing or eBPF-like hooks once the kernel and execution model are mature enough.
+**Future implementation:** Use SecureOS-native tracing or eBPF-like hooks once the kernel and execution model are mature enough.
 
-Important caveat: eBPF is a Linux technology. If TerranoxOS is not Linux-compatible, the future sensor should be described as `eBPF-like`, kernel-native tracing, or a verified telemetry hook rather than literal eBPF.
+Important caveat: eBPF is a Linux technology. If SecureOS is not Linux-compatible, the future sensor should be described as `eBPF-like`, kernel-native tracing, or a verified telemetry hook rather than literal eBPF.
 
 ## 3. Visual Plot: Hybrid Sensor Pipeline
 
 ```mermaid
 graph TD
     subgraph "Host / Runtime Layer"
-        A[Linux or TerranoxOS Host]
+        A[Linux or SecureOS Host]
         B[Network Data Plane]
         C[Runtime / Kernel Telemetry]
     end
@@ -126,9 +126,9 @@ Example categories:
 - **Domain 2.4, Indicators of Malicious Activity:** Captures network indicators, process behavior, resource anomalies, and out-of-cycle logging.
 - **Domain 4.8, Incident Response:** Produces evidence that can feed triage, containment, and post-incident review.
 
-## 7. Engineering Implementation for Zevn
+## 7. Engineering Implementation for Enterprise Platform
 
-The future Zevn sensor workload can become a gVisor sandbox once the runtime is ready.
+The future Enterprise Platform sensor workload can become a gVisor sandbox once the runtime is ready.
 
 Potential bundle contents:
 

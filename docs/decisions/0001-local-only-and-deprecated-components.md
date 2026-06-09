@@ -6,7 +6,7 @@ Accepted
 
 ## Context
 
-Underground Nexus still carries a useful Docker-based lab profile, but several lab conveniences should not be confused with the production-like Kubernetes/UDS direction or the future Zevn/TerranoxOS target.
+Underground Nexus still carries a useful Docker-based lab profile, but several lab conveniences should not be confused with the production-like Kubernetes/UDS direction or the future Enterprise Platform/SecureOS target.
 
 ## Decision
 
@@ -26,4 +26,4 @@ The following components are local-only, experimental, or deprecated as producti
 
 - Architecture documents should describe these components as lab-only when they appear.
 - Production-like work should target Kubernetes, Argo CD, Vault HA, observability, and approved UDS/Zarf packaging where applicable.
-- Future Zevn/TerranoxOS work should remain separate from the local Docker lab profile.
+- Future Enterprise Platform/SecureOS work should remain separate from the local Docker lab profile.

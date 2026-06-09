@@ -22,7 +22,7 @@ The Nexus MCP server is a TypeScript service that translates AI-SOC findings int
 | --- | --- | --- |
 | Phase 1: Bootstrap | Context and tool exposure only | Human-approved investigation |
 | Phase 2: Hermetic migration | Limited approved actions in sandbox environments | Human-approved containment |
-| Phase 3: High-assurance target | Policy-gated response through Vertex and Zevn Auth | Carefully scoped automation |
+| Phase 3: High-assurance target | Policy-gated response through Control Plane and Enterprise Platform Auth | Carefully scoped automation |
 
 ## 2. Component D: Purple Team Workbench
 
@@ -37,7 +37,7 @@ The workbench is the environment where analysts, data scientists, and security e
 - Review model evaluation results before promotion.
 - Maintain runbooks and investigation notes.
 
-In the current Phase 1 architecture, this maps to `nexus-workbench` (implemented as a secure JupyterLab container on a Chainguard base). In the Zevn target architecture, this environment will be authenticated through Zevn Auth.
+In the current Phase 1 architecture, this maps to `nexus-workbench` (implemented as a secure JupyterLab container on a Chainguard base). In the Enterprise Platform target architecture, this environment will be authenticated through Enterprise Platform Auth.
 
 ## 3. MLOps Workflow
 
@@ -85,9 +85,9 @@ graph TD
         I --> J
     end
 
-    subgraph "Zevn Platform"
-        K[Zevn Auth]
-        L[Vertex Rust xDS Control Plane]
+    subgraph "Enterprise Platform Platform"
+        K[Enterprise Platform Auth]
+        L[Rust xDS Control Plane]
         M[gVisor Workload]
         J -->|Human / Policy Approved| K
         K --> L
@@ -130,7 +130,7 @@ Required controls:
 ## 7. Guardrails
 
 - Do not allow raw AI confidence scores to trigger destructive actions automatically.
-- Require Zevn Auth, policy, and audit logs for response workflows.
+- Require Enterprise Platform Auth, policy, and audit logs for response workflows.
 - Sign and attest model artifacts before production use.
 - Keep training data and evaluation data separate.
-- Keep the current workbench profile usable while the Zevn target environment matures.
+- Keep the current workbench profile usable while the Enterprise Platform target environment matures.
