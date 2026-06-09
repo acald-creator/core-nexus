@@ -21,6 +21,45 @@ The current architecture direction is:
 - Use MinIO for artifacts, evidence, datasets, backups, and package archives.
 - Use Vault as the preferred production-like secrets manager.
 
+## Architecture
+
+The system is currently divided into three conceptual layers: the baseline host management stack, the Kubernetes SOC workload cluster, and the future hermetic runtime target.
+
+```mermaid
+graph TD
+    subgraph "Layer 1: Host & Baseline Services (Docker Compose)"
+        UI[Nexus Console - React UI]
+        Port[Portainer]
+        DNS[Pi-hole & NGINX Proxy]
+    end
+
+    subgraph "Layer 2: KuberNexus Platform (k3d Kubernetes)"
+        SOC[Wazuh SOC Platform]
+        Storage[MinIO Object Storage]
+        Analyst[Jupyter Workbench]
+        Sec[Vault Secrets]
+        RedTeam[Athena Emulator]
+    end
+
+    subgraph "Layer 3: Future Zevn/TerranoxOS Target"
+        OS[TerranoxOS Microkernel]
+        gVisor[gVisor Hermetic Sandboxes]
+    end
+
+    UI ==>|Primary Launchpad| SOC
+    UI ==>|Primary Launchpad| Analyst
+    UI ==>|Primary Launchpad| Storage
+    
+    Port -.->|Infrastructure Management| UI
+    
+    SOC -.->|Migration Path| OS
+    Analyst -.->|Migration Path| gVisor
+    
+    style UI fill:#3178c6,stroke:#fff,color:#fff
+    style OS fill:#047857,stroke:#fff,color:#fff
+    style SOC fill:#1e3a8a,stroke:#fff,color:#fff
+```
+
 ## Repository Layout
 
 ```text
