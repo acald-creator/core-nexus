@@ -74,89 +74,113 @@
 
 ## 1.3 Explain the importance of change management processes and the impact to security
 
-### Business processes impacting security operation
-- **Approval process:** *(To be mapped)*
-- **Ownership:** *(To be mapped)*
-- **Stakeholders:** *(To be mapped)*
-- **Impact analysis:** *(To be mapped)*
-- **Test results:** *(To be mapped)*
-- **Backout plan:** *(To be mapped)*
-- **Maintenance window:** *(To be mapped)*
-- **Standard operating procedure:** *(To be mapped)*
+### Business processes impacting security operations
+- **Approval process:** *The formal procedure for reviewing and approving changes before implementation.*
+  - **Nexus Mapping:** Pull Request (PR) reviews and approvals in Git act as the formal approval gate.
+- **Ownership:** *The individual or team accountable for a specific system, process, or data.*
+  - **Nexus Mapping:** Repository owners (e.g., via CODEOWNERS files) dictate ownership of specific infrastructure components.
+- **Stakeholders:** *Individuals or groups with an interest in the change or who may be affected by it.*
+  - **Nexus Mapping:** Developers, SOC analysts, and platform engineers collaborating on Git issues and PRs.
+- **Impact analysis:** *Evaluating the potential consequences of a change, including risks and resource requirements.*
+  - **Nexus Mapping:** **[GAP IDENTIFIED]** Core Nexus relies on CI/CD checks (like `helm lint`), but does not have a formal business impact analysis tool or workflow integrated.
+- **Test results:** *The outcomes of testing the change in a non-production environment.*
+  - **Nexus Mapping:** Automated CI test suites and staging environment validations before merging to the `main` branch.
+- **Backout plan:** *A predefined strategy to revert a change if it causes unexpected issues.*
+  - **Nexus Mapping:** Argo CD provides automatic self-healing, and Git enables instant rollback (`git revert`) to a previous known-good state.
+- **Maintenance window:** *A scheduled period during which authorized changes can be made with minimal impact on users.*
+  - **Nexus Mapping:** **[GAP IDENTIFIED]** GitOps systems apply changes continuously. Formal maintenance windows require configuring Argo CD sync windows, which are currently not explicitly defined in the baseline.
+- **Standard operating procedure:** *Documented step-by-step instructions for executing routine tasks.*
+  - **Nexus Mapping:** Documented as Markdown playbooks in the `docs/` repository structure.
 
 ### Technical implications
-- **Allow lists/deny lists:** *(To be mapped)*
-- **Restricted activities:** *(To be mapped)*
-- **Downtime:** *(To be mapped)*
-- **Service restart:** *(To be mapped)*
-- **Application restart:** *(To be mapped)*
-- **Legacy applications:** *(To be mapped)*
-- **Dependencies:** *(To be mapped)*
+- **Allow lists/deny lists:** *Explicitly permitting or blocking specific entities, actions, or content.*
+  - **Nexus Mapping:** Defined via Kubernetes NetworkPolicies (allow/deny traffic) and Kyverno policies.
+- **Restricted activities:** *Actions that are explicitly prohibited by policy or configuration.*
+  - **Nexus Mapping:** Kyverno admission policies preventing privileged containers or root escalation.
+- **Downtime:** *A period during which a system or service is unavailable.*
+  - **Nexus Mapping:** Minimized via Kubernetes high availability (HA) deployments, rolling updates, and PodDisruptionBudgets.
+- **Service restart / Application restart:** *Restarting a specific service or application.*
+  - **Nexus Mapping:** Handled gracefully by Kubernetes Liveness/Readiness probes and ReplicaSet orchestrations.
+- **Legacy applications:** *Older applications that may not support modern security controls.*
+  - **Nexus Mapping:** Isolated within dedicated Kubernetes namespaces and restricted by strict NetworkPolicies.
+- **Dependencies:** *Software, libraries, or external services that an application relies on.*
+  - **Nexus Mapping:** Tracked via Software Bill of Materials (SBOMs) generated and evaluated against CVE databases.
 
 ### Documentation
-- **Updating diagrams:** *(To be mapped)*
-- **Updating policies/procedures:** *(To be mapped)*
+- **Updating diagrams:** *Ensuring architectural diagrams reflect the current state of the environment.*
+  - **Nexus Mapping:** Tracked as code in the `docs/architecture` directory (e.g., using Mermaid.js).
+- **Updating policies/procedures:** *Ensuring written policies and procedures reflect changes in technology or processes.*
+  - **Nexus Mapping:** Security policies are stored as code (Kyverno YAML manifests), ensuring they are inherently documented and versioned.
 
 ### Version control
-- *(To be mapped)*
+- *The practice of tracking and managing changes to software code and configurations over time.*
+  - **Nexus Mapping:** The fundamental backbone of Core Nexus. All infrastructure, applications, and policies are stored in a Git repository, ensuring traceability, rollback, and auditability (GitOps).
 
 ## 1.4 Explain the importance of using appropriate cryptographic solutions
 
 ### Public key infrastructure (PKI)
-- **Public key:** *(To be mapped)*
-- **Private key:** *(To be mapped)*
-- **Key escrow:** *(To be mapped)*
+- **Public key:** *The publicly distributable key in an asymmetric pair used to encrypt data or verify a digital signature.*
+  - **Nexus Mapping:** Used in Sigstore/Cosign verifications for container images and GPG signature verification for Git commits.
+- **Private key:** *The secret key in an asymmetric pair used to decrypt data or create a digital signature.*
+  - **Nexus Mapping:** Stored securely by developers or CI systems to sign container images and Git commits. Not stored in plain text.
+- **Key escrow:** *A process where a trusted third party holds a copy of cryptographic keys.*
+  - **Nexus Mapping:** **[GAP IDENTIFIED]** Core Nexus does not natively implement key escrow for workload keys, relying instead on HashiCorp Vault for secure dynamic key generation and lifecycle management.
 
 ### Encryption
-- **Level:** *(To be mapped)*
-  - **Full-disk:** *(To be mapped)*
-  - **Partition:** *(To be mapped)*
-  - **File:** *(To be mapped)*
-  - **Volume:** *(To be mapped)*
-  - **Database:** *(To be mapped)*
-  - **Record:** *(To be mapped)*
-- **Transport/communication:** *(To be mapped)*
-- **Asymmetric:** *(To be mapped)*
-- **Symmetric:** *(To be mapped)*
-- **Key exchange:** *(To be mapped)*
-- **Algorithms:** *(To be mapped)*
-- **Key length:** *(To be mapped)*
+- **Level:**
+  - **Full-disk / Partition / Volume:** *Encrypting entire hardware drives or logical partitions.*
+    - **Nexus Mapping:** Handled at the host OS level (e.g., LUKS) or cloud provider level (e.g., AWS EBS encryption), outside the direct scope of the Core Nexus Kubernetes payload.
+  - **File:** *Encrypting individual files.*
+    - **Nexus Mapping:** Used if encrypting GitOps secrets before committing (e.g., Mozilla SOPS).
+  - **Database / Record:** *Encrypting data at rest within a database management system.*
+    - **Nexus Mapping:** Implemented within specific stateful workloads (like Vault's internal storage or MinIO's server-side encryption).
+- **Transport/communication:** *Securing data in transit across a network.*
+  - **Nexus Mapping:** TLS for all external ingress and internal API communications.
+- **Asymmetric:** *Using key pairs (public/private) for encryption/decryption or signing.*
+  - **Nexus Mapping:** GPG commit signing, Cosign image signing.
+- **Symmetric:** *Using a single shared key for both encryption and decryption.*
+  - **Nexus Mapping:** AES encryption used for fast bulk data encryption at rest (e.g., MinIO object storage).
+- **Key exchange:** *Securely transferring cryptographic keys between parties.*
+  - **Nexus Mapping:** TLS handshakes (e.g., ECDHE) used during API and user traffic.
+- **Algorithms / Key length:** *The mathematical rules and size of keys used for encryption.*
+  - **Nexus Mapping:** Enforced via cluster-wide cryptographic policies (e.g., requiring AES-256 and modern ECC equivalents).
 
 ### Tools
-- **Trusted Platform Module (TPM):** *(To be mapped)*
-- **Hardware security module (HSM):** *(To be mapped)*
-- **Key management system:** *(To be mapped)*
-- **Secure enclave:** *(To be mapped)*
+- **Trusted Platform Module (TPM) / Hardware security module (HSM) / Secure enclave:** *Hardware-based security for cryptographic operations and key storage.*
+  - **Nexus Mapping:** Provided by the underlying infrastructure (e.g., cloud KMS, physical HSMs). HashiCorp Vault can be configured to use these as its auto-unseal backend.
+- **Key management system:** *A system for managing cryptographic keys and their lifecycles.*
+  - **Nexus Mapping:** HashiCorp Vault serves as the primary KMS for the Core Nexus cluster.
 
 ### Obfuscation
-- **Steganography:** *(To be mapped)*
-- **Tokenization:** *(To be mapped)*
-- **Data masking:** *(To be mapped)*
+- **Steganography / Tokenization / Data masking:** *Techniques to hide or obscure data.*
+  - **Nexus Mapping:** Tokenization and masking are implemented at the application layer or via specific logging configurations (e.g., Vector masking PII before sending to Loki).
 
-### Hashing
-- *(To be mapped)*
-
-### Salting
-- *(To be mapped)*
+### Hashing / Salting / Key stretching
+- *Techniques used to ensure data integrity and securely store passwords by converting data to fixed-length values and adding complexity.*
+  - **Nexus Mapping:** Used by tools like HashiCorp Vault or application databases when securely storing user credentials. Image digests (SHA256) ensure container image integrity.
 
 ### Digital signatures
-- *(To be mapped)*
+- *A mathematical scheme for verifying the authenticity of digital messages or documents.*
+  - **Nexus Mapping:** Sigstore/Cosign for container images; GPG for Git commits.
 
-### Key stretching
-- *(To be mapped)*
+### Blockchain / Public Ledger
+- *A decentralized, distributed ledger that records the provenance of a digital asset.*
+  - **Nexus Mapping:** Sigstore's Rekor provides an immutable, tamper-resistant transparency log (acting as a public ledger) for container image signatures.
 
-### Blockchain
-- *(To be mapped)*
 
-### Open public ledger
-- *(To be mapped)*
 
 ### Certificates
-- **Certificate authorities:** *(To be mapped)*
-- **Certificate revocation lists (CRLs):** *(To be mapped)*
-- **Online Certificate Status Protocol (OCSP):** *(To be mapped)*
-- **Self-signed:** *(To be mapped)*
-- **Third-party:** *(To be mapped)*
-- **Root of trust:** *(To be mapped)*
-- **Certificate signing request (CSR) generation:** *(To be mapped)*
-- **Wildcard:** *(To be mapped)*
+- **Certificate authorities:** *Trusted entities that issue and manage digital certificates.*
+  - **Nexus Mapping:** HashiCorp Vault acting as an internal Root/Intermediate CA, or `cert-manager` integrated with Let's Encrypt for external CAs.
+- **Certificate revocation lists (CRLs) / Online Certificate Status Protocol (OCSP):** *Methods for checking if a certificate has been invalidated before its expiration date.*
+  - **Nexus Mapping:** Handled by Kubernetes ingress controllers and client libraries when validating external connections.
+- **Self-signed:** *Certificates signed by the same entity whose identity it certifies (not trusted by default).*
+  - **Nexus Mapping:** Often used during initial local lab bootstrapping or within isolated test namespaces.
+- **Third-party:** *Certificates issued by an external, globally trusted Certificate Authority.*
+  - **Nexus Mapping:** Used for public-facing production ingresses (e.g., via Let's Encrypt).
+- **Root of trust:** *A highly secure foundational component from which all other cryptographic trust is derived.*
+  - **Nexus Mapping:** The Vault Root CA or underlying hardware TPMs/KMS used to unseal Vault.
+- **Certificate signing request (CSR) generation:** *A formal request sent to a CA to apply for a digital certificate.*
+  - **Nexus Mapping:** Automated heavily within the cluster using Kubernetes `cert-manager` Custom Resources (Certificate/Issuer).
+- **Wildcard:** *A certificate that secures a domain and an unlimited number of its subdomains.*
+  - **Nexus Mapping:** Utilized for core infrastructure domains (e.g., `*.core-nexus.local`) to simplify internal TLS management.
