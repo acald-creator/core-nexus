@@ -4,7 +4,7 @@
 
 ### Categories
 - **Technical:** *Security controls implemented through technology (e.g., firewalls, encryption, access control lists).*
-  - **Nexus Mapping:** Istio Service Mesh (mTLS), Kyverno (admission control), and Vault (secrets management).
+  - **Nexus Mapping:** Kyverno (admission control), and Vault (secrets management).
 - **Managerial:** *Security controls focused on the management of risk and the governance of information systems (e.g., risk assessments, policies).*
   - **Nexus Mapping:** Managed through GitOps (Argo CD) pipelines, where repository approvals and branch protections act as managerial policy enforcement.
 - **Operational:** *Security controls executed by people in their day-to-day operations (e.g., security awareness training, incident response procedures).*
@@ -14,7 +14,7 @@
 
 ### Control Types
 - **Preventive:** *Controls designed to stop an incident from occurring.*
-  - **Nexus Mapping:** Chainguard hardened images (preventing exploitation of vulnerable packages) and Istio strict mTLS (preventing unauthorized network access).
+  - **Nexus Mapping:** Chainguard hardened images (preventing exploitation of vulnerable packages) and Kyverno admission controls (preventing deployment of non-compliant resources).
 - **Deterrent:** *Controls intended to discourage a threat actor from causing an incident.*
   - **Nexus Mapping:** SSH login warning banners for the underlying Kubernetes (K3s/RKE2) host nodes.
 - **Detective:** *Controls designed to identify and record that a security incident has occurred.*
@@ -22,7 +22,7 @@
 - **Corrective:** *Controls designed to mitigate the damage of an incident and restore the system to normal operations.*
   - **Nexus Mapping:** Argo CD's self-healing synchronization, which automatically corrects configuration drift by reverting to the Git source of truth.
 - **Compensating:** *Controls implemented to provide an alternative solution when a primary control is not feasible.*
-  - **Nexus Mapping:** If a legacy application cannot natively support SAML/OIDC, Istio ingress authorization policies act as a compensating control to restrict traffic.
+  - **Nexus Mapping:** **[GAP IDENTIFIED]** Without a service mesh (like Istio), there is no centralized ingress proxy to act as a compensating authentication control for legacy applications.
 - **Directive:** *Controls that mandate specific actions, rules, or behaviors (often administrative).*
   - **Nexus Mapping:** Repository commit signing requirements and mandatory pull request reviews before Argo CD deploys changes to the cluster.
 
@@ -30,14 +30,14 @@
 
 ### Core Concepts
 - **Confidentiality, Integrity, and Availability (CIA):** *Confidentiality (protecting data from unauthorized disclosure), Integrity (protecting data from unauthorized alteration), Availability (ensuring data is accessible when needed).*
-  - **Nexus Mapping:** Confidentiality via HashiCorp Vault and Istio mTLS. Integrity via container image signing (Sigstore/Cosign/Chainguard). Availability via Kubernetes (K3s/RKE2) orchestration and replication.
+  - **Nexus Mapping:** Confidentiality via HashiCorp Vault. Integrity via container image signing (Sigstore/Cosign/Chainguard). Availability via Kubernetes (K3s/RKE2) orchestration and replication.
 - **Non-repudiation:** *Ensuring that a party cannot deny the authenticity of their signature on a document or a message that they originated.*
   - **Nexus Mapping:** GitOps repository commit signing (GPG/Sigstore) ensures developers cannot repudiate their configuration changes.
 - **Authentication, Authorization, and Accounting (AAA):** *Framework for intelligently controlling access, enforcing policies, and auditing usage.*
   - **Authenticating people:** *Verifying a human user's identity.*
     - **Nexus Mapping:** **[GAP IDENTIFIED]** Since there is no active centralized identity provider in this infrastructure, there is a gap in centralized identity/SSO for human users.
   - **Authenticating systems:** *Verifying a machine or service's identity.*
-    - **Nexus Mapping:** Workload identity is provided by SPIFFE/SPIRE via the Istio Service Mesh.
+    - **Nexus Mapping:** **[GAP IDENTIFIED]** Without a service mesh or SPIFFE/SPIRE deployment, there is no cryptographic workload identity currently implemented (relies purely on basic Kubernetes ServiceAccounts).
   - **Authorization models:** *Determining what an authenticated entity is permitted to do.*
     - **Nexus Mapping:** Implemented natively via Kubernetes Role-Based Access Control (RBAC).
 - **Gap analysis:** *Evaluating the difference between the current state of security and a desired future state.*
@@ -57,11 +57,11 @@
     - **Nexus Mapping:** Kyverno acts as the Kubernetes policy engine.
 - **Data Plane:** *The actual systems, networks, and resources being protected.*
   - **Implicit trust zones:** *Areas within a network where all entities are inherently trusted.*
-    - **Nexus Mapping:** Core Nexus seeks to eliminate these. However, pod-to-pod traffic within a single namespace without Istio strict mTLS applied acts as a localized implicit trust zone.
+    - **Nexus Mapping:** Core Nexus seeks to eliminate these. However, pod-to-pod traffic within a single namespace without a service mesh enforcing strict mTLS acts as a localized implicit trust zone.
   - **Subject/System:** *The entity requesting access.*
     - **Nexus Mapping:** A Kubernetes Pod or associated Service Account.
   - **Policy Enforcement Point:** *The point where the access decision is executed (allowed or denied).*
-    - **Nexus Mapping:** Istio Envoy sidecar proxies deployed alongside application containers.
+    - **Nexus Mapping:** The Kubernetes API Server (via RBAC/Kyverno) and host-level enforcement (via Tetragon eBPF).
 
 ### Physical security
 - **Bollards, Access control vestibule, Fencing, Video surveillance, Security guard, Access badge, Lighting, Sensors (Infrared, Pressure, Microwave, Ultrasonic):** *Controls designed to physically protect the facility, hardware, and personnel.*
