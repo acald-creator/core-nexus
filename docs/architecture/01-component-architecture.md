@@ -26,7 +26,7 @@ graph LR
     subgraph "Air-Gapped Option"
         C1[Zarf Packages]
         C2[UDS Core Baseline]
-        C3[Istio / Keycloak / Authservice / Observability]
+        C3[Istio / Authservice / Observability]
     end
 
     A --> A1
@@ -186,7 +186,7 @@ Secrets should be separated by trust boundary:
 | --- | --- | --- |
 | Build and signing secrets | Cosign keys, registry credentials, attestation signing material | Secure software factory / Vault |
 | Runtime application secrets | Wazuh credentials, MinIO credentials, API tokens | Platform secret manager / Vault |
-| Identity and SSO config | OIDC client secrets, Keycloak clients | Identity platform plus Vault-backed storage |
+| Identity and SSO config | OIDC client secrets | Identity platform plus Vault-backed storage |
 | Lab-only secrets | Temporary tokens, demo passwords | Local Vault dev mode or disposable `.env` files |
 
 For a production-like path, prefer short-lived or identity-bound credentials over long-lived static secrets. GitHub OIDC, SPIFFE/SPIRE workload identity, Vault dynamic secrets, and keyless Sigstore/Cosign flows all fit this direction.
@@ -218,7 +218,6 @@ UDS should be treated as a hardened delivery and platform baseline, not as the s
 
 Expected UDS Core capabilities:
 
-- **Keycloak:** Identity provider and SSO.
 - **Authservice:** SSO flows for mission applications.
 - **Istio:** Service mesh networking.
 - **Grafana and Prometheus:** Observability and metrics.

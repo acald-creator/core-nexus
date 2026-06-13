@@ -35,7 +35,7 @@
   - **Nexus Mapping:** GitOps repository commit signing (GPG/Sigstore) ensures developers cannot repudiate their configuration changes.
 - **Authentication, Authorization, and Accounting (AAA):** *Framework for intelligently controlling access, enforcing policies, and auditing usage.*
   - **Authenticating people:** *Verifying a human user's identity.*
-    - **Nexus Mapping:** **[GAP IDENTIFIED]** Since Keycloak is not currently active in this infrastructure, there is a gap in centralized identity/SSO for human users.
+    - **Nexus Mapping:** **[GAP IDENTIFIED]** Since there is no active centralized identity provider in this infrastructure, there is a gap in centralized identity/SSO for human users.
   - **Authenticating systems:** *Verifying a machine or service's identity.*
     - **Nexus Mapping:** Workload identity is provided by SPIFFE/SPIRE via the Istio Service Mesh.
   - **Authorization models:** *Determining what an authenticated entity is permitted to do.*
