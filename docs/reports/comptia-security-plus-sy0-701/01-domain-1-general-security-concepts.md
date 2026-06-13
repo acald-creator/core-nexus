@@ -18,7 +18,7 @@
 - **Deterrent:** *Controls intended to discourage a threat actor from causing an incident.*
   - **Nexus Mapping:** SSH login warning banners for the underlying Kubernetes (K3s/RKE2) host nodes.
 - **Detective:** *Controls designed to identify and record that a security incident has occurred.*
-  - **Nexus Mapping:** Wazuh agents detecting host-level anomalies and Falco detecting anomalous container behavior.
+  - **Nexus Mapping:** Wazuh agents detecting host-level anomalies and Tetragon detecting anomalous container behavior via eBPF.
 - **Corrective:** *Controls designed to mitigate the damage of an incident and restore the system to normal operations.*
   - **Nexus Mapping:** Argo CD's self-healing synchronization, which automatically corrects configuration drift by reverting to the Git source of truth.
 - **Compensating:** *Controls implemented to provide an alternative solution when a primary control is not feasible.*

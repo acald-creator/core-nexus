@@ -128,7 +128,7 @@ In a UDS-based deployment:
 
 - Zarf packages the application and dependencies for connected or air-gapped delivery.
   - **Local/Development Workloads and the Zarf Webhook**: When deploying external, non-packaged services to a cluster running Zarf, the Zarf Mutating Admission Webhook will automatically intercept Pod creation and rewrite image URLs to point to the local Zarf registry. To allow public image pulls or bypass this mutator, the namespace or pod must be labeled with `zarf.dev/agent: skip` or `zarf.dev/agent: ignore`.
-- UDS Core can provide baseline services such as Authservice for SSO flows, Istio for service mesh networking, Grafana and Prometheus for observability, Loki and Vector for logging, Falco for runtime security, and Velero for backup.
+- UDS Core can provide baseline services such as Authservice for SSO flows, Istio for service mesh networking, Grafana and Prometheus for observability, Loki and Vector for logging, Tetragon for runtime security, and Velero for backup.
 - The same Kubernetes workload boundaries still matter: SOC, Athena, Workbench, and AI triage should remain separate logical components, even when an experiment colocates tightly coupled containers in one Pod.
 - Secrets remain a separate design decision. Vault HA or another secret manager should be chosen explicitly instead of treating UDS itself as the secrets backend.
 

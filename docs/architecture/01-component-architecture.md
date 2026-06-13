@@ -222,7 +222,7 @@ Expected UDS Core capabilities:
 - **Istio:** Service mesh networking.
 - **Grafana and Prometheus:** Observability and metrics.
 - **Loki and Vector:** Log storage and log aggregation.
-- **Falco:** Runtime security.
+- **Tetragon:** Runtime security via eBPF.
 - **Velero:** Backup and recovery.
 
 Secrets remain a separate design decision. Vault HA, Kubernetes secrets with external secret integration, or another secret manager should be selected explicitly.

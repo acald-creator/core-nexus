@@ -38,7 +38,7 @@ The long-term sensor design should use two telemetry streams.
 
 **Why add it:** Suricata cannot see everything happening inside a container or workload. For example, an application spawning a shell, reading sensitive files, or performing unusual process activity may be invisible to network monitoring.
 
-**Near-term implementation:** Use proven Linux runtime sensors such as Falco, Wazuh agents, audit telemetry, or eBPF-based tooling where appropriate.
+**Near-term implementation:** Use proven Linux runtime sensors such as Tetragon, Wazuh agents, audit telemetry, or eBPF-based tooling where appropriate.
 
 **Future implementation:** Use SecureOS-native tracing or eBPF-like hooks once the kernel and execution model are mature enough.
 
