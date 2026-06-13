@@ -13,10 +13,11 @@ The goal is to demonstrate how the Underground Nexus architecture serves as both
 * 1.4 Explain the importance of using appropriate cryptographic solutions.
 
 ### [Domain 2.0: Threats, Vulnerabilities, and Mitigations](./02-domain-2-threats-vulnerabilities-mitigations.md)
-* 2.1 Compare and contrast various types of threat actors and motivations.
+* 2.1 Compare and contrast common threat actors and motivations.
 * 2.2 Explain common threat vectors and attack surfaces.
-* 2.3 Given a scenario, analyze indicators of malicious activity.
-* 2.4 Explain the purpose of mitigation techniques used to secure the enterprise.
+* 2.3 Explain various types of vulnerabilities.
+* 2.4 Given a scenario, analyze indicators of malicious activity.
+* 2.5 Explain the purpose of mitigation techniques used to secure the enterprise.
 
 ### [Domain 3.0: Security Architecture](./03-domain-3-security-architecture.md)
 * 3.1 Compare and contrast security implications of different architecture models.
