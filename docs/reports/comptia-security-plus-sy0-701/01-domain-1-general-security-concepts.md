@@ -3,61 +3,74 @@
 ## 1.1 Compare and contrast various types of security controls
 
 ### Categories
-- **Technical:** *(To be mapped)*
-- **Managerial:** *(To be mapped)*
-- **Operational:** *(To be mapped)*
-- **Physical:** *(To be mapped)*
+- **Technical:** *Security controls implemented through technology (e.g., firewalls, encryption, access control lists).*
+  - **Nexus Mapping:** Istio Service Mesh (mTLS), Kyverno (admission control), and Vault (secrets management).
+- **Managerial:** *Security controls focused on the management of risk and the governance of information systems (e.g., risk assessments, policies).*
+  - **Nexus Mapping:** Managed through GitOps (Argo CD) pipelines, where repository approvals and branch protections act as managerial policy enforcement.
+- **Operational:** *Security controls executed by people in their day-to-day operations (e.g., security awareness training, incident response procedures).*
+  - **Nexus Mapping:** **[GAP IDENTIFIED]** Core Nexus currently lacks a dedicated operational runbook or incident response workflow platform (the `nexus-workbench` JupyterLab is dedicated to AI/ML work, not SOC operations). This indicates a need for future integration of an operational platform (e.g., dedicated SOAR or ticketing system) for analysts.
+- **Physical:** *Security controls designed to protect the physical environment and facilities (e.g., locks, cameras, guards).*
+  - **Nexus Mapping:** Inherited from the physical deployment environment (e.g., data center controls, lab room physical security). Outside the direct software stack scope.
 
 ### Control Types
-- **Preventive:** *(To be mapped)*
-- **Deterrent:** *(To be mapped)*
-- **Detective:** *(To be mapped)*
-- **Corrective:** *(To be mapped)*
-- **Compensating:** *(To be mapped)*
-- **Directive:** *(To be mapped)*
+- **Preventive:** *Controls designed to stop an incident from occurring.*
+  - **Nexus Mapping:** Chainguard hardened images (preventing exploitation of vulnerable packages) and Istio strict mTLS (preventing unauthorized network access).
+- **Deterrent:** *Controls intended to discourage a threat actor from causing an incident.*
+  - **Nexus Mapping:** SSH login warning banners for the underlying Kubernetes (K3s/RKE2) host nodes.
+- **Detective:** *Controls designed to identify and record that a security incident has occurred.*
+  - **Nexus Mapping:** Wazuh agents detecting host-level anomalies and Falco detecting anomalous container behavior.
+- **Corrective:** *Controls designed to mitigate the damage of an incident and restore the system to normal operations.*
+  - **Nexus Mapping:** Argo CD's self-healing synchronization, which automatically corrects configuration drift by reverting to the Git source of truth.
+- **Compensating:** *Controls implemented to provide an alternative solution when a primary control is not feasible.*
+  - **Nexus Mapping:** If a legacy application cannot natively support SAML/OIDC, Istio ingress authorization policies act as a compensating control to restrict traffic.
+- **Directive:** *Controls that mandate specific actions, rules, or behaviors (often administrative).*
+  - **Nexus Mapping:** Repository commit signing requirements and mandatory pull request reviews before Argo CD deploys changes to the cluster.
 
 ## 1.2 Summarize fundamental security concepts
 
 ### Core Concepts
-- **Confidentiality, Integrity, and Availability (CIA):** *(To be mapped)*
-- **Non-repudiation:** *(To be mapped)*
-- **Authentication, Authorization, and Accounting (AAA):** *(To be mapped)*
-  - **Authenticating people:** *(To be mapped)*
-  - **Authenticating systems:** *(To be mapped)*
-  - **Authorization models:** *(To be mapped)*
-- **Gap analysis:** *(To be mapped)*
+- **Confidentiality, Integrity, and Availability (CIA):** *Confidentiality (protecting data from unauthorized disclosure), Integrity (protecting data from unauthorized alteration), Availability (ensuring data is accessible when needed).*
+  - **Nexus Mapping:** Confidentiality via HashiCorp Vault and Istio mTLS. Integrity via container image signing (Sigstore/Cosign/Chainguard). Availability via Kubernetes (K3s/RKE2) orchestration and replication.
+- **Non-repudiation:** *Ensuring that a party cannot deny the authenticity of their signature on a document or a message that they originated.*
+  - **Nexus Mapping:** GitOps repository commit signing (GPG/Sigstore) ensures developers cannot repudiate their configuration changes.
+- **Authentication, Authorization, and Accounting (AAA):** *Framework for intelligently controlling access, enforcing policies, and auditing usage.*
+  - **Authenticating people:** *Verifying a human user's identity.*
+    - **Nexus Mapping:** **[GAP IDENTIFIED]** Since Keycloak is not currently active in this infrastructure, there is a gap in centralized identity/SSO for human users.
+  - **Authenticating systems:** *Verifying a machine or service's identity.*
+    - **Nexus Mapping:** Workload identity is provided by SPIFFE/SPIRE via the Istio Service Mesh.
+  - **Authorization models:** *Determining what an authenticated entity is permitted to do.*
+    - **Nexus Mapping:** Implemented natively via Kubernetes Role-Based Access Control (RBAC).
+- **Gap analysis:** *Evaluating the difference between the current state of security and a desired future state.*
+  - **Nexus Mapping:** Executed by comparing current cluster state against security baselines (e.g., using `kube-bench` for CIS benchmarks, or this exact SY0-701 mapping exercise).
 
 ### Zero Trust
-- **Control Plane:** *(To be mapped)*
-  - **Adaptive identity:** *(To be mapped)*
-  - **Threat scope reduction:** *(To be mapped)*
-  - **Policy-driven access control:** *(To be mapped)*
-  - **Policy Administrator:** *(To be mapped)*
-  - **Policy Engine:** *(To be mapped)*
-- **Data Plane:** *(To be mapped)*
-  - **Implicit trust zones:** *(To be mapped)*
-  - **Subject/System:** *(To be mapped)*
-  - **Policy Enforcement Point:** *(To be mapped)*
+- **Control Plane:** *The overarching system that evaluates context and decides whether to grant access.*
+  - **Adaptive identity:** *Dynamically evaluating identity and risk context before granting access.*
+    - **Nexus Mapping:** **[GAP IDENTIFIED]** Not natively implemented in the current baseline infrastructure.
+  - **Threat scope reduction:** *Limiting the potential blast radius of an incident.*
+    - **Nexus Mapping:** Achieved through strict Kubernetes namespace isolation and Kubernetes NetworkPolicies.
+  - **Policy-driven access control:** *Access decisions based on centrally managed policies.*
+    - **Nexus Mapping:** Enforced by Kyverno cluster admission policies.
+  - **Policy Administrator:** *The entity or group responsible for creating and maintaining policy.*
+    - **Nexus Mapping:** Git repository owners and maintainers (enforced via Pull Request approval workflows).
+  - **Policy Engine:** *The component that evaluates the policy against the request.*
+    - **Nexus Mapping:** Kyverno acts as the Kubernetes policy engine.
+- **Data Plane:** *The actual systems, networks, and resources being protected.*
+  - **Implicit trust zones:** *Areas within a network where all entities are inherently trusted.*
+    - **Nexus Mapping:** Core Nexus seeks to eliminate these. However, pod-to-pod traffic within a single namespace without Istio strict mTLS applied acts as a localized implicit trust zone.
+  - **Subject/System:** *The entity requesting access.*
+    - **Nexus Mapping:** A Kubernetes Pod or associated Service Account.
+  - **Policy Enforcement Point:** *The point where the access decision is executed (allowed or denied).*
+    - **Nexus Mapping:** Istio Envoy sidecar proxies deployed alongside application containers.
 
 ### Physical security
-- **Bollards:** *(To be mapped)*
-- **Access control vestibule:** *(To be mapped)*
-- **Fencing:** *(To be mapped)*
-- **Video surveillance:** *(To be mapped)*
-- **Security guard:** *(To be mapped)*
-- **Access badge:** *(To be mapped)*
-- **Lighting:** *(To be mapped)*
-- **Sensors:** *(To be mapped)*
-  - **Infrared:** *(To be mapped)*
-  - **Pressure:** *(To be mapped)*
-  - **Microwave:** *(To be mapped)*
-  - **Ultrasonic:** *(To be mapped)*
+- **Bollards, Access control vestibule, Fencing, Video surveillance, Security guard, Access badge, Lighting, Sensors (Infrared, Pressure, Microwave, Ultrasonic):** *Controls designed to physically protect the facility, hardware, and personnel.*
+  - **Nexus Mapping:** Inherited entirely from the physical deployment environment (e.g., data center controls, secure lab room). Core Nexus is a software stack and does not directly implement physical security.
 
 ### Deception and disruption technology
-- **Honeypot:** *(To be mapped)*
-- **Honeynet:** *(To be mapped)*
-- **Honeyfile:** *(To be mapped)*
-- **Honeytoken:** *(To be mapped)*
+- *Technologies designed to mislead attackers, waste their resources, and detect early stage attacks (e.g., honeypots, honeyfiles).*
+  - **Nexus Mapping:** **[GAP IDENTIFIED]** No native deception technologies or honeypots are currently deployed in the baseline infrastructure.
+
 
 ## 1.3 Explain the importance of change management processes and the impact to security
 
