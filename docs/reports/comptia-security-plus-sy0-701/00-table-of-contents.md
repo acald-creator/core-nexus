@@ -30,7 +30,7 @@ The goal is to demonstrate how the Underground Nexus architecture serves as both
 * 4.2 Explain the security implications of proper hardware, software, and data asset management.
 * 4.3 Explain various activities associated with vulnerability management.
 * 4.4 Explain security alerting and monitoring concepts and tools.
-* 4.5 Modify enterprise capabilities to enhance security.
+* 4.5 Given a scenario, modify enterprise capabilities to enhance security.
 * 4.6 Given a scenario, implement and maintain identity and access management.
 * 4.7 Explain the importance of automation and orchestration related to secure operations.
 * 4.8 Explain appropriate incident response activities.
