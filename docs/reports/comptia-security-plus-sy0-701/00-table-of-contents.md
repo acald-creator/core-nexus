@@ -43,3 +43,6 @@ The goal is to demonstrate how the Underground Nexus architecture serves as both
 * 5.4 Summarize elements of effective security compliance.
 * 5.5 Explain types and purposes of audits and assessments.
 * 5.6 Given a scenario, implement security awareness practices.
+
+### [Acronyms](./06-acronyms.md)
+* Standard SY0-701 acronyms and definitions.
