@@ -6,8 +6,8 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
 
 ## Tasks
 
-- [ ] 1. Modernize nexus-athena Docker image
-  - [ ] 1.1 Refactor Dockerfile into multi-stage multi-platform build
+- [x] 1. Modernize nexus-athena Docker image
+  - [x] 1.1 Refactor Dockerfile into multi-stage multi-platform build
     - Replace the existing single-stage `Dockerfile` with a multi-stage Dockerfile producing `athena-core` and `athena-full` targets
     - Use `kalilinux/kali-rolling` as the base image (replacing `kali-bleeding-edge`)
     - Stage 1 (`athena-core`): nmap, python3, python3-pip, python3-scapy, git, curl, wget, netcat-openbsd, iproute2, dnsutils, tcpdump, ca-certificates, vim
@@ -18,14 +18,14 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Support `linux/amd64` and `linux/arm64` via `docker buildx` and `ARG TARGETPLATFORM`
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8_
 
-  - [ ] 1.2 Add exploit-lab runtime profile to Docker Compose
+  - [x] 1.2 Add exploit-lab runtime profile to Docker Compose
     - Add `athena.exploit-lab` service to `deploy/compose/athena-profiles.yml`
     - Set `cap_add: [NET_ADMIN, NET_RAW, SYS_PTRACE]`, `cap_drop: [ALL]`, `security_opt: [no-new-privileges:true]`
     - Gate behind `profiles: [exploit-lab]`
     - Attach only to `athena_lab` network
     - _Requirements: 2.1, 2.3, 2.6_
 
-  - [ ] 1.3 Create exploit-lab Kubernetes Deployment manifest
+  - [x] 1.3 Create exploit-lab Kubernetes Deployment manifest
     - Create `deploy/kubernetes/base/athena-exploit-lab.yaml`
     - Set `replicas: 0`, require explicit `kubectl scale` to activate
     - Add annotations documenting required capabilities: `nexus-athena/required-capabilities: "NET_ADMIN,NET_RAW,SYS_PTRACE"`
@@ -33,19 +33,19 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use image `phoenixvlabs/nexus-athena:full-latest`
     - _Requirements: 2.2, 2.4, 2.5_
 
-  - [ ] 1.4 Create Kubernetes NetworkPolicies for Athena namespace isolation
+  - [x] 1.4 Create Kubernetes NetworkPolicies for Athena namespace isolation
     - Create `deploy/kubernetes/base/network-policy-default-deny.yaml`: deny all ingress/egress except DNS (UDP 53 to kube-dns in kube-system)
     - Create `deploy/kubernetes/base/network-policy-lab-egress.yaml`: allow egress to pods with `nexus-lab-target: "true"` in namespaces with `nexus-lab-network: "true"`, plus DNS
     - Create `deploy/kubernetes/base/network-policy-soc-deny.yaml`: explicit deny to namespaces with `nexus-zone: soc`
     - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7_
 
-- [ ] 2. Checkpoint - Verify nexus-athena image modernization
+- [x] 2. Checkpoint - Verify nexus-athena image modernization
   - Ensure Dockerfile builds both targets for at least one platform
   - Ensure Kubernetes manifests pass `kubectl apply --dry-run=client`
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 3. Set up athena-agents repository structure and build system
-  - [ ] 3.1 Initialize repository with workspace structure
+- [x] 3. Set up athena-agents repository structure and build system
+  - [x] 3.1 Initialize repository with workspace structure
     - Create top-level `Cargo.toml` workspace with `members = ["crates/*"]`
     - Create `pyproject.toml` for the Python orchestrator package
     - Create directory structure: `crates/`, `orchestrator/`, `eval/`, `config/`, `tests/`, `docs/`
@@ -55,7 +55,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Print missing dependency error if Rust toolchain or Python not available
     - _Requirements: 13.1, 13.2, 13.3, 13.4, 13.6_
 
-  - [ ] 3.2 Create shared Rust types crate (`athena-common`)
+  - [x] 3.2 Create shared Rust types crate (`athena-common`)
     - Create `crates/athena-common/Cargo.toml` with serde, serde_json dependencies
     - Implement shared JSON output types: `ScanResult`, `FuzzerSummary`, `CraftResult`
     - Implement shared error output type: `ErrorOutput { error: String, message: String }`
@@ -68,7 +68,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `proptest` crate with minimum 100 iterations
     - **Validates: Requirements 5.4**
 
-  - [ ] 3.4 Implement async TCP port scanner (`athena-scanner`)
+  - [x] 3.4 Implement async TCP port scanner (`athena-scanner`)
     - Create `crates/athena-scanner/Cargo.toml` with tokio, clap, athena-common dependencies
     - Implement CLI: `--target`, `--start-port`, `--end-port`, `--concurrency` (default 1024, range 1-65535), `--timeout-ms` (default 3000, range 100-30000)
     - Implement async scanning with tokio semaphore-bounded connection pool
@@ -83,7 +83,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `proptest` crate with minimum 100 iterations
     - **Validates: Requirements 5.1**
 
-  - [ ] 3.6 Implement protocol fuzzer (`athena-fuzzer`)
+  - [x] 3.6 Implement protocol fuzzer (`athena-fuzzer`)
     - Create `crates/athena-fuzzer/Cargo.toml` with tokio, clap, rand_xoshiro, athena-common dependencies
     - Implement CLI: `--target`, `--protocol` (http|tcp|dns), `--seed` (u64), `--iterations` (default 1000, range 1-1000000)
     - Use xoshiro256++ PRNG seeded from CLI argument for deterministic mutations
@@ -99,27 +99,27 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `proptest` crate with minimum 100 iterations
     - **Validates: Requirements 5.2, 5.8**
 
-  - [ ] 3.8 Implement packet crafter (`athena-crafter`)
+  - [x] 3.8 Implement packet crafter (`athena-crafter`)
     - Create `crates/athena-crafter/Cargo.toml` with clap, athena-common dependencies
     - Implement CLI: `--protocol` (tcp|udp|icmp), `--src-port`, `--dst-port`, `--payload` (hex-string), `--flags` (optional)
     - Output JSON to stdout: `{ protocol, total_length_bytes, payload_hex }`
     - Validate all inputs; exit 1 with JSON error on failure
     - _Requirements: 5.3, 5.4, 5.5_
 
-- [ ] 4. Checkpoint - Verify Rust primitives build and test
+- [x] 4. Checkpoint - Verify Rust primitives build and test
   - Ensure `cargo build --release` compiles all crates
   - Ensure `cargo test` passes
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 5. Implement Python orchestrator core
-  - [ ] 5.1 Define orchestrator interfaces and data models
+- [x] 5. Implement Python orchestrator core
+  - [x] 5.1 Define orchestrator interfaces and data models
     - Create `orchestrator/__init__.py`, `orchestrator/interfaces.py`
     - Implement dataclasses: `TargetState`, `ActionSpec`, `ActionResult`, `ReflectSummary`
     - Implement `GroundTruthRecord` dataclass with all schema fields (scenario_id, run_id, timestamp, target, payload_family, technique, expected_result, safety_boundary, label, artifact_reference)
     - Implement `GroundTruthLabel` enum: malicious, benign_control, failed_attack, successful_simulation, needs_review
     - _Requirements: 4.1, 7.1, 7.2_
 
-  - [ ] 5.2 Implement ground-truth telemetry emitter
+  - [x] 5.2 Implement ground-truth telemetry emitter
     - Create `orchestrator/ground_truth.py`
     - Implement JSON Lines serialization (one JSON object per line)
     - Support configurable output path via `ATHENA_GT_OUTPUT` env var; default to stdout
@@ -132,7 +132,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `hypothesis` library with minimum 100 iterations
     - **Validates: Requirements 7.5**
 
-  - [ ] 5.4 Implement allowlist verification
+  - [x] 5.4 Implement allowlist verification
     - Create `orchestrator/allowlist.py`
     - Implement `AllowlistEntry` dataclass: host, port_range, protocol, label
     - Implement `verify_allowlist(path, expected_hash)`: load JSON, compute SHA-256, compare against expected hash
@@ -145,7 +145,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `hypothesis` library with minimum 100 iterations
     - **Validates: Requirements 4.2, 4.3, 11.1**
 
-  - [ ] 5.6 Implement token-bucket rate limiter
+  - [x] 5.6 Implement token-bucket rate limiter
     - Create `orchestrator/rate_limiter.py`
     - Implement `RateLimiter` class with configurable actions_per_minute (range 1-600, default 60)
     - Token-bucket algorithm with `bucket_size` and `refill_rate` (tokens per second)
@@ -158,7 +158,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `hypothesis` library with minimum 100 iterations
     - **Validates: Requirements 11.3, 11.4**
 
-  - [ ] 5.8 Implement Tool Registry loader and validator
+  - [x] 5.8 Implement Tool Registry loader and validator
     - Create `orchestrator/tool_registry.py`
     - Implement Pydantic models: `ToolArg`, `ToolEntry` matching the TOML schema
     - Load and validate `config/tool-registry.toml` at startup
@@ -172,12 +172,12 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `hypothesis` library with minimum 100 iterations
     - **Validates: Requirements 6.8**
 
-- [ ] 6. Checkpoint - Verify orchestrator core modules
+- [x] 6. Checkpoint - Verify orchestrator core modules
   - Ensure `pytest` passes for ground-truth, allowlist, rate limiter, and tool registry modules
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 7. Implement Agent Orchestrator execution cycle
-  - [ ] 7.1 Implement observe/plan/act/reflect loop
+- [x] 7. Implement Agent Orchestrator execution cycle
+  - [x] 7.1 Implement observe/plan/act/reflect loop
     - Create `orchestrator/agent.py` with `AgentOrchestrator` class
     - Implement `run_scenario(scenario: ScenarioConfig) -> ScenarioResult`
     - Observe: produce `TargetState` snapshot
@@ -187,7 +187,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Maintain in-memory action history accessible to reflect phase
     - _Requirements: 4.1, 4.5, 4.7_
 
-  - [ ] 7.2 Implement safety controls and scenario lifecycle
+  - [x] 7.2 Implement safety controls and scenario lifecycle
     - Integrate allowlist verification before each execution cycle
     - Integrate rate limiter into act phase
     - Enforce configurable max actions per scenario (range 1-1000); halt with `limit-reached` reason
@@ -202,13 +202,13 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `hypothesis` library with minimum 100 iterations
     - **Validates: Requirements 4.6**
 
-  - [ ] 7.4 Implement audit trail logging
+  - [x] 7.4 Implement audit trail logging
     - Log all executed actions with ISO-8601 timestamps, target, action_type, tool_id, status (success/failure)
     - Append-only audit trail format (JSON Lines)
     - _Requirements: 11.8_
 
-- [ ] 8. Implement LLM Backend abstraction
-  - [ ] 8.1 Define LLM interface and implement backends
+- [x] 8. Implement LLM Backend abstraction
+  - [x] 8.1 Define LLM interface and implement backends
     - Create `orchestrator/llm/__init__.py`, `orchestrator/llm/interface.py`
     - Define `LLMBackend` protocol: `generate(prompt, max_tokens) -> str`, `health_check() -> bool`, `backend_id` property
     - Implement `OllamaBackend` in `orchestrator/llm/ollama.py` (HTTP client for Ollama REST API)
@@ -216,7 +216,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Implement `LlamaCppBackend` in `orchestrator/llm/llamacpp.py` (llama.cpp server API)
     - _Requirements: 9.1, 9.2, 9.3, 9.6_
 
-  - [ ] 8.2 Implement backend configuration and startup validation
+  - [x] 8.2 Implement backend configuration and startup validation
     - Create `config/llm.toml` with backend type, URL, model, timeout fields
     - Parse `type` field; reject if not in {ollama, vllm, llamacpp}
     - Call `health_check()` with 10-second timeout at startup
@@ -224,8 +224,8 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - On mid-scenario failure: halt scenario, log with backend_id and timestamp
     - _Requirements: 9.4, 9.5, 9.7_
 
-- [ ] 9. Implement Eval Harness
-  - [ ] 9.1 Implement matching algorithm and metrics computation
+- [x] 9. Implement Eval Harness
+  - [x] 9.1 Implement matching algorithm and metrics computation
     - Create `eval/__init__.py`, `eval/harness.py`
     - Implement `match_records(ground_truth, predictions, time_window_seconds)` with algorithm:
       1. Sort by timestamp
@@ -237,7 +237,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Support configurable time window (default 300s, range 1-86400s)
     - _Requirements: 8.1, 8.3, 8.4, 8.7_
 
-  - [ ] 9.2 Implement report generation and filtering
+  - [x] 9.2 Implement report generation and filtering
     - Create `eval/report.py`
     - Output structured JSON report with: model_name, model_version, time_window, total counts, per_technique metrics, aggregate metrics, skipped_records, warning, duplicates_excluded
     - Support filtering by scenario_id, technique, or payload_family
@@ -262,49 +262,49 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Use `hypothesis` library with minimum 100 iterations
     - **Validates: Requirements 8.8**
 
-- [ ] 10. Checkpoint - Verify orchestrator + eval harness integration
+- [x] 10. Checkpoint - Verify orchestrator + eval harness integration
   - Ensure all Python tests pass (`pytest`)
   - Ensure all Rust tests pass (`cargo test`)
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 11. Implement configuration and target environments
-  - [ ] 11.1 Create Tool Registry configuration file
+- [x] 11. Implement configuration and target environments
+  - [x] 11.1 Create Tool Registry configuration file
     - Create `config/tool-registry.toml` with entries for: port-scanner, protocol-fuzzer, packet-crafter, nmap-scan, scapy-craft
     - Each entry includes: executable/module, invocation type, required_capabilities, description, args schema
     - Use `${ATHENA_BIN_DIR}` for Rust binary paths (configurable via env var, default `./target/release`)
     - _Requirements: 6.1, 6.5, 13.4_
 
-  - [ ] 11.2 Create target environment definitions
+  - [x] 11.2 Create target environment definitions
     - Create `config/targets/juice-shop.toml` with host, port, protocol, base_path, timeout, vulnerability categories, OWASP Top 10 mappings
     - Create `config/targets/dvwa.toml` with same schema
     - Schema supports custom targets with same fields
     - _Requirements: 12.1, 12.4, 12.5_
 
-  - [ ] 11.3 Implement target reachability verification
+  - [x] 11.3 Implement target reachability verification
     - In `orchestrator/agent.py`, verify target reachable via TCP within configurable timeout (default 5s) before starting scenario
     - Refuse scenario and log error if target unreachable
     - _Requirements: 12.2, 12.3_
 
-  - [ ] 11.4 Create allowlist configuration
+  - [x] 11.4 Create allowlist configuration
     - Create `config/allowlist.json` with entries for juice-shop and dvwa lab targets
     - Each entry: host, port_range, protocol, label
     - Document expected hash or signature mechanism
     - _Requirements: 11.1_
 
-- [ ] 12. Implement SOC pipeline integration and traffic labeling
-  - [ ] 12.1 Implement traffic labeling and metadata
+- [x] 12. Implement SOC pipeline integration and traffic labeling
+  - [x] 12.1 Implement traffic labeling and metadata
     - Set `X-Athena-Scenario-Id` header on HTTP-based attack traffic
     - Set `ATHENA_SCENARIO_LABEL` environment variable for tool invocations
     - Enable SOC dashboards to filter training traffic by label
     - _Requirements: 10.2, 10.4_
 
-  - [ ] 12.2 Implement local buffering and pipeline resilience
+  - [x] 12.2 Implement local buffering and pipeline resilience
     - If SOC pipeline doesn't acknowledge within 30 seconds, continue execution and store GT records locally
     - On pipeline recovery, forward locally stored records within 5 minutes
     - _Requirements: 10.5, 10.6_
 
-- [ ] 13. Create agent runner Docker image
-  - [ ] 13.1 Write multi-stage Dockerfile for athena-agents
+- [x] 13. Create agent runner Docker image
+  - [x] 13.1 Write multi-stage Dockerfile for athena-agents
     - Stage 1 (rust-builder): Compile Rust binaries as static musl binaries
     - Stage 2 (python-env): Install orchestrator Python package
     - Stage 3 (runner): Copy Rust binaries from builder, copy Python env, no build toolchains
@@ -312,7 +312,7 @@ This plan implements the Athena subsystem refinement in two tracks: (1) moderniz
     - Include securityContext annotations: drop all capabilities, `allowPrivilegeEscalation: false`
     - _Requirements: 13.5, 11.6, 11.7_
 
-- [ ] 14. Final checkpoint - Ensure all tests pass
+- [x] 14. Final checkpoint - Ensure all tests pass
   - Run `make test` (cargo test + pytest)
   - Verify `make build` succeeds
   - Verify `make image` produces the agent runner image
