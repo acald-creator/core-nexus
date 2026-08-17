@@ -43,7 +43,71 @@ In a traditional SOC, human analysts review raw event streams. In an AI-native S
   - Using a vector database (e.g., ChromaDB or Milvus), every analyzed event, incident report, and executed command is embedded into a semantic memory store.
   - When a new event occurs, the AI performs a RAG (Retrieval-Augmented Generation) query to pull context from similar past incidents, allowing the agent's knowledge to compound and evolve over time.
 
-## 4. Multi-Project Security & Orchestration Layer
+## 4. LLM Agent Stimulation & Emulation
+
+Beyond passive triage, the Underground Nexus uses LLM agents as active participants in attack simulation and adversary emulation. This is the architectural bridge between the Athena red-team tooling and the AI-SOC detection pipeline.
+
+### Core Concepts
+
+- **Stimulation:** LLM agents autonomously generate labeled attack traffic against approved targets. The agent decides what to probe, how to mutate payloads, and when to escalate — producing ground-truth telemetry that feeds directly into the SOC evaluation loop. This replaces static replay scripts with adaptive, context-aware traffic generation.
+- **Emulation:** LLM agents assume adversary roles, reasoning through multi-step attack chains (lateral movement, privilege escalation, data exfiltration) against sandbox environments. The agent's planning phase draws on threat intelligence, MITRE ATT&CK mappings, and scenario constraints to produce realistic attack narratives that challenge the blue team.
+
+### Architecture: OPAR Execution Loop
+
+The `athena-agents` repository implements this as an Observe/Plan/Act/Reflect (OPAR) cycle:
+
+```mermaid
+graph LR
+    O[Observe<br/>Target State Snapshot] --> P[Plan<br/>LLM Selects Technique + Tool]
+    P --> A[Act<br/>Execute with Safety Controls]
+    A --> R[Reflect<br/>Evaluate Result, Emit Ground-Truth]
+    R --> O
+```
+
+1. **Observe:** Produce a structured snapshot of target state (open ports, service banners, prior results).
+2. **Plan:** The LLM backend (Ollama, vLLM, or llama.cpp) selects the next technique and tool from the registry based on observations and action history.
+3. **Act:** Execute the selected tool with safety controls (allowlist verification, rate limiting, capability gates, safe-range validation for ICS targets).
+4. **Reflect:** Evaluate the result, emit a labeled ground-truth record, and append to action history for the next planning iteration.
+
+### Safety Controls
+
+LLM-driven autonomy requires stronger guardrails than scripted attacks:
+
+- **Allowlist integrity:** Target list is SHA-256 verified before each cycle.
+- **Rate limiting:** Per-target token-bucket rate limiter prevents runaway execution.
+- **Capability gates:** Tools declare required capabilities (e.g., `ICS_WRITE`, `CAN_INJECT`). The agent can only invoke tools matching its active profile.
+- **Boundary enforcement:** Write operations to ICS registers are validated against configured safe ranges before execution.
+- **Human review checkpoints:** Actions flagged `needs_review` require analyst approval before continuation.
+
+### LLM Backend Configuration
+
+The inference backend is configurable per environment:
+
+| Environment | Backend | Model | Purpose |
+|-------------|---------|-------|---------|
+| Local lab | Ollama | `llama3:8b` | Fast iteration, low resource |
+| GPU node | vLLM | `llama3:70b` (FP8) | High-quality planning decisions |
+| Edge/air-gap | llama.cpp | GGUF quantized | Offline adversary emulation |
+
+### Skill-Driven Agent Memory
+
+Inspired by Hermes Agent's auto skill generation, the Nexus uses persistent skill files to avoid redundant LLM reasoning:
+
+- After an agent solves a novel scenario, the approach is encoded as a reusable skill (method, patterns, pitfalls).
+- On subsequent encounters, the agent loads the relevant skill first, skipping the discovery phase.
+- Skills accumulate across sessions, building domain-specific competence over time.
+- This reduces token spend on repeat work and improves consistency across runs.
+
+Implementation in Kiro uses `~/.kiro/skills/` with a `Stop` hook for auto-generation. The same pattern applies at the platform level: agent skills can be stored in MinIO and loaded into the OPAR planning context.
+
+### Cross-Reference
+
+- `athena-agents/` — Full OPAR loop implementation with LLM backend, tool registry, and ground-truth emission.
+- `docs/architecture/08-athena-adversary-fuzzer.md` — Athena evolution roadmap (Phase 2/3 are implemented by athena-agents).
+- `platform/athena/` — Platform-level Athena component definitions.
+- `config/tool-registry.toml` (in athena-agents) — Offensive tool catalog with capability gates.
+
+## 5. Multi-Project Security & Orchestration Layer
 
 Underground Nexus does not function solely as an isolated security workspace. It acts as an integration and orchestration layer across external projects and development targets.
 

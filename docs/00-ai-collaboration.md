@@ -30,8 +30,12 @@ When documents conflict, prefer the lower-numbered practical architecture docume
 | Codex | Repo edits, code changes, consistency passes, implementation planning | Concrete file changes, patches, verification notes |
 | Claude | Long-form architecture critique, risk analysis, narrative refinement | Review notes, alternative architectures, threat-model questions |
 | Gemini | Broad research synthesis, comparison, product/platform option review | Research summaries, tradeoff tables, external landscape notes |
+| Kiro | IDE-integrated implementation, spec-driven development, skill-driven workflows | File edits, hook/steering configs, auto-generated skills |
+| LLM Agents (runtime) | Autonomous adversary emulation, SOC stimulation, OPAR execution loops | Ground-truth telemetry, attack traffic, coverage metrics, skill files |
 
 These roles are defaults, not hard rules. Any model may review any document, but it should respect the repository vocabulary and decision register.
+
+**Note on LLM agents as runtime components:** Unlike the development-time models above, LLM agents also operate as platform runtime components within the Athena environment (`athena-agents`). They autonomously plan and execute attack scenarios, emit labeled ground-truth data, and build persistent skill memory. See `docs/architecture/11-ai-native-integration-principles.md` Section 4 and `docs/architecture/08-athena-adversary-fuzzer.md` Section 8 for the full architecture.
 
 ## 3. Shared Vocabulary
 
@@ -45,6 +49,12 @@ These roles are defaults, not hard rules. Any model may review any document, but
 - **Nexus MCP Server:** Interface layer for approved SOC/Nexus tools and context.
 - **Kubernetes production model:** Near-term production-like path using Kubernetes, Pulumi, Argo CD, and optionally UDS/Zarf.
 - **Future Enterprise Platform bare-metal production:** Long-horizon SecureOS, Control Plane, and gVisor deployment lifecycle.
+- **OPAR loop:** Observe/Plan/Act/Reflect execution cycle used by LLM agents for autonomous offensive testing. Implemented in `athena-agents`.
+- **Stimulation:** LLM agents generating adaptive, labeled attack traffic against approved targets to exercise detection coverage.
+- **Emulation:** LLM agents assuming adversary roles, reasoning through multi-step attack chains against sandbox environments.
+- **Agent skill:** A persistent, reusable encoding of a proven approach (technique sequence, patterns, pitfalls) that eliminates redundant LLM reasoning on repeat encounters.
+- **Ground-truth record:** A labeled telemetry record emitted during agent execution with scenario ID, technique, timestamp, and expected result — used to evaluate SOC detection accuracy.
+- **athena-agents:** AI offensive agent framework implementing the OPAR loop with configurable LLM backends, safety controls, and ground-truth emission.
 
 ## 4. Non-Negotiable Architecture Decisions
 
@@ -57,6 +67,9 @@ These roles are defaults, not hard rules. Any model may review any document, but
 - Platform UI is monitored like any other workload, but threat findings go to approved Nexus/SOC clients.
 - Autonomous response is a later capability. Human approval and auditability come first.
 - Cloudflare-to-SecureOS deployment is a future Enterprise Platform bare-metal lifecycle, not the current Kubernetes/UDS path.
+- LLM agents operate within allowlist and capability-gate constraints at all times.
+- Agent skill persistence uses MinIO (platform) or local filesystem (development); skills are versioned and signed before unattended use.
+- Stimulation and emulation traffic must be labeled (HTTP headers + env vars) so SOC dashboards can distinguish training traffic from real alerts.
 
 ## 5. Review Protocol
 
@@ -103,7 +116,19 @@ Create a Phase 1 implementation plan that preserves the current Docker lab while
 Keep Phase 2 and Phase 3 items explicitly out of scope.
 ```
 
-## 7. Handoff Format
+## 7. Cross-Repository Context
+
+| Repository | Role | Key artifacts |
+| --- | --- | --- |
+| `core-nexus` | Architecture hub, platform definitions, deployment manifests | `docs/architecture/`, `platform/`, `deploy/` |
+| `nexus-athena` | Red-team container image (Kali-based offensive tooling) | `Dockerfile.*`, `architecture.md` |
+| `athena-agents` | LLM-driven adversary emulation framework (OPAR loop) | `orchestrator/`, `config/`, `eval/`, `crates/` |
+| `nexus-webtop-soc` | SOC analyst webtop + baseline compose stack | `deploy/compose/soc-baseline.yml`, `scripts/` |
+| `nexus-webtop-workbench` | Analyst workbench desktop image | Dockerfile, validation scripts |
+
+When working on LLM agent workflows, the primary implementation lives in `athena-agents`. Architecture and integration docs live in `core-nexus`. The container runtime for agent execution lives in `nexus-athena`.
+
+## 8. Handoff Format
 
 When one model hands work to another, use this format:
 
