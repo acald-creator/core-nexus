@@ -79,7 +79,6 @@ graph TD
 │   ├── scripts/
 │   └── uds/
 ├── images/
-│   ├── cue/
 │   └── docker/
 ├── platform/
 │   ├── ai-inference/
