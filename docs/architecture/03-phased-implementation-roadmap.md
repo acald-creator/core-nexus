@@ -21,7 +21,10 @@ SecureOS is still in early userspace development. It may render early UI element
 | Primary UI | `nexus-console` (Custom React/Vite Launchpad Dashboard) |
 | SOC platform | Phase 1 target baseline built: Wazuh, Suricata, MinIO running in KuberNexus (k3d) |
 | Workbench | `nexus-workbench` (JupyterLab) providing the unified agentic workspace |
-| Athena | `nexus-athena` (Kali Linux build) with standard and elevated profiles |
+| Athena | `nexus-athena` (Kali Linux build) with standard, packet-lab, exploit-lab, agent, and agent-ics profiles |
+| LLM Agents | `athena-agents` OPAR loop with Ollama backend, tool registry, safety controls, and skill persistence |
+| Agent Memory | Git-based skills (`docs/skills/`) + MinIO sync (`nexus-memory/`) + session logs |
+| Terminal Console | `nexus-tui` (Go/Charmbracelet) for alert triage, agent feed, approvals in air-gapped environments |
 | Secrets | Vault dev mode for local learning; begin designing Vault HA for production-like paths |
 | Supply chain | Cosign, SBOMs, attestations, vulnerability scans, registry controls |
 
@@ -71,7 +74,8 @@ graph TD
 - [x] Current Docker lab profiles are documented.
 - [x] SOC baseline exists with Wazuh and Suricata separated from the webtop, running on KuberNexus (k3d).
 - [x] Primary UI replaced with Custom Nexus Console Launchpad.
-- [ ] Workbench and Athena have standard and elevated runtime profiles.
+- [x] Workbench and Athena have standard and elevated runtime profiles.
+- [x] LLM agent workflow operational (athena-agents OPAR loop with safety controls, skill persistence, and ground-truth emission).
 - [ ] SBOM, signing, vulnerability scanning, and attestation workflows are documented.
 - [ ] Vault production direction is selected, even if only dev mode exists locally.
 
@@ -93,7 +97,7 @@ This phase begins once SecureOS has stable enough networking, process management
 | SOC platform | Wazuh and hybrid Suricata/runtime telemetry remain the known-good detection baseline while AI-native telemetry is validated |
 | AI triage | Starts consuming SecureOS telemetry alongside existing SOC events |
 | Workbench | Moves toward secured JupyterLab or VS Code Server if Enterprise Platform Auth is ready |
-| Athena | Begins moving from Kali container workflows to controlled adversary automation |
+| Athena | Begins moving from Kali container workflows to controlled adversary automation via athena-agents OPAR loop (already operational in Phase 1) |
 
 ### Underground Nexus Role
 

@@ -62,8 +62,10 @@ graph LR
 | MinIO | Lab object storage for `/nexus-bucket` artifacts | Kubernetes-native MinIO (`StatefulSet` for base, Helm Distributed cluster for prod) |
 | Vault dev mode | Development secrets service | Vault HA via Helm chart for prod; `StatefulSet` file backend for test |
 | `nexus-webtop-soc` | Legacy SOC desktop with Suricata | Split into dedicated Wazuh SOC services and sensors; legacy webtop client removed |
-| `nexus-athena` | Kali red-team container | Custom local build; keep as isolated lab traffic generator |
+| `nexus-athena` | Kali red-team container | Custom local build; keep as isolated lab traffic generator with 5 runtime profiles (standard, packet-lab, exploit-lab, agent, agent-ics) |
+| `athena-agents` | LLM adversary orchestration | OPAR execution loop with configurable LLM backend, tool registry, safety controls, and ground-truth emission |
 | `nexus-workbench` | Agentic Workspace | JupyterLab environment serving as the unified analyst client |
+| `nexus-tui` | Terminal SOC console | Charmbracelet TUI for alert triage, agent feed, approvals, and skill browsing in SSH/air-gapped environments |
 | Code server | Development editor | Merged into Agentic Workspace concepts (JupyterLab / VS Code) |
 | Docker Swarm | Overlay networking experiment | De-emphasize for future architecture unless a specific lab requires it |
 | k3d / KuberNexus | Local Kubernetes sandbox | Keep as local Kubernetes test path before full production deployment |
@@ -109,6 +111,62 @@ Refinement goals:
 - Label generated traffic by lab scenario.
 - Define required Linux capabilities for packet capture or attack simulation.
 - Keep offensive tooling separate from workbench and SOC services.
+
+Runtime profiles:
+
+| Profile | Purpose | Capabilities |
+| --- | --- | --- |
+| `athena-standard` | Basic red-team commands against approved lab targets | Unprivileged or minimal |
+| `athena-packet-lab` | Wireshark, packet capture, network analysis | `NET_ADMIN`, `NET_RAW` |
+| `athena-exploit-lab` | Metasploit or attack simulation labs | Isolated network, explicit approval |
+| `athena-agent` | LLM-driven autonomous emulation | Network to LLM inference endpoint |
+| `athena-agent-ics` | Autonomous ICS/OT testing with safe-range enforcement | `ICS_WRITE`, `CAN_INJECT` + agent |
+
+### Athena Agents (LLM Adversary Orchestration)
+
+`athena-agents` implements the LLM-driven adversary emulation layer using an Observe/Plan/Act/Reflect (OPAR) execution loop.
+
+Target responsibilities:
+
+- **Observe:** Produce structured target-state snapshots (open ports, service banners, prior results).
+- **Plan:** LLM selects the next technique and tool from the registry based on observations, action history, and loaded skills.
+- **Act:** Execute the selected tool with safety controls (allowlist, rate limiter, capability gates, ICS safe ranges).
+- **Reflect:** Evaluate the result, emit a labeled ground-truth record, and update action history.
+
+Key architectural properties:
+
+- Configurable LLM backend (Ollama, vLLM, llama.cpp) per environment.
+- Allowlist verification (SHA-256 hash) before each execution cycle.
+- Per-target token-bucket rate limiting.
+- Capability gates: tools declare requirements, runtime profiles grant them.
+- Ground-truth telemetry emission for SOC evaluation.
+- Traffic labeling (`X-Athena-Scenario`, `X-Athena-Run-ID`) for dashboard filtering.
+- `needs_review` flag halts execution for human approval.
+
+### Agent Memory
+
+A cross-cutting concern that provides persistent, portable knowledge across all agent sessions and tools.
+
+Three layers:
+
+- **Skill files (structured memory):** Proven approaches encoded as Markdown with front matter. Stored in `docs/skills/` (git), synced to `~/.kiro/skills/` (local) and MinIO `nexus-memory/skills/` (platform).
+- **Session logs (episodic memory):** JSONL records of what each session accomplished. Stored in `docs/skills/sessions/` and synced to MinIO `nexus-memory/sessions/`.
+- **Vector memory (semantic retrieval):** Embeddings of skills and sessions for RAG queries. Future: ChromaDB or equivalent, backed by MinIO.
+
+Consumed by: Kiro (local skills), Claude Code / Codex (via AGENTS.md references), athena-agents OPAR Plan phase (from MinIO), nexus-tui Skill Browser panel.
+
+### Nexus TUI (Terminal SOC Console)
+
+`cmd/nexus-tui` provides a Charmbracelet-based terminal interface for SOC triage in air-gapped or SSH-only environments.
+
+Panels:
+
+- **Agent Feed:** Live OPAR loop events (observe/plan/act/reflect) from JSONL.
+- **Alerts:** Wazuh/Suricata alerts with severity coloring and Athena traffic label detection.
+- **Approvals:** `needs_review` queue with approve/reject workflow.
+- **Skills:** Browse and view auto-generated skill files.
+
+This complements (does not replace) the browser-based Nexus Console and Workbench.
 
 ### Workbench
 
@@ -239,7 +297,10 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 | Workbench default profile | Unified Agentic Workspace (JupyterLab) | `nexus-workbench` |
 | Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-workbench` |
 | Athena default profile | Isolated red-team lab container without SSH or Docker socket | `nexus-athena` |
-| Athena elevated profile | Explicit packet-capture or exploit-lab capabilities | `nexus-athena-elevated` |
+| Athena elevated profile | Explicit packet-capture, exploit-lab, or LLM-agent capabilities | `nexus-athena` |
+| LLM adversary orchestration | OPAR loop with safety controls and ground-truth emission | `athena-agents` |
+| Agent memory | Git-based skills (source of truth) + MinIO sync for headless agents | Core Nexus `docs/skills/` |
+| Terminal SOC console | Charmbracelet TUI for air-gapped/SSH environments | Core Nexus `cmd/nexus-tui` |
 | Primary UI | Custom Nexus Console Launchpad | `nexus-console` |
 | Secrets manager | Vault HA via Helm (prod); Vault `StatefulSet` (test/dev) | Core Nexus |
 | UDS role | Platform baseline and Zarf delivery, not the secrets backend | Core Nexus |
