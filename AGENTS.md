@@ -23,7 +23,8 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 - Summarize changed files and remaining risks.
 - When working on LLM agent workflows, reference `athena-agents` for implementation details
   and update architecture docs here for integration narrative.
-- Check `~/.kiro/skills/` for applicable skills before starting novel work.
+- Check `docs/skills/` (git-based) or `~/.kiro/skills/` (local) for applicable skills before starting novel work.
+- After solving novel problems, add or update skills in `docs/skills/` and run `scripts/sync-skills.sh push-local`.
 
 ## Cross-Repo Context
 
