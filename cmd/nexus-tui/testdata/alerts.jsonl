@@ -1,0 +1,7 @@
+{"timestamp":"2026-08-17T14:00:05Z","source":"suricata","severity":"high","rule_id":"2024001","title":"ET WEB SQL Injection Attempt - Login Bypass","src_ip":"10.0.1.50","dst_ip":"10.0.2.10","labels":{"athena_scenario":"sqli-juice-shop-01"}}
+{"timestamp":"2026-08-17T14:00:12Z","source":"suricata","severity":"medium","rule_id":"2024015","title":"ET WEB Possible Data Exfiltration - Large JSON Response","src_ip":"10.0.2.10","dst_ip":"10.0.1.50","labels":{"athena_scenario":"sqli-juice-shop-01"}}
+{"timestamp":"2026-08-17T14:01:04Z","source":"suricata","severity":"critical","rule_id":"2100501","title":"ET SCADA Modbus TCP Read Holding Registers","src_ip":"10.0.1.50","dst_ip":"10.0.3.20","labels":{"athena_scenario":"modbus-plc-probe-02"}}
+{"timestamp":"2026-08-17T14:02:30Z","source":"wazuh","severity":"high","rule_id":"5710","title":"sshd: authentication failure from 10.0.5.99","src_ip":"10.0.5.99","dst_ip":"10.0.1.1","agent":"bastion-01"}
+{"timestamp":"2026-08-17T14:03:15Z","source":"wazuh","severity":"medium","rule_id":"5502","title":"Login session opened for user analyst","src_ip":"10.0.1.5","agent":"workbench-01"}
+{"timestamp":"2026-08-17T14:04:00Z","source":"suricata","severity":"low","rule_id":"2013028","title":"ET INFO Observed DNS Query to .onion Proxy Domain","src_ip":"10.0.4.12","dst_ip":"8.8.8.8"}
+{"timestamp":"2026-08-17T14:05:22Z","source":"wazuh","severity":"critical","rule_id":"5712","title":"sshd: 5 failed auth attempts from 10.0.5.99 - possible brute force","src_ip":"10.0.5.99","dst_ip":"10.0.1.1","agent":"bastion-01"}
