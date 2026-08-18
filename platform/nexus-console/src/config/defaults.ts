@@ -1,0 +1,83 @@
+import { NexusConfig } from './types';
+
+const host = import.meta.env.VITE_NEXUS_HOST || 'localhost';
+
+export const defaultConfig: NexusConfig = {
+  apiGatewayUrl: import.meta.env.VITE_API_GATEWAY_URL || `http://${host}:8080`,
+  healthPollIntervalMs: 30000,
+  authProvider: 'vault',
+  authEndpoint: import.meta.env.VITE_AUTH_ENDPOINT || `http://${host}:8200`,
+  services: [
+    {
+      id: 'wazuh-dash',
+      name: 'Wazuh Dashboard',
+      description: 'Security event investigation and alerting',
+      category: 'security',
+      url: `https://${host}:5601`,
+      iconId: 'shield',
+      healthEndpoint: '/api/status',
+    },
+    {
+      id: 'grafana',
+      name: 'Grafana',
+      description: 'Platform observability and metrics',
+      category: 'security',
+      url: `http://${host}:3000`,
+      iconId: 'chart',
+      healthEndpoint: '/api/health',
+    },
+    {
+      id: 'minio',
+      name: 'MinIO Console',
+      description: 'Artifact storage — PCAPs, SBOMs, skills, sessions',
+      category: 'storage',
+      url: `http://${host}:9001`,
+      iconId: 'bucket',
+      healthEndpoint: '/minio/health/live',
+    },
+    {
+      id: 'jupyter',
+      name: 'Jupyter Workbench',
+      description: 'Analyst agentic workspace',
+      category: 'workbenches',
+      url: `http://${host}:8888`,
+      iconId: 'notebook',
+      healthEndpoint: '/api/status',
+    },
+    {
+      id: 'portainer',
+      name: 'Portainer',
+      description: 'Container management baseline',
+      category: 'infrastructure',
+      url: `https://${host}:9443`,
+      iconId: 'container',
+      healthEndpoint: '/api/status',
+    },
+    {
+      id: 'pihole',
+      name: 'Pi-Hole',
+      description: 'Lab DNS filtering',
+      category: 'infrastructure',
+      url: `http://${host}:8081/admin`,
+      iconId: 'dns',
+    },
+    {
+      id: 'vault',
+      name: 'Vault UI',
+      description: 'Secrets management',
+      category: 'infrastructure',
+      url: `http://${host}:8200`,
+      iconId: 'lock',
+      healthEndpoint: '/v1/sys/health',
+    },
+    {
+      id: 'ai-inference',
+      name: 'AI Inference API',
+      description: 'AI triage enrichment and hardware detection',
+      category: 'agents',
+      url: `http://${host}:8000`,
+      iconId: 'brain',
+      healthEndpoint: '/health',
+    },
+  ],
+};
