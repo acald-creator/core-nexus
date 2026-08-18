@@ -1,0 +1,11 @@
+.dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.healthy { background: var(--color-healthy); }
+.degraded { background: var(--color-degraded); }
+.offline { background: var(--color-offline); }
+.unknown { background: var(--color-unknown); }

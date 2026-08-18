@@ -1,4 +1,4 @@
-import { NexusConfig } from './types';
+import type { NexusConfig } from './types';
 
 const host = import.meta.env.VITE_NEXUS_HOST || 'localhost';
 

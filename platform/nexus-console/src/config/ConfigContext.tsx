@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
-import { NexusConfig } from './types';
+import type { NexusConfig } from './types';
 import { defaultConfig } from './defaults';
 import { loadConfig } from './loader';
 

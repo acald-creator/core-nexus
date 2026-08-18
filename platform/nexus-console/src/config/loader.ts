@@ -1,4 +1,4 @@
-import { NexusConfig } from './types';
+import type { NexusConfig } from './types';
 import { defaultConfig } from './defaults';
 
 export async function loadConfig(): Promise<NexusConfig> {
