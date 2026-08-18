@@ -1,8 +1,11 @@
+import { NavigationHub } from '../components/panels/Navigation/NavigationHub';
+import { HealthMonitor } from '../components/panels/Health/HealthMonitor';
+
 export default function OverviewPage() {
   return (
-    <div>
-      <h2>Overview</h2>
-      <p style={{ color: 'var(--color-text-secondary)' }}>Panel implementation pending.</p>
-    </div>
+    <>
+      <HealthMonitor />
+      <NavigationHub />
+    </>
   );
 }
