@@ -1,3 +1,4 @@
+import { fetchWithAuth } from '../api/fetchWithAuth';
 import { useQuery } from '@tanstack/react-query';
 import { useConfig } from '../config/ConfigContext';
 import type { Skill, SkillFilters } from '../api/types/skills';
@@ -28,7 +29,7 @@ export function useSkills(filters?: SkillFilters) {
   const { data: allSkills = [], isLoading } = useQuery<Skill[]>({
     queryKey: ['skills'],
     queryFn: async () => {
-      const response = await fetch(`${config.apiGatewayUrl}/api/v1/skills`);
+      const response = await fetchWithAuth(`${config.apiGatewayUrl}/api/v1/skills`);
       if (!response.ok) throw new Error(`Skills fetch failed: ${response.status}`);
       return response.json();
     },
@@ -45,7 +46,7 @@ export function useSkillContent(skillId: string | null) {
   return useQuery<string>({
     queryKey: ['skill-content', skillId],
     queryFn: async () => {
-      const response = await fetch(`${config.apiGatewayUrl}/api/v1/skills/${skillId}/content`);
+      const response = await fetchWithAuth(`${config.apiGatewayUrl}/api/v1/skills/${skillId}/content`);
       if (!response.ok) throw new Error(`Skill content fetch failed: ${response.status}`);
       return response.text();
     },

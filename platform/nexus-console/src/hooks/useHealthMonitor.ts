@@ -1,3 +1,4 @@
+import { fetchWithAuth } from '../api/fetchWithAuth';
 import { useQuery } from '@tanstack/react-query';
 import { useConfig } from '../config/ConfigContext';
 import type { HealthStatus, HealthStatusValue, HealthSummary } from '../api/types/health';
@@ -40,7 +41,7 @@ export function useHealthMonitor() {
           const controller = new AbortController();
           const timeout = setTimeout(() => controller.abort(), 5000);
 
-          const response = await fetch(
+          const response = await fetchWithAuth(
             `${config.apiGatewayUrl}/api/v1/health/${service.id}`,
             { signal: controller.signal }
           );

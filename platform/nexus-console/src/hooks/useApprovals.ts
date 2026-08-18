@@ -1,3 +1,4 @@
+import { fetchWithAuth } from '../api/fetchWithAuth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useConfig } from '../config/ConfigContext';
 import type { ApprovalAction } from '../api/types/approvals';
@@ -13,7 +14,7 @@ export function useApprovals() {
   const { data: pending = [], isLoading } = useQuery<ApprovalAction[]>({
     queryKey: ['approvals', 'pending'],
     queryFn: async () => {
-      const response = await fetch(`${config.apiGatewayUrl}/api/v1/approvals?status=pending`);
+      const response = await fetchWithAuth(`${config.apiGatewayUrl}/api/v1/approvals?status=pending`);
       if (!response.ok) throw new Error(`Approvals fetch failed: ${response.status}`);
       return response.json();
     },
@@ -23,7 +24,7 @@ export function useApprovals() {
 
   const mutation = useMutation({
     mutationFn: async ({ id, decision }: { id: string; decision: 'approve' | 'reject' }) => {
-      const response = await fetch(`${config.apiGatewayUrl}/api/v1/approvals/${id}/decision`, {
+      const response = await fetchWithAuth(`${config.apiGatewayUrl}/api/v1/approvals/${id}/decision`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ decision }),

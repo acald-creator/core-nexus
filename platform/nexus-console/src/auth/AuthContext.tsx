@@ -1,6 +1,9 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 import type { AuthState, LoginCredentials } from '../api/types/auth';
 import { useConfig } from '../config/ConfigContext';
+import { registerTokenGetter } from '../api/fetchWithAuth';
+
+const DEV_BYPASS = import.meta.env.VITE_DEV_AUTH_BYPASS === 'true';
 
 const AuthContext = createContext<AuthState>({
   token: null,
@@ -13,6 +16,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const config = useConfig();
   const tokenRef = useRef<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Register token getter for fetchWithAuth
+  useEffect(() => {
+    registerTokenGetter(() => tokenRef.current);
+  }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
     const response = await fetch(`${config.apiGatewayUrl}/api/v1/auth/login`, {
@@ -34,6 +42,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenRef.current = null;
     setIsAuthenticated(false);
   }, []);
+
+  // Dev bypass: auto-login on mount
+  useEffect(() => {
+    if (DEV_BYPASS && !isAuthenticated) {
+      login({ username: 'dev-analyst', password: 'dev' }).catch(() => {
+        // Gateway not running — use placeholder token for offline dev
+        tokenRef.current = 'dev-bypass-token';
+        setIsAuthenticated(true);
+      });
+    }
+  }, [DEV_BYPASS, isAuthenticated, login]);
 
   const state: AuthState = {
     token: tokenRef.current,

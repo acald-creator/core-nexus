@@ -1,3 +1,4 @@
+import { fetchWithAuth } from '../api/fetchWithAuth';
 import { useQuery } from '@tanstack/react-query';
 import { useConfig } from '../config/ConfigContext';
 import type { AlertFilters, SOCAlert } from '../api/types/alerts';
@@ -44,7 +45,7 @@ export function useAlerts(filters?: AlertFilters) {
       if (filters?.timeRange?.end) params.set('to', filters.timeRange.end);
       params.set('limit', '100');
 
-      const response = await fetch(`${config.apiGatewayUrl}/api/v1/alerts?${params}`);
+      const response = await fetchWithAuth(`${config.apiGatewayUrl}/api/v1/alerts?${params}`);
       if (!response.ok) throw new Error(`Alerts fetch failed: ${response.status}`);
       return response.json();
     },
