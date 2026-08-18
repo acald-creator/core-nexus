@@ -47,7 +47,7 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
       }
     });
 
-    es.addEventListener('error', (event) => {
+    es.addEventListener('error', (_event) => {
       if (es.readyState === EventSource.CLOSED) {
         setIsConnected(false);
         setConnectionError('Connection lost — retrying...');

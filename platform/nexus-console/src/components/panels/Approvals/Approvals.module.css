@@ -1,0 +1,60 @@
+.panel { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.header { display: flex; justify-content: space-between; align-items: center; }
+.count { font-size: var(--font-size-sm); color: var(--color-text-muted); }
+
+.list { display: flex; flex-direction: column; gap: var(--space-3); }
+
+.card {
+  padding: var(--space-4);
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-3);
+}
+
+.tool { font-weight: 600; font-family: var(--font-mono); font-size: var(--font-size-sm); }
+.time { font-size: var(--font-size-xs); color: var(--color-text-muted); }
+
+.cardBody { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-4); }
+
+.field { display: flex; gap: var(--space-3); align-items: baseline; }
+.label { font-size: var(--font-size-xs); color: var(--color-text-muted); width: 60px; flex-shrink: 0; }
+.value { font-size: var(--font-size-sm); color: var(--color-text-primary); }
+.valueMono { font-size: var(--font-size-xs); font-family: var(--font-mono); color: var(--color-text-secondary); }
+
+.cardActions { display: flex; gap: var(--space-3); }
+
+.approveBtn {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-accent);
+  color: var(--color-text-inverse);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: opacity var(--transition-fast);
+}
+.approveBtn:hover { opacity: 0.9; }
+.approveBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.rejectBtn {
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  color: var(--color-critical);
+  border: 1px solid var(--color-critical);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  transition: background var(--transition-fast);
+}
+.rejectBtn:hover { background: rgba(239, 68, 68, 0.1); }
+.rejectBtn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.empty { text-align: center; padding: var(--space-8); color: var(--color-text-muted); }
+.emptyHint { font-size: var(--font-size-sm); margin-top: var(--space-2); }
