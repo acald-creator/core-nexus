@@ -1,5 +1,58 @@
-# Docker Compose Lab
+# Compose Stacks
 
-This directory contains Docker Compose definitions for the local Underground Nexus lab profile.
+## Dev Stack (`dev.yml`) — Recommended for local development
 
-Compose remains a lab and developer workflow. Production-like GitOps belongs under `deploy/kubernetes/` or `deploy/uds/`.
+Starts the full Nexus platform locally:
+- **Nexus Console** (React SPA) → http://localhost:3000
+- **API Gateway** (FastAPI) → http://localhost:3100 (API docs at /docs)
+- **MinIO** (Object storage) → http://localhost:9001 (minioadmin/minioadmin)
+- **AI Inference** (FastAPI triage) → http://localhost:8000
+
+```bash
+# Start everything
+./scripts/dev-stack.sh up
+
+# Seed MinIO with skills (after stack is running)
+./scripts/seed-minio-skills.sh
+
+# Check status
+./scripts/dev-stack.sh status
+
+# View logs
+./scripts/dev-stack.sh logs
+
+# Stop
+./scripts/dev-stack.sh down
+```
+
+### Console Access
+
+The Console runs at http://localhost:3000 with dev auth bypass enabled.
+For local frontend dev with hot reload, run `npm run dev` in `platform/nexus-console/` (port 5173) instead.
+
+### Connecting to SOC Baseline
+
+The SOC baseline (Wazuh + Suricata) runs as a separate stack in `nexus-webtop-soc`:
+
+```bash
+cd ~/nexus-webtop-soc
+docker compose -f deploy/compose/soc-baseline.yml up -d
+```
+
+Set `NEXUS_GW_WAZUH_API_URL` to point at the Wazuh manager.
+
+### Connecting to Athena
+
+Athena profiles run from `nexus-athena`:
+
+```bash
+cd ~/nexus-athena
+./scripts/run-athena-profile.sh agent juice-shop.lab
+```
+
+## Legacy Stacks
+
+- `baseline.yml` — Original "Olympiad" deployment (Console + Pi-hole + Portainer + nginx-proxy)
+- `portainer-deploy.yml` — Standalone Portainer
+- `soc-baseline.yml` — Symlink/reference to nexus-webtop-soc SOC stack
+- `docker-compose.yml` — Legacy root compose (deprecated)
