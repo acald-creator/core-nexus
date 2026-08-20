@@ -11,7 +11,7 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'wazuh-dash',
       name: 'Wazuh Dashboard',
-      description: 'Security event investigation and alerting',
+      description: 'Security events (run SOC baseline stack separately)',
       category: 'security',
       url: `https://${host}:5601`,
       iconId: 'shield',
@@ -20,9 +20,9 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'grafana',
       name: 'Grafana',
-      description: 'Platform observability and metrics',
+      description: 'Platform observability and metrics (not in dev stack)',
       category: 'security',
-      url: `http://${host}:3000`,
+      url: `http://${host}:3002`,
       iconId: 'chart',
       healthEndpoint: '/api/health',
     },
@@ -38,7 +38,7 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'jupyter',
       name: 'Jupyter Workbench',
-      description: 'Analyst agentic workspace',
+      description: 'Analyst agentic workspace (not in dev stack)',
       category: 'workbenches',
       url: `http://${host}:8888`,
       iconId: 'notebook',
@@ -47,7 +47,7 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'portainer',
       name: 'Portainer',
-      description: 'Container management baseline',
+      description: 'Container management (not in dev stack)',
       category: 'infrastructure',
       url: `https://${host}:9443`,
       iconId: 'container',
@@ -56,7 +56,7 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'pihole',
       name: 'Pi-Hole',
-      description: 'Lab DNS filtering',
+      description: 'Lab DNS filtering (not in dev stack)',
       category: 'infrastructure',
       url: `http://${host}:8081/admin`,
       iconId: 'dns',
@@ -64,7 +64,7 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'vault',
       name: 'Vault UI',
-      description: 'Secrets management',
+      description: 'Secrets management (not in dev stack)',
       category: 'infrastructure',
       url: `http://${host}:8200`,
       iconId: 'lock',
