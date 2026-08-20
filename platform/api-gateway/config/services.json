@@ -21,9 +21,9 @@
     {
       "id": "minio",
       "name": "MinIO Console",
-      "description": "Artifact storage — PCAPs, SBOMs, skills, sessions",
+      "description": "Artifact storage \u2014 PCAPs, SBOMs, skills, sessions",
       "category": "storage",
-      "url": "http://localhost:9001",
+      "url": "http://minio:9001",
       "iconId": "bucket",
       "healthEndpoint": "/minio/health/live"
     },
@@ -67,9 +67,9 @@
       "name": "AI Inference API",
       "description": "AI triage enrichment and hardware detection",
       "category": "agents",
-      "url": "http://localhost:8000",
+      "url": "http://ai-inference:8000",
       "iconId": "brain",
-      "healthEndpoint": "/health"
+      "healthEndpoint": "/"
     }
   ]
 }
