@@ -3,7 +3,7 @@
     {
       "id": "wazuh-dash",
       "name": "Wazuh Dashboard",
-      "description": "Security event investigation and alerting",
+      "description": "Security event investigation (run SOC baseline stack separately)",
       "category": "security",
       "url": "https://localhost:5601",
       "iconId": "shield",
@@ -12,9 +12,9 @@
     {
       "id": "grafana",
       "name": "Grafana",
-      "description": "Platform observability and metrics",
+      "description": "Platform observability and metrics (not in dev stack)",
       "category": "security",
-      "url": "http://localhost:3000",
+      "url": "http://localhost:3002",
       "iconId": "chart",
       "healthEndpoint": "/api/health"
     },
@@ -30,7 +30,7 @@
     {
       "id": "jupyter",
       "name": "Jupyter Workbench",
-      "description": "Analyst agentic workspace",
+      "description": "Analyst agentic workspace (not in dev stack)",
       "category": "workbenches",
       "url": "http://localhost:8888",
       "iconId": "notebook",
@@ -39,7 +39,7 @@
     {
       "id": "portainer",
       "name": "Portainer",
-      "description": "Container management baseline",
+      "description": "Container management (not in dev stack)",
       "category": "infrastructure",
       "url": "https://localhost:9443",
       "iconId": "container",
@@ -48,7 +48,7 @@
     {
       "id": "pihole",
       "name": "Pi-Hole",
-      "description": "Lab DNS filtering",
+      "description": "Lab DNS filtering (not in dev stack)",
       "category": "infrastructure",
       "url": "http://localhost:8081/admin",
       "iconId": "dns"
@@ -56,7 +56,7 @@
     {
       "id": "vault",
       "name": "Vault UI",
-      "description": "Secrets management",
+      "description": "Secrets management (not in dev stack)",
       "category": "infrastructure",
       "url": "http://localhost:8200",
       "iconId": "lock",
