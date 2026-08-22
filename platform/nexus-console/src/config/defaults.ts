@@ -3,7 +3,7 @@ import type { NexusConfig } from './types';
 const host = import.meta.env.VITE_NEXUS_HOST || 'localhost';
 
 export const defaultConfig: NexusConfig = {
-  apiGatewayUrl: import.meta.env.VITE_API_GATEWAY_URL || `http://${host}:8080`,
+  apiGatewayUrl: import.meta.env.VITE_API_GATEWAY_URL || `http://${host}:3100`,
   healthPollIntervalMs: 30000,
   authProvider: 'vault',
   authEndpoint: import.meta.env.VITE_AUTH_ENDPOINT || `http://${host}:8200`,

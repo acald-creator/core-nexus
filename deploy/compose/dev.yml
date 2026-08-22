@@ -42,6 +42,7 @@ services:
       NEXUS_GW_AI_INFERENCE_URL: http://ai-inference:8000
       NEXUS_GW_ATHENA_AGENTS_URL: ${NEXUS_GW_ATHENA_AGENTS_URL:-http://host.docker.internal:8080}
       NEXUS_GW_MINIO_ENDPOINT: minio:9000
+      NEXUS_GW_MINIO_PUBLIC_ENDPOINT: localhost:9000
       NEXUS_GW_MINIO_ACCESS_KEY: ${MINIO_ROOT_USER:-minioadmin}
       NEXUS_GW_MINIO_SECRET_KEY: ${MINIO_ROOT_PASSWORD:-minioadmin}
       NEXUS_GW_MINIO_BUCKET: nexus-memory
@@ -69,6 +70,7 @@ services:
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
+      MINIO_API_CORS_ALLOW_ORIGIN: "http://localhost:3000,http://localhost:5173"
     volumes:
       - minio_data:/data
     healthcheck:

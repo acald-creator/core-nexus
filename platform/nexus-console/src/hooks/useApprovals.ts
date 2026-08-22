@@ -7,6 +7,10 @@ export function sortApprovalsBySubmittedAt(approvals: ApprovalAction[]): Approva
   return [...approvals].sort((a, b) => new Date(a.submittedAt).getTime() - new Date(b.submittedAt).getTime());
 }
 
+export function countPendingApprovals(approvals: ApprovalAction[]): number {
+  return approvals.filter((a) => a.status === 'pending').length;
+}
+
 export function useApprovals() {
   const config = useConfig();
   const queryClient = useQueryClient();
@@ -53,7 +57,7 @@ export function useApprovals() {
 
   return {
     pending,
-    pendingCount: pending.length,
+    pendingCount: countPendingApprovals(pending),
     approve: (id: string) => mutation.mutateAsync({ id, decision: 'approve' }),
     reject: (id: string) => mutation.mutateAsync({ id, decision: 'reject' }),
     isSubmitting: mutation.isPending,

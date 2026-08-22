@@ -4,9 +4,19 @@ from minio import Minio
 
 
 class MinIOClient:
-    def __init__(self, endpoint: str, access_key: str, secret_key: str, secure: bool, bucket: str):
+    def __init__(
+        self,
+        endpoint: str,
+        access_key: str,
+        secret_key: str,
+        secure: bool,
+        bucket: str,
+        public_endpoint: str | None = None,
+    ):
         self._client = Minio(endpoint, access_key=access_key, secret_key=secret_key, secure=secure)
         self._bucket = bucket
+        self._endpoint = endpoint
+        self._public_endpoint = public_endpoint
 
     def bucket_exists(self) -> bool:
         """Check if the configured bucket exists."""
@@ -26,10 +36,13 @@ class MinIOClient:
         return results
 
     def get_presigned_url(self, key: str, expires_minutes: int = 15) -> str:
-        """Generate a pre-signed download URL."""
-        return self._client.presigned_get_object(
+        """Generate a pre-signed download URL reachable from the browser."""
+        url = self._client.presigned_get_object(
             self._bucket, key, expires=timedelta(minutes=expires_minutes)
         )
+        if self._public_endpoint and self._endpoint != self._public_endpoint:
+            url = url.replace(self._endpoint, self._public_endpoint, 1)
+        return url
 
     def get_object_content(self, key: str) -> str:
         """Get object content as string."""

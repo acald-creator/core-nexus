@@ -2,20 +2,20 @@
 
 A hybrid build + use challenge: implement the platform AND use it for real security operations.
 
-**Start date:** ___________
-**End date:** ___________
+**Start date:** 2026-08-18
+**End date:** 2026-11-25
 
 ## Tracking
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Skills generated | 30+ | 12 |
+| Skills generated | 30+ | 14 |
 | Detection coverage (% agent actions caught) | 80%+ | — |
 | Token efficiency (tokens/scenario trend) | Decreasing | — |
 | MITRE ATT&CK techniques exercised | 20+ | — |
-| Ground-truth records emitted | 1000+ | — |
+| Ground-truth records emitted | 1000+ | 7 |
 | Approval queue decisions | 50+ | — |
-| Agent sessions completed | 100+ | — |
+| Agent sessions completed | 100+ | 1 |
 
 ## Daily Template
 
@@ -34,13 +34,13 @@ Skills generated: X | Agent sessions: Y
 
 ## Phase 1: Foundation (Days 1-20) — "Make It Run"
 
-- [ ] **Day 1** (B) — Implement athena-agent-runtime-wiring: Dockerfile rust-builder stage
-- [ ] **Day 2** (B) — Implement python-builder stage + integrate into athena-core
-- [ ] **Day 3** (B) — Create entrypoint script + `orchestrator/__main__.py`
-- [ ] **Day 4** (U) — First OPAR agent run against Juice Shop — watch it work
-- [ ] **Day 5** (D) — Document what happened, generate first agent skill from the run
-- [ ] **Day 6** (B) — Wire Console live badges (alerts count, approvals count from Gateway)
-- [ ] **Day 7** (B) — Add CORS handling fixes, test Console → Gateway → MinIO flow end-to-end
+- [x] **Day 1** (B) — Implement athena-agent-runtime-wiring: Dockerfile rust-builder stage
+- [x] **Day 2** (B) — Implement python-builder stage + integrate into athena-core
+- [x] **Day 3** (B) — Create entrypoint script + `orchestrator/__main__.py`
+- [x] **Day 4** (U) — First OPAR agent run against Juice Shop — watch it work
+- [x] **Day 5** (D) — Document what happened, generate first agent skill from the run
+- [x] **Day 6** (B) — Wire Console live badges (alerts count, approvals count from Gateway)
+- [x] **Day 7** (B) — Add CORS handling fixes, test Console → Gateway → MinIO flow end-to-end
 - [ ] **Day 8** (B) — Add Settings page to Console (config display, token info, service status)
 - [ ] **Day 9** (U) — Use Console to monitor a live Athena agent session
 - [ ] **Day 10** (D) — Share: "Day 10 — My SOC console watching an AI agent hack"
@@ -155,7 +155,13 @@ Skills generated: X | Agent sessions: Y
 
 | Day | Date | Type | Summary | Skill Generated |
 |-----|------|------|---------|-----------------|
-| | | | | |
+| 1 | 2026-08-18 | B | rust-builder / runtime wiring in nexus-athena + athena-agents | |
+| 2 | 2026-08-19 | B | python-builder, Juice Shop compose target, allowlist | |
+| 3 | 2026-08-18 | B | entrypoint + `orchestrator/__main__.py` | |
+| 4 | 2026-08-22 | U | First OPAR run vs Juice Shop (`localhost:3001`), 6 actions, `limit-reached` in 30s. Plan used gemma3:12b (nmap → login → http-request). Act phase still stubbed. GT: `/tmp/juice-shop-day4-gt.jsonl` | |
+| 5 | 2026-08-22 | D | Documented Juice Shop run. Skill: allowlist host:port identity (first-match bug, host vs compose, stub Act ≠ traffic) | red-team-allowlist-target-identity.md |
+| 6 | 2026-08-22 | B | Sidebar badges live from Gateway: unacknowledged critical+high alerts, pending approvals. Property 16. | |
+| 7 | 2026-08-22 | B | CORS 204 preflight, Console gateway URL 3100, MinIO public presign rewrite. 5 tests. | code-console-gateway-minio-browser-path.md |
 
 ### Phase 2
 

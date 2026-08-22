@@ -2,11 +2,11 @@
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 
 from src.config import get_settings
 from src.logging_config import configure_logging
 from src.middleware.auth import JWTAuthMiddleware
+from src.middleware.cors import NexusCORSMiddleware
 from src.middleware.error_handler import register_error_handlers
 from src.middleware.request_logger import RequestLoggerMiddleware
 from src.routes import auth, services, health, agents, alerts, approvals, skills, artifacts, probes
@@ -35,6 +35,7 @@ async def lifespan(app: FastAPI):
         secret_key=settings.minio_secret_key,
         secure=settings.minio_secure,
         bucket=settings.minio_bucket,
+        public_endpoint=settings.minio_public_endpoint,
     )
     app.state.athena_client = AthenaClient(base_url=settings.athena_agents_url)
     app.state.ai_inference_client = AIInferenceClient(base_url=settings.ai_inference_url)
@@ -69,15 +70,18 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
-    # Middleware (order matters: first added = outermost)
+    # Middleware: last added runs first (outermost). Order on the wire:
+    # CORS → Auth → Request Logger → routes
     app.add_middleware(RequestLoggerMiddleware)
     app.add_middleware(JWTAuthMiddleware)
     app.add_middleware(
-        CORSMiddleware,
+        NexusCORSMiddleware,
         allow_origins=settings.cors_allowed_origins,
         allow_credentials=True,
         allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        allow_headers=["Authorization", "Content-Type"],
+        allow_headers=["Authorization", "Content-Type", "Accept"],
+        expose_headers=["X-Request-ID"],
+        max_age=600,
     )
 
     # Routes

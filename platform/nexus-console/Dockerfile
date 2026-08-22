@@ -6,15 +6,15 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+ARG VITE_API_GATEWAY_URL=http://localhost:3100
+ENV VITE_API_GATEWAY_URL=$VITE_API_GATEWAY_URL
 RUN npm run build
 
 # Stage 2: Serve the application with NGINX
 FROM nginx:alpine
 
-# Copy the built assets from the builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port 80
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]

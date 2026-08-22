@@ -32,11 +32,21 @@ export function filterAlerts(alerts: SOCAlert[], filters: AlertFilters): SOCAler
   });
 }
 
+export function countUnacknowledgedCriticalHigh(alerts: SOCAlert[]): number {
+  return alerts.filter(
+    (a) => !a.acknowledged && (a.severity === 'critical' || a.severity === 'high'),
+  ).length;
+}
+
+function hasActiveFilters(filters?: AlertFilters): boolean {
+  return !!(filters?.severity?.length || filters?.source || filters?.timeRange);
+}
+
 export function useAlerts(filters?: AlertFilters) {
   const config = useConfig();
 
   const { data, isLoading, error } = useQuery<{ alerts: SOCAlert[]; total: number }>({
-    queryKey: ['alerts', filters],
+    queryKey: hasActiveFilters(filters) ? ['alerts', filters] : ['alerts', 'latest'],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (filters?.severity?.length) params.set('severity', filters.severity.join(','));
@@ -53,9 +63,7 @@ export function useAlerts(filters?: AlertFilters) {
   });
 
   const alerts = data?.alerts || [];
-  const unacknowledgedCriticalHighCount = alerts.filter(
-    (a) => !a.acknowledged && (a.severity === 'critical' || a.severity === 'high')
-  ).length;
+  const unacknowledgedCriticalHighCount = countUnacknowledgedCriticalHigh(alerts);
 
   return { alerts, total: data?.total || 0, unacknowledgedCriticalHighCount, isLoading, error };
 }

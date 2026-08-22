@@ -263,7 +263,7 @@ Build a stateless Python/FastAPI API Gateway service at `platform/api-gateway/` 
   - Ensure all tests pass, ask the user if questions arise.
 
 - [ ] 13. CORS, probes, and application wiring
-  - [ ] 13.1 Configure CORS middleware
+  - [x] 13.1 Configure CORS middleware
     - Add CORSMiddleware to app factory with configurable allowed origins from settings
     - Allow methods: GET, POST, PUT, DELETE, OPTIONS
     - Allow headers: Authorization, Content-Type

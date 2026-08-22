@@ -19,7 +19,11 @@ export function SidebarNavItem({ item }: NavItemProps) {
       <span className={styles.icon}>{item.icon}</span>
       <span className={styles.label}>{item.label}</span>
       {item.badge !== undefined && item.badge > 0 && (
-        <Badge count={item.badge} variant="critical" />
+        <Badge
+          count={item.badge}
+          variant="critical"
+          label={`${item.badge} ${item.id === 'alerts' ? 'unacknowledged high-severity alerts' : item.id === 'approvals' ? 'pending approvals' : 'items'}`}
+        />
       )}
     </NavLink>
   );

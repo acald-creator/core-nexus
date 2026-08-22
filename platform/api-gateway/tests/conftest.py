@@ -23,11 +23,15 @@ def test_settings():
 @pytest.fixture
 def app(test_settings, monkeypatch):
     """Create test app with mocked clients."""
+    from src.config import get_settings
+
+    get_settings.cache_clear()
     monkeypatch.setenv("NEXUS_GW_JWT_SECRET", test_settings.jwt_secret)
     monkeypatch.setenv("NEXUS_GW_WAZUH_API_URL", test_settings.wazuh_api_url)
     monkeypatch.setenv("NEXUS_GW_WAZUH_API_PASSWORD", test_settings.wazuh_api_password)
     monkeypatch.setenv("NEXUS_GW_MINIO_ACCESS_KEY", test_settings.minio_access_key)
     monkeypatch.setenv("NEXUS_GW_MINIO_SECRET_KEY", test_settings.minio_secret_key)
+    get_settings.cache_clear()
 
     app = create_app()
     # Mock clients to avoid real connections

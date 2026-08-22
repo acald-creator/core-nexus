@@ -34,6 +34,8 @@ class GatewaySettings(BaseSettings):
     minio_secret_key: str = Field(description="MinIO secret key — required")
     minio_secure: bool = False
     minio_bucket: str = "nexus-memory"
+    # Host:port the browser uses to fetch pre-signed URLs (rewritten from minio_endpoint).
+    minio_public_endpoint: str | None = None
 
     # CORS
     cors_allowed_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]
