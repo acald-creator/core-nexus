@@ -1,0 +1,124 @@
+.page {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  max-width: 960px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.heading {
+  margin: 0;
+}
+
+.lede {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(8rem, 14rem) 1fr;
+  gap: var(--space-2) var(--space-4);
+  margin: 0;
+}
+
+.grid dt {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+}
+
+.grid dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  overflow-wrap: anywhere;
+}
+
+.kind {
+  display: inline-block;
+  padding: 0.1em 0.5em;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.expired {
+  color: var(--color-critical);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.logout {
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-bg-tertiary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+}
+
+.logout:hover {
+  background: var(--color-bg-elevated);
+  border-color: var(--color-border-active);
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.table th {
+  text-align: left;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: top;
+}
+
+.table tbody tr:hover {
+  background: var(--color-bg-tertiary);
+}
+
+.serviceName {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.serviceId,
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.statusCell {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  text-transform: capitalize;
+}

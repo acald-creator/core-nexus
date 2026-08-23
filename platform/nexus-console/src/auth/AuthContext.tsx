@@ -15,6 +15,7 @@ const AuthContext = createContext<AuthState>({
 export function AuthProvider({ children }: { children: ReactNode }) {
   const config = useConfig();
   const tokenRef = useRef<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // Register token getter for fetchWithAuth
@@ -35,11 +36,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const data = await response.json();
     tokenRef.current = data.token;
+    setToken(data.token);
     setIsAuthenticated(true);
   }, [config.apiGatewayUrl]);
 
   const logout = useCallback(() => {
     tokenRef.current = null;
+    setToken(null);
     setIsAuthenticated(false);
   }, []);
 
@@ -49,13 +52,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login({ username: 'dev-analyst', password: 'dev' }).catch(() => {
         // Gateway not running — use placeholder token for offline dev
         tokenRef.current = 'dev-bypass-token';
+        setToken('dev-bypass-token');
         setIsAuthenticated(true);
       });
     }
   }, [DEV_BYPASS, isAuthenticated, login]);
 
   const state: AuthState = {
-    token: tokenRef.current,
+    token,
     isAuthenticated,
     login,
     logout,

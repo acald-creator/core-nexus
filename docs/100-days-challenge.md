@@ -41,7 +41,7 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 5** (D) — Document what happened, generate first agent skill from the run
 - [x] **Day 6** (B) — Wire Console live badges (alerts count, approvals count from Gateway)
 - [x] **Day 7** (B) — Add CORS handling fixes, test Console → Gateway → MinIO flow end-to-end
-- [ ] **Day 8** (B) — Add Settings page to Console (config display, token info, service status)
+- [x] **Day 8** (B) — Add Settings page to Console (config display, token info, service status)
 - [ ] **Day 9** (U) — Use Console to monitor a live Athena agent session
 - [ ] **Day 10** (D) — Share: "Day 10 — My SOC console watching an AI agent hack"
 - [ ] **Day 11** (B) — Implement alerts route in Gateway (pull from Wazuh API)
@@ -162,6 +162,7 @@ Skills generated: X | Agent sessions: Y
 | 5 | 2026-08-22 | D | Documented Juice Shop run. Skill: allowlist host:port identity (first-match bug, host vs compose, stub Act ≠ traffic) | red-team-allowlist-target-identity.md |
 | 6 | 2026-08-22 | B | Sidebar badges live from Gateway: unacknowledged critical+high alerts, pending approvals. Property 16. | |
 | 7 | 2026-08-22 | B | CORS 204 preflight, Console gateway URL 3100, MinIO public presign rewrite. 5 tests. | code-console-gateway-minio-browser-path.md |
+| 8 | 2026-08-23 | B | Settings page: config, JWT claims (no raw token), service health table. Property 17. | |
 
 ### Phase 2
 
