@@ -25,21 +25,26 @@ inclusion: manual
 ## Key Patterns
 - `_get_target_port()` in `orchestrator/agent.py` returns the first allowlist row whose `host` matches. Two `localhost` rows mean the first port wins
 - Juice Shop compose: hostname `juice-shop.lab`, container port `3000`, host map `3001:3000`
+- Grimoire host: `127.0.0.1:3010` (`targets/grimoire.toml`). Grimoire compose: `grimoire.lab:3000` (`targets/grimoire-lab.toml` + `grimoire-workbench/docker-compose.athena.yml`)
 - Planner prompt must use the allowlist port, not a leftover rehearsal port
 - Cap `max_actions` (5–8) for a watchable first run; Juice Shop target default is 50
-- Ground-truth `label: malicious` plus `scenario_complete` does not prove tools executed. Check `act()` for `stub_executed`
+- Ground-truth `label: malicious` plus `scenario_complete` still does not prove the planned technique ran. Read `output.status` (`executed`, `rejected`, `error`) and HTTP `status_code` / subprocess `returncode`
 
 ## Pitfalls
 - Do not add a second `localhost` allowlist entry and expect the Juice Shop port to be selected
+- Do not list Grimoire as `localhost:3010`. `localhost` is already novel-directory `:8090`. Use `127.0.0.1:3010` or `grimoire.lab:3000`
 - `host.docker.internal` is for container-to-host. It is the wrong identity for a host-side orchestrator
 - A hardcoded base URL port (the `:8090` leftover from novel-directory) will aim Plan at the wrong service even when TCP checks the right one
 - Native host traffic never hits Suricata on `athena_lab`. Detection days require the agent container on the same network as the target
-- Do not treat ATT&CK IDs in JSONL as ground truth of what executed while Act is still a stub
+- Do not treat ATT&CK IDs in JSONL as ground truth of what executed. Act now invokes registered tools, but invented tool IDs (`login-user`) are rejected and HTTP is GET-only
 
 ## References
-- `athena-agents/orchestrator/agent.py` — `_get_target_port()`, `plan()` base URL, stub `act()`
+- `athena-agents/orchestrator/agent.py` — `_get_target_port()`, `plan()` base URL, `act()`
+- `athena-agents/orchestrator/executor.py` — subprocess argv, constrained nmap, GET-only `http-request`
 - `athena-agents/orchestrator/allowlist.py` — host/port_range matching
 - `nexus-athena/config/allowlist.json` + `allowlist.sha256`
 - `nexus-athena/config/targets/juice-shop.toml`
+- `nexus-athena/config/targets/grimoire.toml` and `grimoire-lab.toml`
+- `grimoire-workbench/docker-compose.athena.yml`
 - `nexus-athena/deploy/compose/athena-profiles.yml` — juice-shop service
 - Day 4 Juice Shop run: `/tmp/juice-shop-day4-gt.jsonl`

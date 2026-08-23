@@ -41,6 +41,7 @@ See `docs/architecture/11-ai-native-integration-principles.md` Section 4 for LLM
 - `deploy/kubernetes/overlays/local/` — Local dev overlay
 - `deploy/kubernetes/overlays/prod/` — Production overlay
 - `scripts/run-athena-profile.sh` — Profile launcher script
+- `config/targets/grimoire.toml` / `grimoire-lab.toml` — Grimoire workbench API (host `:3010` or `grimoire.lab:3000`)
 
 ## Dockerfile (Platform Reference)
 
