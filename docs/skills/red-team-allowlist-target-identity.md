@@ -25,14 +25,14 @@ inclusion: manual
 ## Key Patterns
 - `_get_target_port()` in `orchestrator/agent.py` returns the first allowlist row whose `host` matches. Two `localhost` rows mean the first port wins
 - Juice Shop compose: hostname `juice-shop.lab`, container port `3000`, host map `3001:3000`
-- Grimoire host: `127.0.0.1:3010` (`targets/grimoire.toml`). Grimoire compose: `grimoire.lab:3000` (`targets/grimoire-lab.toml` + `grimoire-workbench/docker-compose.athena.yml`)
+- Grimoire host: `127.0.0.1:4400` (SvelteKit UI; proxies `/api` to cargo `:3010`). Do not store the operator password in Athena config. Grimoire compose API: `grimoire.lab:3000`
 - Planner prompt must use the allowlist port, not a leftover rehearsal port
 - Cap `max_actions` (5–8) for a watchable first run; Juice Shop target default is 50
 - Ground-truth `label: malicious` plus `scenario_complete` still does not prove the planned technique ran. Read `output.status` (`executed`, `rejected`, `error`) and HTTP `status_code` / subprocess `returncode`
 
 ## Pitfalls
 - Do not add a second `localhost` allowlist entry and expect the Juice Shop port to be selected
-- Do not list Grimoire as `localhost:3010`. `localhost` is already novel-directory `:8090`. Use `127.0.0.1:3010` or `grimoire.lab:3000`
+- Do not list Grimoire as `localhost:4400`. `localhost` is already novel-directory `:8090`. Use `127.0.0.1:4400` or `grimoire.lab:3000`
 - `host.docker.internal` is for container-to-host. It is the wrong identity for a host-side orchestrator
 - A hardcoded base URL port (the `:8090` leftover from novel-directory) will aim Plan at the wrong service even when TCP checks the right one
 - Native host traffic never hits Suricata on `athena_lab`. Detection days require the agent container on the same network as the target
