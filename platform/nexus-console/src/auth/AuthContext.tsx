@@ -46,16 +46,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setIsAuthenticated(false);
   }, []);
 
-  // Dev bypass: auto-login on mount
+  // Dev bypass: keep retrying Gateway login until we have a real JWT.
+  // Do not fall back to dev-bypass-token — SSE and most routes need a signed token.
   useEffect(() => {
-    if (DEV_BYPASS && !isAuthenticated) {
-      login({ username: 'dev-analyst', password: 'dev' }).catch(() => {
-        // Gateway not running — use placeholder token for offline dev
-        tokenRef.current = 'dev-bypass-token';
-        setToken('dev-bypass-token');
-        setIsAuthenticated(true);
-      });
-    }
+    if (!DEV_BYPASS || isAuthenticated) return;
+
+    let cancelled = false;
+
+    const attemptLogin = async () => {
+      while (!cancelled && !tokenRef.current) {
+        try {
+          await login({ username: 'dev-analyst', password: 'dev' });
+          return;
+        } catch {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+        }
+      }
+    };
+
+    void attemptLogin();
+    return () => {
+      cancelled = true;
+    };
   }, [DEV_BYPASS, isAuthenticated, login]);
 
   const state: AuthState = {

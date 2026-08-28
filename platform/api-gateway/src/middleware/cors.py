@@ -9,4 +9,8 @@ class NexusCORSMiddleware(CORSMiddleware):
 
     def preflight_response(self, request_headers: Headers) -> Response:
         response = super().preflight_response(request_headers)
-        return Response(status_code=204, headers=dict(response.headers))
+        headers = dict(response.headers)
+        # Parent may set Content-Length for a body we discard on 204.
+        headers.pop("content-length", None)
+        headers.pop("Content-Length", None)
+        return Response(status_code=204, headers=headers)

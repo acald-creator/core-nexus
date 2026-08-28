@@ -29,7 +29,13 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
       eventSourceRef.current.close();
     }
 
-    const url = `${config.apiGatewayUrl}/api/v1/agents/events?token=${token || ''}`;
+    if (!token || token === 'dev-bypass-token') {
+      setIsConnected(false);
+      setConnectionError('Waiting for Gateway authentication…');
+      return;
+    }
+
+    const url = `${config.apiGatewayUrl}/api/v1/agents/events?token=${token}`;
     const es = new EventSource(url);
     eventSourceRef.current = es;
 
