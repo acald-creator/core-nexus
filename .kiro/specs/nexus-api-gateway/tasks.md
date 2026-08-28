@@ -157,8 +157,8 @@ Build a stateless Python/FastAPI API Gateway service at `platform/api-gateway/` 
 - [ ] 7. Checkpoint - Clients and middleware verified
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Alert and triage routes
-  - [ ] 8.1 Implement alerts route with filtering
+- [x] 8. Alert and triage routes
+  - [x] 8.1 Implement alerts route with filtering
     - Create `src/models/alerts.py` with SOCAlert, AlertsResponse, TriageResponse Pydantic models
     - Create `src/routes/alerts.py` with GET `/alerts` endpoint
     - Support query params: severity, source, from (alias from_ts), to (alias to_ts), limit (default 100, max 500)
@@ -168,25 +168,25 @@ Build a stateless Python/FastAPI API Gateway service at `platform/api-gateway/` 
     - Return 502 if Wazuh unreachable
     - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 7.6_
 
-  - [ ]* 8.2 Write property test for alert filter correctness
+  - [x]* 8.2 Write property test for alert filter correctness
     - **Property 5: Alert filter correctness**
     - For any set of alerts and any filter combination, all returned alerts satisfy all predicates, no matching alert excluded
     - Use hypothesis to generate alert lists and filter parameter combinations
     - **Validates: Requirements 7.1, 7.2, 7.3**
 
-  - [ ]* 8.3 Write property test for alert limit clamping
+  - [x]* 8.3 Write property test for alert limit clamping
     - **Property 6: Alert limit clamping**
     - For any limit value, gateway clamps to [1, 500]; response has at most limit items; default is 100
     - Use hypothesis integers() with wide range including negatives and large values
     - **Validates: Requirements 7.3**
 
-  - [ ]* 8.4 Write property test for Athena scenario tagging preservation
+  - [x]* 8.4 Write property test for Athena scenario tagging preservation
     - **Property 7: Athena scenario tagging preservation**
     - For alerts with X-Athena-Scenario: field present; for alerts without: field absent/null
     - Use hypothesis to generate alerts with and without scenario metadata
     - **Validates: Requirements 7.4**
 
-  - [ ] 8.5 Implement alert triage route
+  - [x] 8.5 Implement alert triage route
     - Add GET `/alerts/{alert_id}/triage` endpoint to alerts router
     - Forward to AI Inference client, return TriageResponse
     - Return 404 if no triage result, 502 if inference unreachable, 504 if timeout >10s

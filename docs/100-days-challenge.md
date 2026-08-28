@@ -44,7 +44,7 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 8** (B) — Add Settings page to Console (config display, token info, service status)
 - [x] **Day 9** (U) — Use Console to monitor a live Athena agent session
 - [x] **Day 10** (D) — Share: "Day 10 — My SOC console watching an AI agent hack"
-- [ ] **Day 11** (B) — Implement alerts route in Gateway (pull from Wazuh API)
+- [x] **Day 11** (B) — Implement alerts route in Gateway (pull from Wazuh API)
 - [ ] **Day 12** (B) — Implement approvals route in Gateway (pull from athena-agents)
 - [ ] **Day 13** (B) — Implement SSE agent events route (stream from athena-agents)
 - [ ] **Day 14** (U) — Start SOC baseline stack, generate Athena traffic, triage first real alerts
@@ -165,6 +165,7 @@ Skills generated: X | Agent sessions: Y
 | 8 | 2026-08-23 | B | Settings page: config, JWT claims (no raw token), service health table. Property 17. | |
 | 9 | 2026-08-26 | U | Console Agent Feed via Day9 GT→SSE bridge; Juice Shop 6 http-request acts; 8 SSE events | code-console-host-opar-event-bridge.md |
 | 10 | 2026-08-27 | D | Share writeup: SOC console watching Athena vs Juice Shop; honest gap + bridge narrative | |
+| 11 | 2026-08-28 | B | Gateway alerts: SOCAlert map, filters, triage 404/504; Properties 5–7 | |
 
 ### Phase 2
 
