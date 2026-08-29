@@ -14,4 +14,4 @@ images:
     newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-workbench:tag"}
   - name: phoenixvlabs/nexus-athena
     newName: phoenixvlabs/nexus-athena
-    newTag: dc1aa25 # {"$imagepolicy": "flux-system:nexus-athena:tag"}
+    newTag: latest # {"$imagepolicy": "flux-system:nexus-athena:tag"}
