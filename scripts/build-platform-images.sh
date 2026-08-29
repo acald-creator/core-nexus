@@ -39,7 +39,12 @@ build_image() {
     return
   fi
   echo "  Building $name..."
-  docker build -t "$tag" -t "$latest" "$context" 2>&1 | tail -3
+  local -a build_args=()
+  if [[ "$name" == "console" ]]; then
+    # Published Console images must not bake lab auto-login.
+    build_args+=(--build-arg "VITE_DEV_AUTH_BYPASS=false")
+  fi
+  docker build "${build_args[@]}" -t "$tag" -t "$latest" "$context" 2>&1 | tail -3
   echo "  SBOM..."
   mkdir -p "$REPO_ROOT/supply-chain/sboms"
   syft "$tag" -o spdx-json="$REPO_ROOT/supply-chain/sboms/$name-$VERSION.spdx.json" 2>/dev/null

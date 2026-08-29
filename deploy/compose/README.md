@@ -30,8 +30,18 @@ Starts the full Nexus platform locally:
 
 ### Console Access
 
-The Console runs at http://localhost:3000 with dev auth bypass enabled.
-For local frontend dev with hot reload, run `npm run dev` in `platform/nexus-console/` (port 5173) instead.
+The Console runs at http://localhost:3000. Compose builds with
+`VITE_DEV_AUTH_BYPASS=true` so the SPA auto-logins against the gateway (lab only).
+Published images should build with `VITE_DEV_AUTH_BYPASS=false` via
+`./scripts/build-platform-images.sh`.
+
+Optional stricter gateway login:
+
+```bash
+NEXUS_GW_LOCAL_USERS='analyst:changeme' ./scripts/dev-stack.sh up --from-vault
+```
+
+For local frontend hot reload, run `npm run dev` in `platform/nexus-console/` (port 5173).
 
 ### Connecting to SOC Baseline
 

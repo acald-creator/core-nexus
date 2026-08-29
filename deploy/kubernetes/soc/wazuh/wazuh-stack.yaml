@@ -22,6 +22,8 @@ spec:
               value: single-node
             - name: DISABLE_INSTALL_DEMO_CONFIG
               value: "true"
+            # LAB ONLY — do not carry into staging/prod. Prefer security plugin +
+            # credentials from sync-vault-to-k8s.sh / External Secrets later.
             - name: DISABLE_SECURITY_PLUGIN
               value: "true"
             - name: OPENSEARCH_JAVA_OPTS

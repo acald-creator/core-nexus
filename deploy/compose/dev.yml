@@ -20,6 +20,10 @@ services:
     build:
       context: ../../platform/nexus-console
       dockerfile: Dockerfile
+      args:
+        # Lab compose: auto-login against gateway. Published images should build with false.
+        VITE_DEV_AUTH_BYPASS: ${VITE_DEV_AUTH_BYPASS:-true}
+        VITE_API_GATEWAY_URL: ${VITE_API_GATEWAY_URL:-http://localhost:3100}
     ports:
       - "3000:80"
     depends_on:
@@ -54,6 +58,8 @@ services:
       NEXUS_GW_VAULT_ROLE_ID: ${NEXUS_GW_VAULT_ROLE_ID:-}
       NEXUS_GW_VAULT_SECRET_ID: ${NEXUS_GW_VAULT_SECRET_ID:-}
       NEXUS_GW_AUTH_PROVIDER: ${NEXUS_GW_AUTH_PROVIDER:-local}
+      # Optional: user:pass,user2:pass2 — when set, local login must match
+      NEXUS_GW_LOCAL_USERS: ${NEXUS_GW_LOCAL_USERS:-}
       NEXUS_GW_CORS_ALLOWED_ORIGINS: '["http://localhost:3000","http://localhost:5173"]'
       NEXUS_GW_DEBUG: "true"
       NEXUS_GW_SERVICE_REGISTRY_PATH: /app/config/services.json
