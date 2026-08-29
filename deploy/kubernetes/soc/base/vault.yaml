@@ -1,3 +1,37 @@
+# Single-node Vault with file storage (Shamir). Matches nexus-hashistack recipe 04 / Test intent.
+# overlays/dev patches this back to -dev for disposable k3d labs.
+# overlays/test further tunes PVC/ConfigMap; overlays/prod deletes this Deployment (Helm HA).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-server-config
+  namespace: soc
+data:
+  vault.hcl: |
+    ui = true
+    disable_mlock = true
+
+    storage "file" {
+      path = "/vault/file"
+    }
+
+    listener "tcp" {
+      address     = "0.0.0.0:8200"
+      tls_disable = 1
+    }
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: vault-data-pvc
+  namespace: soc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 2Gi
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -14,14 +48,16 @@ spec:
         app: vault
         zarf.dev/agent: skip
     spec:
+      securityContext:
+        fsGroup: 1000
       containers:
       - name: vault
-        image: hashicorp/vault:1.15.2
+        image: hashicorp/vault:1.18.5
         imagePullPolicy: IfNotPresent
-        command: ["vault", "server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+        command: ["vault", "server", "-config=/vault/config/vault.hcl"]
         env:
-        - name: VAULT_DEV_ROOT_TOKEN_ID
-          value: "myroot"
+        - name: VAULT_ADDR
+          value: http://127.0.0.1:8200
         securityContext:
           allowPrivilegeEscalation: false
           capabilities:
@@ -30,6 +66,18 @@ spec:
         ports:
         - containerPort: 8200
           name: api
+        volumeMounts:
+        - name: config
+          mountPath: /vault/config
+        - name: data
+          mountPath: /vault/file
+      volumes:
+      - name: config
+        configMap:
+          name: vault-server-config
+      - name: data
+        persistentVolumeClaim:
+          claimName: vault-data-pvc
 ---
 apiVersion: v1
 kind: Service

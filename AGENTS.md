@@ -32,7 +32,7 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 |------------|-------------|
 | `athena-agents` | LLM-driven adversary emulation framework (OPAR loop) |
 | `nexus-athena` | Red-team container image and execution environment |
-| `nexus-hashistack` | Local Vault (+ Consul) secrets pack beside the dev stack |
+| `nexus-hashistack` | Local Vault pack + AppRole export for `dev-stack.sh --from-vault` |
 | `nexus-webtop-soc` | SOC analyst webtop + baseline compose stack |
 | `nexus-webtop-workbench` | Analyst workbench desktop image |
 
