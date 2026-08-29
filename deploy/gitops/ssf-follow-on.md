@@ -30,11 +30,13 @@ kiln build nexus-console
 
 ## Suggested ssf work order
 
-1. **Implement `pkg/artifact/oci.go`** — resolve registry reference → manifest digest; wire Cosign `sign`/`verify`/`attest` for OCI.
-2. **testdata `sample-oci.ssf.yaml`** — `type: oci`, reference `phoenixvlabs/nexus-console:${VERSION}`.
-3. **Policy** — ensure `policies/base.cue` accepts OCI metadata (digest, repo).
-4. **CI job (ssf or core-nexus)** — after image build: `ssf run` then `docker push` / `crane push` of signed tag.
-5. **Handshake test** — push `v0.1.0`, confirm Flux ImagePolicy selects it, automation PR/commit updates gitops-lab markers, Argo rolls Deployment.
+1. **Implement `pkg/artifact/oci.go`** — resolve registry reference → manifest digest; wire Cosign `sign`/`verify`/`attest` for OCI. ✅ (`nebucloud/ssf` branch `feat/oci-artifact`, commit `f773502`)
+2. **testdata `sample-oci.ssf.yaml`** — ✅ in ssf repo
+3. **Policy** — ensure `policies/base.cue` accepts OCI metadata (digest, repo) — still verify against real signed image
+4. **CI job (ssf or core-nexus)** — after image build: `ssf run` then push signed tag to a durable registry (GHCR/Hub), not only `localhost:5001`
+5. **Handshake test** — push `v0.1.0`, confirm Flux ImagePolicy selects it, automation commits gitops-lab markers, Argo rolls Deployment
+
+Lab notes: `deploy/gitops/flux/image-repositories-local.example.yaml` documents localhost:5001 ImageRepositories (in-cluster Flux cannot use host localhost without extra networking).
 
 ## Out of scope for first ssf pass
 

@@ -1,5 +1,6 @@
 # Flux watches published nexus images. Point image to your registry if different.
 # Private registries need an imagePullSecret referenced on ImageRepository.spec.secretRef.
+# For localhost:5001 lab registries see image-repositories-local.example.yaml.
 ---
 apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageRepository

@@ -1,0 +1,33 @@
+# Lab / local-registry overlay example — NOT applied by default kustomization.
+#
+# Use when images are pushed to a local registry (e.g. SSF Flux path dry-runs):
+#   docker run -d --name ssf-registry -p 5001:5000 registry:2
+#   docker tag phoenixvlabs/nexus-console:latest localhost:5001/nexus-console:v0.1.0
+#   docker push localhost:5001/nexus-console:v0.1.0
+#
+# Copy or kustomize-replace image-repositories.yaml with this file in a lab
+# overlay. Do not merge into the default Hub refs without explicit consent.
+#
+# Note: Flux running in-cluster cannot reach host localhost:5001 unless you
+# use host.docker.internal / kind host mapping / a NodePort service to the
+# registry. Adjust `image:` accordingly for your cluster networking.
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: nexus-console
+  namespace: flux-system
+spec:
+  image: localhost:5001/nexus-console
+  interval: 1m
+  insecure: true
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: nexus-api-gateway
+  namespace: flux-system
+spec:
+  image: localhost:5001/nexus-api-gateway
+  interval: 1m
+  insecure: true
