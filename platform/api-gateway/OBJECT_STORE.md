@@ -14,9 +14,10 @@ route code — both use the MinIO Python SDK (S3 API).
 | `NEXUS_GW_MINIO_PUBLIC_ENDPOINT` | browser-reachable host | R2 public/custom domain host |
 | `NEXUS_GW_OBJECT_STORE_REGION` | optional | `auto` (default for r2) |
 
-D1 is reserved for **artifact/run metadata indexes** (not blobs). Wire a
-separate index client when Flux/SSF digests need queryable provenance; keep
-blobs on R2.
+D1 is reserved for **artifact/run metadata indexes** (not blobs). The
+`platform/nexus-metadata` Worker + D1 database back the index; the gateway
+talks to it when `NEXUS_GW_D1_PROXY_URL` + `NEXUS_GW_D1_API_KEY` are set
+(`GET/POST /api/v1/artifact-index`, `POST/GET /api/v1/runs`).
 
 ## Kubernetes
 
@@ -24,7 +25,7 @@ blobs on R2.
 |---------|---------|
 | `deploy/kubernetes/soc/overlays/dev` | MinIO (lab) |
 | `deploy/kubernetes/soc/overlays/gitops-lab` | MinIO (lab) |
-| `deploy/kubernetes/soc/overlays/r2` | R2 (`NEXUS_GW_OBJECT_STORE_BACKEND=r2`) |
+| `deploy/kubernetes/soc/overlays/r2` | R2 + D1 metadata Worker |
 
 R2 overlay: edit `object-store-config.yaml`, seed Vault `secret/nexus/prod`, then:
 
@@ -33,4 +34,5 @@ NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
 kubectl apply -k deploy/kubernetes/soc/overlays/r2
 ```
 
-Details: `deploy/kubernetes/soc/overlays/r2/README.md`.
+Details: `deploy/kubernetes/soc/overlays/r2/README.md` and
+`platform/nexus-metadata/README.md`.

@@ -50,6 +50,9 @@ class GatewaySettings(BaseSettings):
     minio_bucket: str = "nexus-memory"
     # Host:port the browser uses to fetch pre-signed URLs (rewritten from minio_endpoint).
     minio_public_endpoint: str | None = None
+    # D1 metadata index (via nexus-metadata Worker). Optional — unset in MinIO lab.
+    d1_proxy_url: str | None = None
+    d1_api_key: str | None = None
 
     # CORS
     cors_allowed_origins: list[str] = ["http://localhost:3000", "http://localhost:5173"]

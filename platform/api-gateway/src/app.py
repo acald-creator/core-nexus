@@ -9,7 +9,18 @@ from src.middleware.auth import JWTAuthMiddleware
 from src.middleware.cors import NexusCORSMiddleware
 from src.middleware.error_handler import register_error_handlers
 from src.middleware.request_logger import RequestLoggerMiddleware
-from src.routes import auth, services, health, agents, alerts, approvals, skills, artifacts, probes
+from src.routes import (
+    auth,
+    services,
+    health,
+    agents,
+    alerts,
+    approvals,
+    skills,
+    artifacts,
+    probes,
+    metadata_index,
+)
 
 
 @asynccontextmanager
@@ -23,6 +34,7 @@ async def lifespan(app: FastAPI):
     from src.clients.minio_client import MinIOClient
     from src.clients.athena import AthenaClient
     from src.clients.ai_inference import AIInferenceClient
+    from src.clients.metadata_index import MetadataIndexClient
 
     app.state.wazuh_client = WazuhClient(
         base_url=settings.wazuh_api_url,
@@ -32,6 +44,7 @@ async def lifespan(app: FastAPI):
     app.state.minio_client = MinIOClient.from_settings(settings)
     app.state.athena_client = AthenaClient(base_url=settings.athena_agents_url)
     app.state.ai_inference_client = AIInferenceClient(base_url=settings.ai_inference_url)
+    app.state.metadata_index = MetadataIndexClient.from_settings(settings)
 
     import structlog
     logger = structlog.get_logger()
@@ -42,6 +55,7 @@ async def lifespan(app: FastAPI):
         wazuh_url=settings.wazuh_api_url,
         minio_endpoint=settings.minio_endpoint,
         object_store_backend=settings.object_store_backend,
+        metadata_index=app.state.metadata_index.enabled,
         athena_url=settings.athena_agents_url,
         ai_inference_url=settings.ai_inference_url,
     )
@@ -88,6 +102,7 @@ def create_app() -> FastAPI:
     app.include_router(approvals.router, prefix="/api/v1", tags=["approvals"])
     app.include_router(skills.router, prefix="/api/v1", tags=["skills"])
     app.include_router(artifacts.router, prefix="/api/v1", tags=["artifacts"])
+    app.include_router(metadata_index.router, prefix="/api/v1", tags=["metadata-index"])
 
     # Error handlers
     register_error_handlers(app)

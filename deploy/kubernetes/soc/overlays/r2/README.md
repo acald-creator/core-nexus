@@ -20,11 +20,10 @@ ConfigMap `object-store-config.yaml` is filled with account id + S3 host.
 Gateway Secret is **not** in this overlay (deleted from kustomize output) so Argo
 cannot overwrite R2 keys — use Vault sync only.
 
-**Still required — S3 API token** (wrangler OAuth cannot mint these):
-
-1. Dashboard → R2 → Overview → **Manage** API Tokens → Create User API token  
-   Permission: **Object Read & Write**, bucket `nexus-memory` only.
-2. Copy Access Key ID + Secret Access Key once.
+**Still required — rotate R2 S3 API token** (chat-pasted keys; wrangler OAuth
+cannot mint replacements). Dashboard → R2 → Manage API Tokens → create new
+Object Read & Write on `nexus-memory`, then re-seed `secret/nexus/prod` and
+`NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh`.
 
 ```bash
 # From nexus-hashistack — only writes when R2 env vars are set

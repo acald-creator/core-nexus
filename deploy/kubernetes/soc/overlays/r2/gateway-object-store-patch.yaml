@@ -28,3 +28,11 @@ spec:
               value: nexus-memory
             - name: NEXUS_GW_MINIO_PUBLIC_ENDPOINT
               value: REPLACE_ME_R2_PUBLIC_HOST
+            - name: NEXUS_GW_D1_PROXY_URL
+              value: REPLACE_ME_D1_PROXY_URL
+            - name: NEXUS_GW_D1_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_D1_API_KEY
+                  optional: true

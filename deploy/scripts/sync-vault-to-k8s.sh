@@ -85,6 +85,8 @@ pairs = {
         "NEXUS_GW_MINIO_SECRET_KEY",
         "minioadmin" if lab else "",
     ),
+    "D1_PROXY": gw.get("NEXUS_GW_D1_PROXY_URL", ""),
+    "D1_KEY": gw.get("NEXUS_GW_D1_API_KEY", ""),
 }
 for k, v in pairs.items():
     print(f"{k}={shlex.quote(str(v))}")
@@ -126,6 +128,14 @@ GW_ARGS=(
   --from-literal=NEXUS_GW_VAULT_ROLE_ID="${ROLE_ID}"
   --from-literal=NEXUS_GW_VAULT_SECRET_ID="${SECRET_ID}"
 )
+if [ -n "${D1_KEY}" ]; then
+  GW_ARGS+=(--from-literal=NEXUS_GW_D1_API_KEY="${D1_KEY}")
+fi
+# Proxy URL is non-secret but may travel with the Secret for single-source sync;
+# ConfigMap on overlays/r2 also sets NEXUS_GW_D1_PROXY_URL.
+if [ -n "${D1_PROXY}" ]; then
+  GW_ARGS+=(--from-literal=NEXUS_GW_D1_PROXY_URL="${D1_PROXY}")
+fi
 kubectl create secret generic nexus-gateway-secrets \
   "${GW_ARGS[@]}" \
   --dry-run=client -o yaml | kubectl apply -f -

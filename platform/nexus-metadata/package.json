@@ -1,0 +1,11 @@
+{
+  "name": "nexus-metadata",
+  "private": true,
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "schema": "wrangler d1 execute nexus-metadata --remote --file=./schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^4.127.1"
+  }
+}

@@ -17,3 +17,5 @@ data:
   # Host only — S3 API endpoint (presigned URLs). Anonymous pub-*.r2.dev is
   # separate (enabled for optional public objects) and must not rewrite signatures.
   PUBLIC_ENDPOINT: "901cf745bc4091a67a1070c2d0d61574.r2.cloudflarestorage.com"
+  # nexus-metadata Worker (D1 index)
+  D1_PROXY_URL: "https://nexus-metadata.antonette-caldwell.workers.dev"
