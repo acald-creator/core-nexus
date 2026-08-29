@@ -23,6 +23,18 @@ open http://localhost:3100/docs
 open http://localhost:9001
 ```
 
+### Local Vault (sidecar)
+
+Vault is not part of `dev.yml`. For the Console Vault tile and `deploy/scripts/init-vault-secrets.sh`, start [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) beside this stack:
+
+```bash
+cd ../nexus-hashistack   # or your clone path
+./scripts/nexus-dev-up.sh
+# Vault http://localhost:8200  — token myroot
+```
+
+See `docs/architecture/12-vault-environments-specification.md` for Dev / Test / Prod Vault intent.
+
 ## Architecture
 
 ```mermaid
@@ -80,6 +92,7 @@ graph TD
 | Repository | Purpose |
 |------------|---------|
 | **core-nexus** (this repo) | Architecture hub, Nexus Console, API Gateway, AI Inference, nexus-tui, deploy manifests, skills |
+| **nexus-hashistack** | Vault (+ Consul) lab pack for local secrets — run beside this repo’s dev stack |
 | **nexus-athena** | Kali-based red-team container with 5 runtime profiles |
 | **athena-agents** | LLM-driven OPAR orchestrator (Python + Rust) |
 | **nexus-webtop-soc** | SOC baseline compose stack (Wazuh + Suricata) |
