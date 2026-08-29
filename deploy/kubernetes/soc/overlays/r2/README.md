@@ -17,6 +17,9 @@ default on `overlays/dev`, `overlays/gitops-lab`, and compose.
 
 ConfigMap `object-store-config.yaml` is filled with account id + S3 host.
 
+Gateway Secret is **not** in this overlay (deleted from kustomize output) so Argo
+cannot overwrite R2 keys — use Vault sync only.
+
 **Still required — S3 API token** (wrangler OAuth cannot mint these):
 
 1. Dashboard → R2 → Overview → **Manage** API Tokens → Create User API token  

@@ -1,6 +1,5 @@
-# First GitOps workload: Console + API gateway (gitops-lab overlay).
-# Repo URL/branch inherited from cluster when using ApplicationSet later;
-# for the sketch, root Application syncs this directory — set repo on each app.
+# First GitOps workload: Console + API gateway on Cloudflare R2.
+# MinIO lab overlay remains at overlays/gitops-lab for local/compose use.
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
@@ -15,7 +14,7 @@ spec:
     # bootstrap.sh does not rewrite this file; align with NEXUS_GIT_URL or edit after apply.
     repoURL: https://github.com/acald-creator/core-nexus.git
     targetRevision: main
-    path: deploy/kubernetes/soc/overlays/gitops-lab
+    path: deploy/kubernetes/soc/overlays/r2
   destination:
     server: https://kubernetes.default.svc
     namespace: soc
@@ -30,3 +29,9 @@ spec:
       kind: Deployment
       jsonPointers:
         - /spec/replicas
+    # Owned by sync-vault-to-k8s.sh (secret/nexus/prod)
+    - kind: Secret
+      name: nexus-gateway-secrets
+      jsonPointers:
+        - /data
+        - /stringData

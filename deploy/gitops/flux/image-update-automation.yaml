@@ -28,7 +28,7 @@ spec:
     push:
       branch: main
   update:
-    path: ./deploy/kubernetes/soc/overlays/gitops-lab
+    path: ./deploy/kubernetes/soc/overlays/r2
     strategy: Setters
 ---
 # Minimal GitRepository for image automation commits (not used for full cluster sync).

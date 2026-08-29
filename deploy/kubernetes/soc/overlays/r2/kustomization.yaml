@@ -1,10 +1,8 @@
 # Non-lab object store: Cloudflare R2 for gateway blobs.
-# Lab default remains MinIO (overlays/dev, overlays/gitops-lab, compose).
+# Lab MinIO remains on overlays/dev, overlays/gitops-lab, and compose.
 #
-# Before apply:
-#   1. Edit object-store-config.yaml (account id, public host, bucket)
-#   2. Seed Vault secret/nexus/prod (see README) OR patch secrets placeholders
-#   3. NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
+# Secrets: NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
+# (Secret is excluded from this kustomization so Argo cannot clobber it.)
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: soc
@@ -13,7 +11,7 @@ resources:
   - object-store-config.yaml
 patches:
   - path: gateway-object-store-patch.yaml
-  - path: secrets-placeholder-patch.yaml
+  - path: delete-lab-gateway-secrets.yaml
 replacements:
   - source:
       kind: ConfigMap
@@ -48,7 +46,7 @@ replacements:
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console
-    newTag: v0.1.0
+    newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-console:tag"}
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
-    newTag: v0.1.0
+    newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
