@@ -9,8 +9,11 @@ resources:
   - ../../../system/suricata
   - ../../wazuh
 
+components:
+  - ../../wazuh/secure
+
 patches:
   - path: athena-gvisor-patch.yaml
   - path: ai-inference-patch.yaml
-# wazuh-dashboard-patch removed — dashboard not in this wazuh kustomize; secrets via wazuh-secrets.
-# Vault is external — use nexus-hashistack + ./deploy/scripts/sync-vault-to-k8s.sh
+# Prefer lightweight: kubectl apply -k deploy/kubernetes/soc/overlays/wazuh-secure
+# Prerequisites: generate-wazuh-indexer-certs.sh + sync-vault-to-k8s.sh

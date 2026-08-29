@@ -45,5 +45,6 @@ kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
 |---------|------|
 | `base` | Gateway, Console, AI, MCP, Athena, MinIO (images `phoenixvlabs/nexus-*`) |
 | `overlays/dev` | Same base (disposable lab) |
-| `overlays/test` | Adds system charts + Wazuh |
+| `overlays/wazuh-secure` | Wazuh only with TLS/security indexer |
+| `overlays/test` | System charts + Wazuh secure component (needs Helm) |
 | `overlays/prod` | Helm MinIO; Vault stays external |

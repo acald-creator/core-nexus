@@ -1,0 +1,99 @@
+# Enable OpenSearch security + TLS on wazuh-indexer (test overlay).
+# Requires: ./deploy/scripts/generate-wazuh-indexer-certs.sh
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-indexer
+  namespace: soc
+spec:
+  template:
+    spec:
+      containers:
+        - name: wazuh-indexer
+          env:
+            - name: discovery.type
+              value: single-node
+            - name: DISABLE_INSTALL_DEMO_CONFIG
+              value: "true"
+            - name: DISABLE_SECURITY_PLUGIN
+              value: "false"
+            - name: OPENSEARCH_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+            - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+          volumeMounts:
+            - name: indexer-certs
+              mountPath: /usr/share/opensearch/config/certs
+              readOnly: true
+            - name: indexer-config
+              mountPath: /usr/share/opensearch/config/opensearch.yml
+              subPath: opensearch.yml
+              readOnly: true
+          readinessProbe:
+            tcpSocket:
+              port: 9200
+            initialDelaySeconds: 40
+            periodSeconds: 15
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket:
+              port: 9200
+            initialDelaySeconds: 60
+            periodSeconds: 30
+      volumes:
+        - name: indexer-certs
+          secret:
+            secretName: wazuh-indexer-certs
+        - name: indexer-config
+          configMap:
+            name: wazuh-indexer-secure-config
+---
+# Manager talks to indexer over HTTPS (lab: skip hostname verify on Filebeat)
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wazuh-manager
+  namespace: soc
+spec:
+  template:
+    spec:
+      containers:
+        - name: wazuh-manager
+          env:
+            - name: INDEXER_URL
+              value: https://wazuh-indexer:9200
+            - name: FILEBEAT_SSL_VERIFICATION_MODE
+              value: none
+            - name: INDEXER_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: INDEXER_USERNAME
+            - name: INDEXER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+            - name: API_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: WAZUH_API_USER
+            - name: API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: WAZUH_API_PASSWORD
+            - name: WAZUH_API_USER
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: WAZUH_API_USER
+            - name: WAZUH_API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wazuh-secrets
+                  key: WAZUH_API_PASSWORD

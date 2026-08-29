@@ -1,0 +1,15 @@
+# Lightweight TLS/security profile for Wazuh only (no Tetragon/Helm charts).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../wazuh
+
+components:
+  - ../../wazuh/secure
+
+# Prerequisites:
+#   ./deploy/scripts/generate-wazuh-indexer-certs.sh
+#   ./deploy/scripts/sync-vault-to-k8s.sh
+# Apply:
+#   kubectl apply -k deploy/kubernetes/soc/overlays/wazuh-secure
