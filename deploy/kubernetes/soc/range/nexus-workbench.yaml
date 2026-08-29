@@ -1,0 +1,80 @@
+# Jupyter purple workspace (lab). Empty notebook token — lab only.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-workbench
+  namespace: soc
+  labels:
+    app: nexus-workbench
+    app.kubernetes.io/part-of: underground-nexus
+    app.kubernetes.io/component: purple-workbench
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-workbench
+  template:
+    metadata:
+      labels:
+        app: nexus-workbench
+        zarf.dev/agent: skip
+    spec:
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+      containers:
+        - name: nexus-workbench
+          image: phoenixvlabs/nexus-workbench:v0.1.0
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
+          ports:
+            - containerPort: 8888
+              name: jupyter
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8888
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          volumeMounts:
+            - name: workbench-config
+              mountPath: /home/nonroot/work
+      volumes:
+        - name: workbench-config
+          persistentVolumeClaim:
+            claimName: nexus-workbench-config-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nexus-workbench-config-pvc
+  namespace: soc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-workbench
+  namespace: soc
+  labels:
+    app: nexus-workbench
+spec:
+  selector:
+    app: nexus-workbench
+  ports:
+    - name: jupyter
+      port: 8888
+      targetPort: 8888

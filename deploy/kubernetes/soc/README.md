@@ -47,8 +47,9 @@ kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
 |---------|------|
 | `base` | Gateway, Console, AI, MCP, Athena, MinIO (images `phoenixvlabs/nexus-*`) |
 | `overlays/dev` | Same base (disposable lab) |
-| `overlays/gitops-lab` | Thin Console + gateway; Flux image pins |
-| `overlays/r2` | Console + gateway on Cloudflare R2 (no in-cluster MinIO) |
+| `overlays/gitops-lab` | Thin Console + gateway; Flux image pins (MinIO-era) |
+| `overlays/r2` | Console + gateway on Cloudflare R2 (Argo `nexus-gitops-lab`) |
+| `overlays/gitops-range` | Jupyter workbench + Athena standard (Argo `nexus-gitops-range`) |
 | `overlays/wazuh-secure` | Wazuh only with TLS/security indexer |
 | `overlays/test` | System charts + Wazuh secure component (needs Helm) |
 | `overlays/prod` | Helm MinIO; Vault stays external |

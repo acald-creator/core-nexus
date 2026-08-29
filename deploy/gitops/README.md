@@ -34,7 +34,8 @@ deploy/gitops/
   argo/
     root-application.yaml   ← app-of-apps
     applications/
-      nexus-gitops-lab.yaml ← first workload: Console + gateway
+      nexus-gitops-lab.yaml   ← Console + gateway (path → overlays/r2)
+      nexus-gitops-range.yaml ← Jupyter + Athena standard
   flux/
     namespace.yaml
     kustomization.yaml

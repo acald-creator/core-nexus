@@ -28,7 +28,7 @@ spec:
     push:
       branch: main
   update:
-    path: ./deploy/kubernetes/soc/overlays/r2
+    path: ./deploy/kubernetes/soc/overlays
     strategy: Setters
 ---
 # Minimal GitRepository for image automation commits (not used for full cluster sync).

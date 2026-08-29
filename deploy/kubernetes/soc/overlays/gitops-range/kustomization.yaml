@@ -1,0 +1,17 @@
+# Purple + red range slice for GitOps (Jupyter workbench + Athena standard).
+# Separate from overlays/r2 (Console + gateway) so the blue/ops spine stays small.
+#
+# Lab memory: requests are tiny; Jupyter limit is 512Mi. On ~4Gi Rancher Desktop
+# expect pressure — raise RD memory before adding Wazuh or elevated Athena.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: soc
+resources:
+  - ../../range
+images:
+  - name: phoenixvlabs/nexus-workbench
+    newName: phoenixvlabs/nexus-workbench
+    newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-workbench:tag"}
+  - name: phoenixvlabs/nexus-athena
+    newName: phoenixvlabs/nexus-athena
+    newTag: dc1aa25 # {"$imagepolicy": "flux-system:nexus-athena:tag"}

@@ -1,0 +1,29 @@
+# Purple Jupyter + isolated Athena (standard). Independent of Console/R2 spine.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nexus-gitops-range
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: underground-nexus
+    nexus.underground.io/plane: range
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/acald-creator/core-nexus.git
+    targetRevision: main
+    path: deploy/kubernetes/soc/overlays/gitops-range
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: soc
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

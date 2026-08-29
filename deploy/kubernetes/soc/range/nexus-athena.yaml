@@ -1,0 +1,77 @@
+# Isolated Athena standard profile (sleep infinity shell). Not elevated / packet-lab.
+# Canonical image builds live in nexus-athena; Hub tag pinned by gitops-range.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-athena
+  namespace: soc
+  labels:
+    app: nexus-athena
+    app.kubernetes.io/part-of: underground-nexus
+    app.kubernetes.io/component: athena-standard
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-athena
+  template:
+    metadata:
+      labels:
+        app: nexus-athena
+        zarf.dev/agent: skip
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: nexus-athena
+          image: phoenixvlabs/nexus-athena:dc1aa25
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/bash", "-lc", "sleep infinity"]
+          securityContext:
+            privileged: false
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: "250m"
+              memory: 256Mi
+          volumeMounts:
+            - name: athena-home
+              mountPath: /home/kali
+      volumes:
+        - name: athena-home
+          persistentVolumeClaim:
+            claimName: nexus-athena-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nexus-athena-pvc
+  namespace: soc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-athena
+  namespace: soc
+  labels:
+    app: nexus-athena
+spec:
+  selector:
+    app: nexus-athena
+  ports:
+    - name: ssh
+      port: 22
+      targetPort: 22
