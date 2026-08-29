@@ -25,12 +25,19 @@ open http://localhost:9001
 
 ### Local Vault (sidecar)
 
-Vault is not part of `dev.yml`. For the Console Vault tile and `deploy/scripts/init-vault-secrets.sh`, start [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) beside this stack:
+Vault is not part of `dev.yml`. Start [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) beside this stack, then optionally load secrets into compose:
 
 ```bash
-cd ../nexus-hashistack   # or your clone path
+cd ../nexus-hashistack
 ./scripts/nexus-dev-up.sh
+./scripts/admin-bootstrap-approle.sh
+./scripts/export-core-nexus-env.sh
+cp .env.core-nexus ../core-nexus/.env.vault
+
+cd ../core-nexus
+./scripts/dev-stack.sh up --from-vault
 # Vault http://localhost:8200  — token myroot
+# Gateway can also hydrate via NEXUS_GW_VAULT_ROLE_ID / SECRET_ID from the export
 ```
 
 See `docs/architecture/12-vault-environments-specification.md` for Dev / Test / Prod Vault intent.

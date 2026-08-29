@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
-# dev-stack.sh — Manage the unified dev compose stack.
+# dev-stack.sh — Manage the unified Nexus compose stack.
 #
 # Usage:
-#   ./scripts/dev-stack.sh up      # Start all services
-#   ./scripts/dev-stack.sh down    # Stop all services
-#   ./scripts/dev-stack.sh logs    # Follow all logs
-#   ./scripts/dev-stack.sh status  # Show running services
-#   ./scripts/dev-stack.sh build   # Rebuild images
-
+#   ./scripts/dev-stack.sh up [--from-vault]
+#   ./scripts/dev-stack.sh down
+#   ./scripts/dev-stack.sh logs|status|build
+#
+# --from-vault loads secrets from nexus-hashistack export:
+#   NEXUS_VAULT_ENV=/path/to/.env.core-nexus
+#   or ../nexus-hashistack/.env.core-nexus
+#   or ./.env.vault
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -20,19 +22,59 @@ if [[ ! -f "$COMPOSE_FILE" ]]; then
 fi
 
 CMD="${1:-status}"
+shift || true
+FROM_VAULT=0
+for arg in "$@"; do
+  case "$arg" in
+    --from-vault) FROM_VAULT=1 ;;
+  esac
+done
+
+resolve_vault_env() {
+  if [[ -n "${NEXUS_VAULT_ENV:-}" && -f "${NEXUS_VAULT_ENV}" ]]; then
+    echo "$NEXUS_VAULT_ENV"
+    return
+  fi
+  local cand
+  for cand in \
+    "$REPO_ROOT/.env.vault" \
+    "$REPO_ROOT/../nexus-hashistack/.env.core-nexus" \
+    "$HOME/nexus-hashistack/.env.core-nexus"
+  do
+    if [[ -f "$cand" ]]; then
+      echo "$cand"
+      return
+    fi
+  done
+  return 1
+}
 
 case "$CMD" in
   up)
+    COMPOSE=(docker compose)
+    if [[ "$FROM_VAULT" == "1" ]]; then
+      if ! VAULT_ENV="$(resolve_vault_env)"; then
+        echo "Error: --from-vault set but no env file found." >&2
+        echo "Run in nexus-hashistack: ./scripts/export-core-nexus-env.sh" >&2
+        echo "Then set NEXUS_VAULT_ENV or copy to $REPO_ROOT/.env.vault" >&2
+        exit 1
+      fi
+      echo "Using Vault-exported env: $VAULT_ENV"
+      COMPOSE+=(--env-file "$VAULT_ENV")
+    fi
     echo "Starting Nexus dev stack..."
-    docker compose -f "$COMPOSE_FILE" up -d
+    "${COMPOSE[@]}" -f "$COMPOSE_FILE" up -d
     echo ""
     echo "Services:"
     echo "  Console:      http://localhost:3000"
     echo "  API Gateway:  http://localhost:3100 (docs: http://localhost:3100/docs)"
     echo "  MinIO:        http://localhost:9001 (minioadmin/minioadmin)"
     echo "  AI Inference:  http://localhost:8000 (docs: http://localhost:8000/docs)"
+    if [[ "$FROM_VAULT" == "1" ]]; then
+      echo "  Vault:        http://localhost:8200 (via nexus-hashistack)"
+    fi
     echo ""
-    docker compose -f "$COMPOSE_FILE" ps
+    "${COMPOSE[@]}" -f "$COMPOSE_FILE" ps
     ;;
   down)
     echo "Stopping Nexus dev stack..."
@@ -49,7 +91,7 @@ case "$CMD" in
     docker compose -f "$COMPOSE_FILE" build
     ;;
   *)
-    echo "Usage: $0 {up|down|logs|status|build}" >&2
+    echo "Usage: $0 {up|down|logs|status|build} [--from-vault]" >&2
     exit 1
     ;;
 esac

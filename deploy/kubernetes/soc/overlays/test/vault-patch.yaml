@@ -1,3 +1,4 @@
+# Test overlay keeps a dedicated PVC/ConfigMap name; align mounts with base file backend.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,14 +12,16 @@ spec:
         runAsUser: 100
       containers:
       - name: vault
+        image: hashicorp/vault:1.18.5
         command: ["vault", "server", "-config=/vault/config/vault.hcl"]
-        # Override the env variables from the base dev setup
-        env: []
+        env:
+        - name: VAULT_ADDR
+          value: http://127.0.0.1:8200
         volumeMounts:
         - name: config-volume
           mountPath: /vault/config
         - name: data-volume
-          mountPath: /vault/data
+          mountPath: /vault/file
       volumes:
       - name: config-volume
         configMap:

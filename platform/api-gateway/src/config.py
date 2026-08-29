@@ -22,6 +22,14 @@ class GatewaySettings(BaseSettings):
     jwt_expiration_minutes: int = 480  # 8 hours
     auth_provider: Literal["local", "vault"] = "local"
     vault_url: str | None = None
+    vault_role_id: str | None = Field(
+        default=None,
+        description="AppRole role_id — when set with vault_secret_id, hydrate secrets from Vault",
+    )
+    vault_secret_id: str | None = Field(
+        default=None,
+        description="AppRole secret_id for optional Vault hydration",
+    )
 
     # Upstream services
     wazuh_api_url: str = Field(description="Wazuh Manager API URL — required")
@@ -55,4 +63,7 @@ class GatewaySettings(BaseSettings):
 @lru_cache
 def get_settings() -> GatewaySettings:
     """Cached settings singleton — fails fast if required vars are missing."""
+    from src.vault_secrets import hydrate_env_from_vault
+
+    hydrate_env_from_vault()
     return GatewaySettings()

@@ -1,0 +1,18 @@
+# Disposable local Vault for overlays/dev (Phase 1 bootstrap).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vault
+  namespace: soc
+spec:
+  template:
+    spec:
+      containers:
+      - name: vault
+        image: hashicorp/vault:1.18.5
+        command: ["vault", "server", "-dev", "-dev-listen-address=0.0.0.0:8200"]
+        env:
+        - name: VAULT_DEV_ROOT_TOKEN_ID
+          value: "myroot"
+        volumeMounts: []
+      volumes: []
