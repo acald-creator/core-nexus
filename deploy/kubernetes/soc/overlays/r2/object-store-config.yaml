@@ -1,5 +1,8 @@
-# Non-secret R2 settings. Replace REPLACE_ME_* before apply (or via CI).
+# Non-secret R2 settings (filled via wrangler whoami + r2 bucket).
 # Credentials stay in Secret nexus-gateway-secrets (Vault secret/nexus/prod).
+# S3 access/secret keys cannot be minted from wrangler OAuth — create an R2
+# API token in the dashboard (Object Read & Write on nexus-memory), then:
+#   NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -9,7 +12,8 @@ metadata:
     app.kubernetes.io/part-of: underground-nexus
     app.kubernetes.io/component: object-store
 data:
-  R2_ACCOUNT_ID: REPLACE_ME_CLOUDFLARE_ACCOUNT_ID
+  R2_ACCOUNT_ID: "901cf745bc4091a67a1070c2d0d61574"
   BUCKET: nexus-memory
-  # Host only (no scheme) — custom domain or *.r2.dev public bucket host
-  PUBLIC_ENDPOINT: REPLACE_ME_R2_PUBLIC_HOST
+  # Host only — S3 API endpoint (presigned URLs). Anonymous pub-*.r2.dev is
+  # separate (enabled for optional public objects) and must not rewrite signatures.
+  PUBLIC_ENDPOINT: "901cf745bc4091a67a1070c2d0d61574.r2.cloudflarestorage.com"
