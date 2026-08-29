@@ -3,6 +3,9 @@ kind: Kustomization
 
 resources:
   - namespace.yaml
+  - nexus-gateway-secrets.yaml
+  - nexus-api-gateway.yaml
+  - nexus-console.yaml
   - ai-inference.yaml
   - nexus-mcp.yaml
   - nexus-workbench.yaml
