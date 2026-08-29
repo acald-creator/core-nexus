@@ -33,6 +33,7 @@ flowchart LR
 * **Auto-Unseal**: Vault handles unsealing automatically and logs the keys/token to stdout.
 * **Root Token**: Configured with a static token (e.g., `VAULT_DEV_ROOT_TOKEN_ID=myroot`) to allow local automation scripts to interact with Vault deterministically.
 * **Storage**: In-memory only. Any restarts destroy all secrets, matching the ephemeral nature of local code development.
+* **Local lab pack**: Use the sibling repo [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) (`./scripts/nexus-dev-up.sh`) beside this stack. Feed secrets into compose with `./scripts/dev-stack.sh up --from-vault` after exporting AppRoles.
 
 ---
 

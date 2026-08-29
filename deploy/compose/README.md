@@ -12,6 +12,9 @@ Starts the full Nexus platform locally:
 # Start everything
 ./scripts/dev-stack.sh up
 
+# Or start with secrets exported from nexus-hashistack Vault
+./scripts/dev-stack.sh up --from-vault
+
 # Seed MinIO with skills (after stack is running)
 ./scripts/seed-minio-skills.sh
 
@@ -40,6 +43,20 @@ docker compose -f deploy/compose/soc-baseline.yml up -d
 ```
 
 Set `NEXUS_GW_WAZUH_API_URL` to point at the Wazuh manager.
+
+### Connecting to HashiStack (Vault)
+
+[nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) provides local Vault on `:8200`. After exporting AppRoles:
+
+```bash
+cd ../nexus-hashistack
+./scripts/nexus-dev-up.sh && ./scripts/admin-bootstrap-approle.sh
+./scripts/export-core-nexus-env.sh
+cp .env.core-nexus ../core-nexus/.env.vault
+cd ../core-nexus && ./scripts/dev-stack.sh up --from-vault
+```
+
+Compose then receives JWT / MinIO / Wazuh values plus gateway AppRole ids (`NEXUS_GW_VAULT_*`) so the API Gateway can re-read `secret/nexus/dev` at startup.
 
 ### Connecting to Athena
 

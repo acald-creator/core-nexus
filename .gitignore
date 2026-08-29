@@ -2,3 +2,4 @@ cluster-keys.json
 cosign.key
 kustomize
 .env.vault
+.env

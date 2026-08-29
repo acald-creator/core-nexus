@@ -8,10 +8,11 @@ echo "Initializing secrets in HashiCorp Vault..."
 echo "Vault Address: ${VAULT_ADDR}"
 
 # Payload structure for kv-v2
+# Defaults match deploy/compose/dev.env and nexus-hashistack seed-nexus-secrets.sh
 PAYLOAD='{
   "data": {
-    "OPENSEARCH_INITIAL_ADMIN_PASSWORD": "admin",
-    "WAZUH_API_PASSWORD": "admin"
+    "OPENSEARCH_INITIAL_ADMIN_PASSWORD": "changeme",
+    "WAZUH_API_PASSWORD": "changeme"
   }
 }'
 
