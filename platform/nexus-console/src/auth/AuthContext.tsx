@@ -24,7 +24,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (credentials: LoginCredentials) => {
-    const response = await fetch(`${config.apiGatewayUrl}/api/v1/auth/login`, {
+    const response = await fetch(config.authEndpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(credentials),
@@ -38,7 +38,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     tokenRef.current = data.token;
     setToken(data.token);
     setIsAuthenticated(true);
-  }, [config.apiGatewayUrl]);
+  }, [config.authEndpoint]);
 
   const logout = useCallback(() => {
     tokenRef.current = null;

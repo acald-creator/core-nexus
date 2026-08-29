@@ -31,14 +31,14 @@ def test_hydrate_noop_without_approle(monkeypatch):
     assert hydrate_env_from_vault() is False
 
 
-def test_hydrate_sets_missing_env_from_kv(monkeypatch):
+def test_hydrate_sets_missing_env_from_nexus_dev_only(monkeypatch):
     monkeypatch.setenv("NEXUS_GW_VAULT_ROLE_ID", "role")
     monkeypatch.setenv("NEXUS_GW_VAULT_SECRET_ID", "secret")
     monkeypatch.setenv("NEXUS_GW_VAULT_URL", "http://vault.test")
     monkeypatch.delenv("NEXUS_GW_JWT_SECRET", raising=False)
     monkeypatch.delenv("NEXUS_GW_MINIO_ACCESS_KEY", raising=False)
     monkeypatch.delenv("NEXUS_GW_MINIO_SECRET_KEY", raising=False)
-    monkeypatch.delenv("NEXUS_GW_WAZUH_API_PASSWORD", raising=False)
+    monkeypatch.setenv("NEXUS_GW_WAZUH_API_PASSWORD", "from-export")
 
     calls: list[str] = []
 
@@ -59,30 +59,51 @@ def test_hydrate_sets_missing_env_from_kv(monkeypatch):
 
         def get(self, path, headers=None):
             calls.append(path)
-            if path.endswith("/nexus/dev"):
-                return _FakeResponse(
-                    200,
-                    {
+            assert path == "/v1/secret/data/nexus/dev"
+            return _FakeResponse(
+                200,
+                {
+                    "data": {
                         "data": {
-                            "data": {
-                                "NEXUS_GW_JWT_SECRET": "from-vault-jwt",
-                                "NEXUS_GW_MINIO_ACCESS_KEY": "vault-access",
-                                "NEXUS_GW_MINIO_SECRET_KEY": "vault-secret",
-                            }
+                            "NEXUS_GW_JWT_SECRET": "from-vault-jwt",
+                            "NEXUS_GW_MINIO_ACCESS_KEY": "vault-access",
+                            "NEXUS_GW_MINIO_SECRET_KEY": "vault-secret",
                         }
-                    },
-                )
-            if path.endswith("/soc/wazuh"):
-                return _FakeResponse(
-                    200,
-                    {"data": {"data": {"WAZUH_API_PASSWORD": "vault-wazuh"}}},
-                )
-            return _FakeResponse(404, {})
+                    }
+                },
+            )
 
     monkeypatch.setattr(httpx, "Client", FakeClient)
     assert hydrate_env_from_vault() is True
     assert os.environ["NEXUS_GW_JWT_SECRET"] == "from-vault-jwt"
     assert os.environ["NEXUS_GW_MINIO_ACCESS_KEY"] == "vault-access"
     assert os.environ["NEXUS_GW_MINIO_SECRET_KEY"] == "vault-secret"
-    assert os.environ["NEXUS_GW_WAZUH_API_PASSWORD"] == "vault-wazuh"
+    # Wazuh stays from compose/export — gateway AppRole cannot read soc/*
+    assert os.environ["NEXUS_GW_WAZUH_API_PASSWORD"] == "from-export"
     assert "/v1/auth/approle/login" in calls
+    assert not any("/soc/wazuh" in c for c in calls)
+
+
+def test_hydrate_returns_false_when_nexus_dev_forbidden(monkeypatch):
+    monkeypatch.setenv("NEXUS_GW_VAULT_ROLE_ID", "role")
+    monkeypatch.setenv("NEXUS_GW_VAULT_SECRET_ID", "secret")
+    monkeypatch.setenv("NEXUS_GW_VAULT_URL", "http://vault.test")
+
+    class FakeClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *args):
+            return False
+
+        def post(self, path, json=None):
+            return _FakeResponse(200, {"auth": {"client_token": "t"}})
+
+        def get(self, path, headers=None):
+            return _FakeResponse(403, {})
+
+    monkeypatch.setattr(httpx, "Client", FakeClient)
+    assert hydrate_env_from_vault() is False

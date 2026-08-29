@@ -24,7 +24,8 @@ export default function SettingsPage() {
       <section className={styles.section} aria-labelledby="settings-config">
         <h2 id="settings-config" className={styles.heading}>Configuration</h2>
         <p className={styles.lede}>
-          Runtime Console config. Secrets stay on the Gateway. This panel does not show JWT secrets or passwords.
+          Runtime Console config. Login uses the API Gateway (local JWT). Vault
+          is a service tile only (nexus-hashistack). Secrets stay on the Gateway.
         </p>
         <dl className={styles.grid}>
           <dt>API Gateway</dt>

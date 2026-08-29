@@ -2,14 +2,16 @@
 # dev-stack.sh — Manage the unified Nexus compose stack.
 #
 # Usage:
-#   ./scripts/dev-stack.sh up [--from-vault]
-#   ./scripts/dev-stack.sh down
-#   ./scripts/dev-stack.sh logs|status|build
+#   ./scripts/dev-stack.sh up --from-vault   # preferred (secrets from HashiStack)
+#   ./scripts/dev-stack.sh up               # offline defaults (changeme/minioadmin)
+#   ./scripts/dev-stack.sh down|logs|status|build
 #
 # --from-vault loads secrets from nexus-hashistack export:
 #   NEXUS_VAULT_ENV=/path/to/.env.core-nexus
 #   or ../nexus-hashistack/.env.core-nexus
 #   or ./.env.vault
+#
+# Set NEXUS_REQUIRE_VAULT=1 to refuse `up` without --from-vault / a vault env file.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -61,6 +63,17 @@ case "$CMD" in
       fi
       echo "Using Vault-exported env: $VAULT_ENV"
       COMPOSE+=(--env-file "$VAULT_ENV")
+    elif [[ "${NEXUS_REQUIRE_VAULT:-}" == "1" ]]; then
+      echo "Error: NEXUS_REQUIRE_VAULT=1 but --from-vault was not set." >&2
+      echo "Preferred lab flow:" >&2
+      echo "  cd ../nexus-hashistack && ./scripts/nexus-dev-up.sh" >&2
+      echo "  ./scripts/admin-bootstrap-approle.sh && ./scripts/export-core-nexus-env.sh" >&2
+      echo "  cp .env.core-nexus ../core-nexus/.env.vault" >&2
+      echo "  cd ../core-nexus && ./scripts/dev-stack.sh up --from-vault" >&2
+      exit 1
+    else
+      echo "Note: starting with compose defaults (no Vault export)." >&2
+      echo "      Prefer: ./scripts/dev-stack.sh up --from-vault" >&2
     fi
     echo "Starting Nexus dev stack..."
     "${COMPOSE[@]}" -f "$COMPOSE_FILE" up -d
@@ -92,6 +105,8 @@ case "$CMD" in
     ;;
   *)
     echo "Usage: $0 {up|down|logs|status|build} [--from-vault]" >&2
+    echo "  Prefer: $0 up --from-vault" >&2
+    echo "  Strict: NEXUS_REQUIRE_VAULT=1 $0 up --from-vault" >&2
     exit 1
     ;;
 esac

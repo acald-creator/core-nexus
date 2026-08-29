@@ -9,11 +9,11 @@ Starts the full Nexus platform locally:
 - **AI Inference** (FastAPI triage) → http://localhost:8000
 
 ```bash
-# Start everything
-./scripts/dev-stack.sh up
-
-# Or start with secrets exported from nexus-hashistack Vault
+# Preferred — secrets from nexus-hashistack
 ./scripts/dev-stack.sh up --from-vault
+
+# Offline defaults only
+./scripts/dev-stack.sh up
 
 # Seed MinIO with skills (after stack is running)
 ./scripts/seed-minio-skills.sh
@@ -56,7 +56,7 @@ cp .env.core-nexus ../core-nexus/.env.vault
 cd ../core-nexus && ./scripts/dev-stack.sh up --from-vault
 ```
 
-Compose then receives JWT / MinIO / Wazuh values plus gateway AppRole ids (`NEXUS_GW_VAULT_*`) so the API Gateway can re-read `secret/nexus/dev` at startup.
+Compose then receives JWT / MinIO / Wazuh values plus gateway AppRole ids (`NEXUS_GW_VAULT_*`) so the API Gateway can re-read `secret/nexus/dev` at startup. Wazuh stays on the exported env (gateway AppRole cannot read `secret/soc/*`). Prefer `up --from-vault`; set `NEXUS_REQUIRE_VAULT=1` to refuse bare `up`.
 
 ### Connecting to Athena
 

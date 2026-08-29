@@ -6,41 +6,35 @@ Underground Nexus combines a SOC detection pipeline (Wazuh + Suricata), autonomo
 
 ## Quick Start (Dev Stack)
 
-```bash
-# Start all services (Console + API Gateway + MinIO + AI Inference)
-./scripts/dev-stack.sh up
-
-# Seed skills into MinIO
-./scripts/seed-minio-skills.sh
-
-# Open the Console
-open http://localhost:3000
-
-# API Gateway docs
-open http://localhost:3100/docs
-
-# MinIO Console
-open http://localhost:9001
-```
-
-### Local Vault (sidecar — nexus-hashistack only)
-
-Vault is **not** part of `dev.yml` and is **not** deployed from this repo’s Kubernetes overlays. Start [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) beside this stack, then optionally load secrets into compose:
+Preferred: start Vault beside this stack, then bring up compose with exported secrets.
 
 ```bash
+# Terminal A — nexus-hashistack (Vault :8200)
 cd ../nexus-hashistack
 ./scripts/nexus-dev-up.sh
 ./scripts/admin-bootstrap-approle.sh
 ./scripts/export-core-nexus-env.sh
 cp .env.core-nexus ../core-nexus/.env.vault
 
+# Terminal B — platform
 cd ../core-nexus
 ./scripts/dev-stack.sh up --from-vault
-# Vault http://localhost:8200  — token myroot
-# Gateway can also hydrate via NEXUS_GW_VAULT_ROLE_ID / SECRET_ID from the export
+./scripts/seed-minio-skills.sh
+
+open http://localhost:3000          # Console (gateway local login)
+open http://localhost:3100/docs     # API Gateway
+open http://localhost:8200          # Vault UI (sidecar)
 ```
 
-See `docs/architecture/12-vault-environments-specification.md` for Dev / Test / Prod Vault intent.
+Offline / no Vault (compose defaults only):
+
+```bash
+./scripts/dev-stack.sh up
+```
+
+Strict labs can refuse defaults: `NEXUS_REQUIRE_VAULT=1 ./scripts/dev-stack.sh up --from-vault`.
+
+Console login uses the **API Gateway** (`authProvider: local`), not Vault user auth. The Vault tile is a deep-link to the hashistack sidecar. See `docs/architecture/12-vault-environments-specification.md`.
 
 ## Architecture
 

@@ -1,12 +1,16 @@
 import type { NexusConfig } from './types';
 
 const host = import.meta.env.VITE_NEXUS_HOST || 'localhost';
+const apiGatewayUrl =
+  import.meta.env.VITE_API_GATEWAY_URL || `http://${host}:3100`;
 
 export const defaultConfig: NexusConfig = {
-  apiGatewayUrl: import.meta.env.VITE_API_GATEWAY_URL || `http://${host}:3100`,
+  apiGatewayUrl,
   healthPollIntervalMs: 30000,
-  authProvider: 'vault',
-  authEndpoint: import.meta.env.VITE_AUTH_ENDPOINT || `http://${host}:8200`,
+  // Login is always gateway JWT (local). Vault :8200 is a service tile only.
+  authProvider: 'local',
+  authEndpoint:
+    import.meta.env.VITE_AUTH_ENDPOINT || `${apiGatewayUrl}/api/v1/auth/login`,
   services: [
     {
       id: 'wazuh-dash',
@@ -64,7 +68,7 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'vault',
       name: 'Vault UI',
-      description: 'Secrets management (not in dev stack)',
+      description: 'Secrets (nexus-hashistack sidecar — not in this compose)',
       category: 'infrastructure',
       url: `http://${host}:8200`,
       iconId: 'lock',
