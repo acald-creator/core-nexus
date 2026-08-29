@@ -124,8 +124,8 @@ Keep Phase 2 and Phase 3 items explicitly out of scope.
 | `nexus-hashistack` | Local/shared Vault (+ Consul) packs; AppRole export for `--from-vault` | `scripts/`, `docs/nexus-wiring.md` |
 | `nexus-athena` | Red-team container image (Kali-based offensive tooling) | `Dockerfile.*`, deploy profiles |
 | `athena-agents` | LLM-driven adversary emulation framework (OPAR loop) | `orchestrator/`, `config/`, `eval/` |
-| `nexus-webtop-soc` | **Transitional** SOC compose recipes only; desktop webtop **retired** | `deploy/compose/` until fully replaced by `core-nexus` k8s SOC |
-| `nexus-webtop-workbench` | **Retired** analyst desktop image; use Jupyter workbench + Console | archive path |
+| `nexus-webtop-soc` | **Retired** — archive compose only; prefer `deploy/kubernetes/soc/` | do not pull k8s base into core-nexus |
+| `nexus-webtop-workbench` | **Retired** analyst desktop; use Jupyter workbench + Console | archive path |
 
 **Keep as human surfaces:** Nexus Console, Jupyter purple workspace, isolated Athena.
 **GitOps default:** Flux + Argo CD. **Prod objects:** Cloudflare R2 + D1 (lab: MinIO).

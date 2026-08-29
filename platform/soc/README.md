@@ -14,7 +14,7 @@ desktop/webtop images (`docs/architecture/01-component-architecture.md` §0).
 |-------|----------|
 | Kubernetes SOC (preferred in-repo path) | `deploy/kubernetes/soc/` |
 | Vault → k8s secret sync | `deploy/scripts/sync-vault-to-k8s.sh` |
-| Transitional compose (legacy repo) | `nexus-webtop-soc` — recipes only; webtop client retired |
+| Transitional compose (legacy repo) | `nexus-webtop-soc` — **retired**; archive recipes only |
 
 ## Architecture References
 

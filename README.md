@@ -96,8 +96,8 @@ graph TD
 | **nexus-hashistack** | Sole local Vault (+ optional Consul) pack — run beside this repo; core-nexus only consumes |
 | **nexus-athena** | Kali-based red-team container with 5 runtime profiles |
 | **athena-agents** | LLM-driven OPAR orchestrator (Python + Rust) |
-| **nexus-webtop-soc** | SOC baseline compose stack (Wazuh + Suricata) |
-| **nexus-webtop-workbench** | Browser-based analyst desktop |
+| **nexus-webtop-soc** | **Retired** — archive compose recipes only; use `deploy/kubernetes/soc/` |
+| **nexus-webtop-workbench** | **Retired** — use Jupyter `platform/workbench` + Console |
 
 ## Components
 
@@ -138,8 +138,8 @@ graph TD
 │   ├── athena/                 # Athena component reference
 │   ├── mcp/                    # MCP server scaffold
 │   ├── nexus-console/          # React 19 dashboard
-│   ├── sensors/                # Sensor integration (references nexus-webtop-soc)
-│   ├── soc/                    # SOC integration (references nexus-webtop-soc)
+│   ├── sensors/                # Sensor notes → system/suricata + Tetragon
+│   ├── soc/                    # SOC notes → deploy/kubernetes/soc/
 │   └── workbench/              # JupyterLab integration
 ├── scripts/
 │   ├── dev-stack.sh            # Dev compose helper

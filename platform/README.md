@@ -10,8 +10,8 @@ Implementation code for Underground Nexus. Architecture docs live in `docs/`.
 | `mcp/` | Nexus MCP server |
 | `workbench/` | Jupyter workbench image + Vault consumer example |
 | `athena/` | Athena container reference (images in `nexus-athena`) |
-| `soc/` | SOC placeholder (stack in `nexus-webtop-soc`) |
-| `sensors/` | Sensor placeholder (Suricata etc. in webtop-soc / k8s) |
+| `soc/` | SOC notes — headless stack in `deploy/kubernetes/soc/` |
+| `sensors/` | Sensor notes — Suricata in `deploy/kubernetes/system/suricata` |
 
 Local run: `./scripts/dev-stack.sh up --from-vault` (Vault from `nexus-hashistack`).
 Images: `./scripts/build-platform-images.sh` → `phoenixvlabs/nexus-*`.

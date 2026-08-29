@@ -54,5 +54,5 @@ Compatible with: Kiro, Claude Desktop, any MCP SDK client.
 
 - docs/architecture/07-mcp-workbench.md
 - docs/architecture/11-ai-native-integration-principles.md Section 2
-- nexus-webtop-workbench (MCP client)
+- Jupyter purple workbench (`platform/workbench`) as MCP/notebook client
 - platform/ai-inference/ (backend)

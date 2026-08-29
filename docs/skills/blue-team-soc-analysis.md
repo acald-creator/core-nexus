@@ -12,7 +12,7 @@ inclusion: manual
 - Investigating via Nexus Console, Jupyter purple workspace, or `nexus-tui` (not webtop desktops)
 
 ## Approach
-1. Prefer `deploy/kubernetes/soc/` in core-nexus; treat `nexus-webtop-soc` compose as transitional only
+1. Prefer `deploy/kubernetes/soc/` in core-nexus; treat `nexus-webtop-soc` as **retired** (archive only)
 2. Identify which service generated the alert (Wazuh manager, Suricata sensor, or custom)
 3. Check Suricata rule files for existing coverage of the indicator
 4. Cross-reference with Wazuh decoder/rule XML for correlation
@@ -35,4 +35,4 @@ inclusion: manual
 - `docs/architecture/01-component-architecture.md` §0
 - `deploy/kubernetes/soc/` — in-repo SOC path
 - `platform/soc/README.md`
-- Transitional: `nexus-webtop-soc` compose recipes only
+- Retired: `nexus-webtop-soc` compose recipes (do not revive as the default stack)

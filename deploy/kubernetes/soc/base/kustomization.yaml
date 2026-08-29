@@ -15,4 +15,6 @@ resources:
   - minio-pvc.yaml
   # Vault is not deployed here — use sibling nexus-hashistack (local) or an
   # external Vault for test/prod. Apps consume VAULT_ADDR / AppRole exports.
-  - github.com/acald-creator/nexus-webtop-soc/deploy/kubernetes/base
+  #
+  # nexus-webtop-soc k8s base is retired (desktop webtop). Suricata/runtime live
+  # under deploy/kubernetes/system/suricata (see overlays/test).

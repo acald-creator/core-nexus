@@ -340,7 +340,7 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 
 ### Milestone 2: Refine Component Images
 
-- Finish headless SOC in `core-nexus`; mark `nexus-webtop-*` desktop images retired/archived.
+- Finish headless SOC in `core-nexus`; **`nexus-webtop-*` desktop images retired** (no remote k8s base pull).
 - Keep Athena isolated (profiles + agents); Jupyter as sole purple client; Console as blue/ops UI.
 - Define image signing, SBOM, and version pinning standards (factory review of existing repos comes next).
 

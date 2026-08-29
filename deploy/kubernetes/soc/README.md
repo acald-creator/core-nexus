@@ -1,7 +1,8 @@
 # SOC Kubernetes overlays
 
-Workloads live here: **API Gateway**, **Console**, AI, MCP, workbench, Athena, MinIO,
-optional Wazuh, and webtop-soc (remote base).
+Workloads live here: **API Gateway**, **Console**, AI, MCP, Jupyter workbench,
+Athena, MinIO (lab), optional Wazuh. Suricata is under `deploy/kubernetes/system/suricata`
+(see `overlays/test`). Desktop webtops are **not** part of this tree.
 
 **Vault is not deployed from this tree.** Local and lab Vault come from
 [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack):
@@ -53,3 +54,6 @@ kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
 | `overlays/wazuh-secure` | Wazuh only with TLS/security indexer |
 | `overlays/test` | System charts + Wazuh secure component (needs Helm) |
 | `overlays/prod` | Helm MinIO; Vault stays external |
+
+**Retired:** `nexus-webtop-soc` / `nexus-webtop-workbench` desktops — do not re-add the
+webtop-soc Git remote to `base/`. Suricata: `deploy/kubernetes/system/suricata`.

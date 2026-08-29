@@ -4,13 +4,16 @@ This directory is reserved for hybrid sensor integration code (Suricata + runtim
 
 ## Current Implementation
 
-Suricata runs as a dedicated container in the SOC baseline compose stack:
+Suricata is deployed from this monorepo’s Kubernetes tree (not from webtop images):
 
 | Asset | Location |
 |-------|----------|
-| Suricata container | `nexus-webtop-soc/deploy/compose/soc-baseline.yml` (service: `suricata.sensor`) |
-| Suricata config | `nexus-webtop-soc/deploy/suricata/suricata.yaml` |
-| Runtime telemetry | Tetragon (in UDS Core baseline) — see scenarios in `docs/scenarios/` |
+| Suricata DaemonSet | `deploy/kubernetes/system/suricata/` |
+| Wired from | `deploy/kubernetes/soc/overlays/test` |
+| Runtime telemetry | Tetragon (`deploy/kubernetes/system/tetragon`) — see `docs/scenarios/` |
+
+Archived compose recipes may exist under `nexus-webtop-soc`; do not use them as the
+recommended path.
 
 ## Architecture References
 
@@ -19,6 +22,6 @@ Suricata runs as a dedicated container in the SOC baseline compose stack:
 
 ## Future
 
-When the hybrid sensor moves from compose into Kubernetes (DaemonSet, sidecar, or gateway),
-the manifests and integration code will land here. Tetragon integration from UDS Core
-provides the runtime/kernel telemetry side.
+When hybrid sensor config or operators land beside the DaemonSet, keep them under
+`deploy/kubernetes/system/suricata` / this directory — not in webtop images.
+Tetragon provides runtime/kernel telemetry alongside Suricata.

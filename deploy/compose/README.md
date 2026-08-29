@@ -45,16 +45,13 @@ For local frontend hot reload, run `npm run dev` in `platform/nexus-console/` (p
 
 ### Connecting to SOC Baseline
 
-The SOC baseline (Wazuh + Suricata + webtop) lives in **nexus-webtop-soc** — do not
-vend a second copy in this repo:
+Preferred path is **Kubernetes** in this repo (`deploy/kubernetes/soc/overlays/wazuh-secure`
+or HTTP lab under `deploy/kubernetes/soc/wazuh`). Sync secrets with
+`./deploy/scripts/sync-vault-to-k8s.sh`.
 
-```bash
-cd ../nexus-webtop-soc
-docker compose -f deploy/compose/soc-baseline.yml up -d
-```
-
-Set `NEXUS_GW_WAZUH_API_URL` / `NEXUS_GW_WAZUH_API_PASSWORD` to match the manager
-(and Vault `secret/soc/wazuh` when using `--from-vault`).
+Transitional compose recipes may still exist in the archived sibling
+`nexus-webtop-soc` — do not treat the XFCE webtop as a product surface, and do not
+re-vend that stack here.
 
 ### Connecting to HashiStack (Vault)
 
@@ -102,4 +99,4 @@ Kubernetes SOC base uses the same registry. Build/push with:
 - `baseline.yml` — Original "Olympiad" deployment (Console + Pi-hole + Portainer + nginx-proxy)
 - `portainer-deploy.yml` — Standalone Portainer
 - `docker-compose.yml` — Legacy root compose (deprecated)
-- SOC baseline compose → sibling `nexus-webtop-soc/deploy/compose/soc-baseline.yml`
+- SOC baseline compose → **retired** sibling `nexus-webtop-soc` (archive); use `deploy/kubernetes/soc/`
