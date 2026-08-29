@@ -4,4 +4,5 @@ kind: Kustomization
 namespace: soc
 
 resources:
+  - wazuh-secrets.yaml
   - wazuh-stack.yaml

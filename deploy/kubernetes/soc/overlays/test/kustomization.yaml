@@ -12,5 +12,5 @@ resources:
 patches:
   - path: athena-gvisor-patch.yaml
   - path: ai-inference-patch.yaml
-  - path: wazuh-dashboard-patch.yaml
-# Vault is external — Shamir / file-backend labs live in nexus-hashistack recipe 04.
+# wazuh-dashboard-patch removed — dashboard not in this wazuh kustomize; secrets via wazuh-secrets.
+# Vault is external — use nexus-hashistack + ./deploy/scripts/sync-vault-to-k8s.sh

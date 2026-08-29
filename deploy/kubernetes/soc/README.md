@@ -12,8 +12,8 @@ cd ../nexus-hashistack
 ```
 
 Point apps at that Vault (`VAULT_ADDR`, AppRole export, or future ESO/injector).
-Optional: `./deploy/scripts/sync-vault-to-k8s.sh` copies `secret/soc/wazuh` into a
-Kubernetes Secret when a cluster is already running.
+Optional: `./deploy/scripts/sync-vault-to-k8s.sh` overwrites Secret `wazuh-secrets`
+from Vault `secret/soc/wazuh` (see `deploy/kubernetes/soc/wazuh/README.md`).
 
 | Overlay | Role |
 |---------|------|

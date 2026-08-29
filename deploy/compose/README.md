@@ -53,7 +53,8 @@ cd ../nexus-webtop-soc
 docker compose -f deploy/compose/soc-baseline.yml up -d
 ```
 
-Set `NEXUS_GW_WAZUH_API_URL` to point at the Wazuh manager.
+Set `NEXUS_GW_WAZUH_API_URL` / `NEXUS_GW_WAZUH_API_PASSWORD` to match the manager
+(and Vault `secret/soc/wazuh` when using `--from-vault`).
 
 ### Connecting to HashiStack (Vault)
 
