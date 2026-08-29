@@ -19,7 +19,7 @@ Use these documents as the source of truth, in order:
 | 9 | `docs/architecture/09-production-deployment-lifecycle.md` | Future Enterprise Platform bare-metal lifecycle |
 | 10 | `docs/architecture/10-ai-infused-security-plus-labs.md` | Security+ lab scenarios |
 | 11 | `docs/architecture/11-ai-native-integration-principles.md` | AI-native design and integration principles |
-| 12 | `docs/architecture/12-vault-environments-specification.md` | Dev, Test, and Prod Vault environments |
+| 12 | `docs/architecture/12-vault-environments-specification.md` | Vault intent (runtime in nexus-hashistack) |
 
 When documents conflict, prefer the lower-numbered practical architecture documents for near-term implementation and the higher-numbered Enterprise Platform documents for future-state concepts.
 
@@ -63,7 +63,7 @@ These roles are defaults, not hard rules. Any model may review any document, but
 - Wazuh is the near-term SOC event store.
 - Loki is for platform and workload logs.
 - MinIO is for artifacts, evidence, datasets, backups, and package archives.
-- Vault is the preferred production-like secrets manager; UDS is not the secrets backend.
+- Vault is the preferred production-like secrets manager (owned by nexus-hashistack / shared Vault — not deployed from core-nexus); UDS is not the secrets backend.
 - Platform UI is monitored like any other workload, but threat findings go to approved Nexus/SOC clients.
 - Autonomous response is a later capability. Human approval and auditability come first.
 - Cloudflare-to-SecureOS deployment is a future Enterprise Platform bare-metal lifecycle, not the current Kubernetes/UDS path.

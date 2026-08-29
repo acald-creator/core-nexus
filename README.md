@@ -23,9 +23,9 @@ open http://localhost:3100/docs
 open http://localhost:9001
 ```
 
-### Local Vault (sidecar)
+### Local Vault (sidecar — nexus-hashistack only)
 
-Vault is not part of `dev.yml`. Start [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) beside this stack, then optionally load secrets into compose:
+Vault is **not** part of `dev.yml` and is **not** deployed from this repo’s Kubernetes overlays. Start [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) beside this stack, then optionally load secrets into compose:
 
 ```bash
 cd ../nexus-hashistack
@@ -99,7 +99,7 @@ graph TD
 | Repository | Purpose |
 |------------|---------|
 | **core-nexus** (this repo) | Architecture hub, Nexus Console, API Gateway, AI Inference, nexus-tui, deploy manifests, skills |
-| **nexus-hashistack** | Vault (+ Consul) lab pack for local secrets — run beside this repo’s dev stack |
+| **nexus-hashistack** | Sole local Vault (+ optional Consul) pack — run beside this repo; core-nexus only consumes |
 | **nexus-athena** | Kali-based red-team container with 5 runtime profiles |
 | **athena-agents** | LLM-driven OPAR orchestrator (Python + Rust) |
 | **nexus-webtop-soc** | SOC baseline compose stack (Wazuh + Suricata) |
@@ -171,7 +171,7 @@ Start with [docs/00-doc-index.md](docs/00-doc-index.md).
 | 9 | [Production Deployment Lifecycle](docs/architecture/09-production-deployment-lifecycle.md) | Future bare-metal lifecycle |
 | 10 | [AI-Infused Security+ Labs](docs/architecture/10-ai-infused-security-plus-labs.md) | Lab scenarios |
 | 11 | [AI-Native Integration Principles](docs/architecture/11-ai-native-integration-principles.md) | Stimulation, emulation, skill memory |
-| 12 | [Vault Environments](docs/architecture/12-vault-environments-specification.md) | Dev, Test, Prod Vault setup |
+| 12 | [Vault Environments](docs/architecture/12-vault-environments-specification.md) | Vault intent (implemented in nexus-hashistack) |
 | 13 | [Agent Workflows and Memory](docs/architecture/13-agent-workflows-and-memory.md) | OPAR loop, skills, nexus-tui, safety |
 
 ## Agent Skill Memory

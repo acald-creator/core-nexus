@@ -16,7 +16,7 @@ The following components are local-only, experimental, or deprecated as producti
 | --- | --- | --- |
 | Portainer CE | Local-only | Keep for Docker lab visibility; replace with Argo CD for production-like GitOps. |
 | Pi-hole | Local-only | Keep for lab DNS filtering; use Kubernetes DNS, network policy, and Istio for cluster and service traffic control. |
-| Vault dev mode | Local-only | Keep for learning and local workflows; replace with Vault HA or an equivalent production secrets design. |
+| Vault (HashiCorp) | External (nexus-hashistack) | Do not deploy Vault from core-nexus; consume AppRole / VAULT_ADDR from the sibling HashiStack (lab) or a shared cluster Vault (later). |
 | Privileged Docker-in-Docker image | Local-only | Keep for the bootstrap lab; avoid as the production runtime model. |
 | Sysbox image | Experimental | Keep as an alternate lab runtime until its role is revalidated. |
 | Docker Swarm bootstrap | Deprecated direction | Keep only while needed by the legacy script; prefer Kubernetes for future orchestration. |
@@ -25,5 +25,6 @@ The following components are local-only, experimental, or deprecated as producti
 ## Consequences
 
 - Architecture documents should describe these components as lab-only when they appear.
-- Production-like work should target Kubernetes, Argo CD, Vault HA, observability, and approved UDS/Zarf packaging where applicable.
+- Production-like work should target Kubernetes, Argo CD, shared Vault (via nexus-hashistack / platform Vault), observability, and approved UDS/Zarf packaging where applicable.
 - Future Enterprise Platform/SecureOS work should remain separate from the local Docker lab profile.
+- core-nexus must not reintroduce in-cluster Vault Deployments; keep secrets ownership in HashiStack / shared Vault.

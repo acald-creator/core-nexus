@@ -8,13 +8,9 @@ resources:
   - ../../../system/kyverno
   - ../../../system/suricata
   - ../../wazuh
-  - configmap.yaml
-  - pvc.yaml
 
 patches:
-  - path: vault-patch.yaml
   - path: athena-gvisor-patch.yaml
   - path: ai-inference-patch.yaml
   - path: wazuh-dashboard-patch.yaml
-
-
+# Vault is external — Shamir / file-backend labs live in nexus-hashistack recipe 04.

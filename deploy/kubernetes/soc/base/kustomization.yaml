@@ -10,5 +10,6 @@ resources:
   - nexus-athena-elevated.yaml
   - minio.yaml
   - minio-pvc.yaml
-  - vault.yaml
+  # Vault is not deployed here — use sibling nexus-hashistack (local) or an
+  # external Vault for test/prod. Apps consume VAULT_ADDR / AppRole exports.
   - github.com/acald-creator/nexus-webtop-soc/deploy/kubernetes/base

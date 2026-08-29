@@ -3,6 +3,9 @@
 vault_example.py
 Demonstrates how to retrieve SOC credentials programmatically from HashiCorp Vault
 using the 'hvac' library in the Underground Nexus workbench.
+
+Expects an *external* Vault (typically nexus-hashistack on :8200), not an in-cluster
+Vault from core-nexus manifests.
 """
 
 import os

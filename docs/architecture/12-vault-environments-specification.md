@@ -2,6 +2,19 @@
 
 This document defines the architecture, storage layouts, unseal mechanisms, and security controls for HashiCorp Vault across the development, test/staging, and production environments of the Underground Nexus.
 
+## Ownership
+
+**Vault is not deployed from `core-nexus`.** Runtime packs, recipes (dev / transit / Shamir), and AppRole export live in [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack). This repo **consumes** Vault:
+
+| Consumer | How |
+|----------|-----|
+| Local compose | `./scripts/dev-stack.sh up --from-vault` + gateway AppRole hydrate |
+| Console | Deep-link / health tile to `:8200` |
+| Workbench | `platform/workbench/vault_example.py` against `VAULT_ADDR` |
+| Kubernetes | Optional `deploy/scripts/sync-vault-to-k8s.sh` (one-shot); later ESO/injector |
+
+Do not re-add Vault Deployments, Helm charts, or `-dev` patches under `deploy/kubernetes/`.
+
 ---
 
 ## 1. Environment Matrix
@@ -33,7 +46,7 @@ flowchart LR
 * **Auto-Unseal**: Vault handles unsealing automatically and logs the keys/token to stdout.
 * **Root Token**: Configured with a static token (e.g., `VAULT_DEV_ROOT_TOKEN_ID=myroot`) to allow local automation scripts to interact with Vault deterministically.
 * **Storage**: In-memory only. Any restarts destroy all secrets, matching the ephemeral nature of local code development.
-* **Local lab pack**: Use the sibling repo [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) (`./scripts/nexus-dev-up.sh`) beside this stack. Feed secrets into compose with `./scripts/dev-stack.sh up --from-vault` after exporting AppRoles.
+* **Local lab pack**: Use the sibling repo [nexus-hashistack](https://github.com/acald-creator/nexus-hashistack) (`./scripts/nexus-dev-up.sh`) beside this stack. Feed secrets into compose with `./scripts/dev-stack.sh up --from-vault` after exporting AppRoles. **core-nexus Kubernetes overlays do not run Vault.**
 
 ---
 

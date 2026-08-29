@@ -5,25 +5,7 @@ resources:
   - ../../base
 
 patches:
-  - path: prod-patch.yaml
-  - patch: |-
-      $patch: delete
-      apiVersion: apps/v1
-      kind: Deployment
-      metadata:
-        name: vault
-    target:
-      kind: Deployment
-      name: vault
-  - patch: |-
-      $patch: delete
-      apiVersion: v1
-      kind: Service
-      metadata:
-        name: vault
-    target:
-      kind: Service
-      name: vault
+  # Replace in-cluster MinIO with the Helm chart below.
   - patch: |-
       $patch: delete
       apiVersion: apps/v1
@@ -47,12 +29,7 @@ helmGlobals:
   chartHome: /tmp/charts
 
 helmCharts:
-  - name: vault
-    repo: https://helm.releases.hashicorp.com
-    version: 0.28.0
-    releaseName: vault
-    namespace: soc
-    valuesFile: vault-values.yaml
+  # Vault is not deployed from this repo — use nexus-hashistack or shared Vault.
   - name: minio
     repo: https://charts.bitnami.com/bitnami
     version: 14.6.0

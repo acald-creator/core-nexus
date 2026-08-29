@@ -1,6 +1,13 @@
 #!/bin/sh
+# Pull secret/soc/wazuh from an *external* Vault (nexus-hashistack locally)
+# into a Kubernetes Secret. Does not run Vault itself.
+#
+# Prerequisites:
+#   cd ../nexus-hashistack && ./scripts/nexus-dev-up.sh
+#   kubectl context pointing at the target cluster
+#
+# Defaults match the local HashiStack lab token.
 
-# Default Vault location, dev token, and namespace
 VAULT_ADDR="${VAULT_ADDR:-http://localhost:8200}"
 VAULT_TOKEN="${VAULT_TOKEN:-myroot}"
 NAMESPACE="${NAMESPACE:-soc}"
