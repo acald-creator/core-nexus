@@ -20,7 +20,7 @@ spec:
         fsGroup: 1000
       containers:
       - name: nexus-athena
-        image: local/nexus-athena:latest
+        image: phoenixvlabs/nexus-athena:latest
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false

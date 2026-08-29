@@ -1,14 +1,16 @@
 #!/usr/bin/env python3
-"""Day 9 bridge: mock Ollama + athena-agents HTTP shim for Console Agent Feed.
+"""Day 9 bridge: temporary mock Ollama + athena-agents HTTP shim for Console Agent Feed.
 
 Host OPAR writes ground-truth JSONL. The Gateway expects athena-agents on :8080
-with /sessions and /events. That HTTP surface does not exist yet (Day 13).
+with /sessions and /events. That HTTP surface does not exist yet.
 
-This Use-day bridge:
+This bridge:
   - Serves a canned Ollama-compatible planner on :11435 so the orchestrator can run
   - Tails ATHENA_GT_OUTPUT and streams OPAR-shaped SSE on :8080 for the Console
 
-Stdlib only. Not production. Replace with a real athena-agents event source on Day 13.
+Stdlib only. Not production. Start only via:
+  NEXUS_ENABLE_DAY9_BRIDGE=1 ./scripts/start-day9-dev-stack.sh
+Replace with a real athena-agents event source when available.
 """
 from __future__ import annotations
 

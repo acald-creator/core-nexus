@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: nexus-mcp
-        image: local/nexus-mcp:latest
+        image: phoenixvlabs/nexus-mcp:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 3001

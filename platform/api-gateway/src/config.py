@@ -20,7 +20,8 @@ class GatewaySettings(BaseSettings):
     jwt_secret: str = Field(description="JWT signing secret — required")
     jwt_algorithm: str = "HS256"
     jwt_expiration_minutes: int = 480  # 8 hours
-    auth_provider: Literal["local", "vault"] = "local"
+    # Auth — user login only. Vault AppRole (vault_role_id/secret_id) is secrets hydrate, not login.
+    auth_provider: Literal["local", "oidc"] = "local"
     vault_url: str | None = None
     vault_role_id: str | None = Field(
         default=None,

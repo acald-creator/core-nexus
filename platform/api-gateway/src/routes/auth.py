@@ -25,14 +25,14 @@ async def login(credentials: LoginRequest):
     """Authenticate and issue JWT token."""
     settings = get_settings()
 
-    # Local auth: lab JWT (production would use OIDC). Vault AppRole is for
-    # secrets hydrate only — see vault_secrets.py — not user login.
+    # Local auth: lab JWT. OIDC later. Vault AppRole is secrets-only (vault_secrets.py).
     if settings.auth_provider == "local":
         if not credentials.username or not credentials.password:
             raise HTTPException(status_code=401, detail="Invalid credentials")
+    elif settings.auth_provider == "oidc":
+        raise HTTPException(status_code=503, detail="OIDC auth provider not yet implemented")
     else:
-        # Vault/OIDC user auth not implemented; keep auth_provider=local for labs
-        raise HTTPException(status_code=503, detail="Vault auth provider not yet implemented")
+        raise HTTPException(status_code=400, detail="Unsupported auth_provider")
 
     now = datetime.now(timezone.utc)
     exp = now + timedelta(minutes=settings.jwt_expiration_minutes)

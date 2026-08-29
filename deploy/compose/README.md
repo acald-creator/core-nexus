@@ -35,10 +35,11 @@ For local frontend dev with hot reload, run `npm run dev` in `platform/nexus-con
 
 ### Connecting to SOC Baseline
 
-The SOC baseline (Wazuh + Suricata) runs as a separate stack in `nexus-webtop-soc`:
+The SOC baseline (Wazuh + Suricata + webtop) lives in **nexus-webtop-soc** — do not
+vend a second copy in this repo:
 
 ```bash
-cd ~/nexus-webtop-soc
+cd ../nexus-webtop-soc
 docker compose -f deploy/compose/soc-baseline.yml up -d
 ```
 
@@ -58,18 +59,36 @@ cd ../core-nexus && ./scripts/dev-stack.sh up --from-vault
 
 Compose then receives JWT / MinIO / Wazuh values plus gateway AppRole ids (`NEXUS_GW_VAULT_*`) so the API Gateway can re-read `secret/nexus/dev` at startup. Wazuh stays on the exported env (gateway AppRole cannot read `secret/soc/*`). Prefer `up --from-vault`; set `NEXUS_REQUIRE_VAULT=1` to refuse bare `up`.
 
-### Connecting to Athena
+### Connecting to Athena / Agent Feed
 
-Athena profiles run from `nexus-athena`:
+Athena profiles run from `nexus-athena`. The compose gateway defaults
+`NEXUS_GW_ATHENA_AGENTS_URL` to `host.docker.internal:8080`, but **compose does not
+start athena-agents**. For Console Agent Feed until the real HTTP API exists:
 
 ```bash
-cd ~/nexus-athena
+NEXUS_ENABLE_DAY9_BRIDGE=1 ./scripts/start-day9-dev-stack.sh
+```
+
+That temporary bridge mocks `:8080` (`scripts/day9-console-bridge.py`). Replace it when athena-agents exposes `/sessions` and `/events`.
+
+```bash
+cd ../nexus-athena
 ./scripts/run-athena-profile.sh agent juice-shop.lab
+```
+
+### Platform images
+
+Compose services use `phoenixvlabs/nexus-*:latest` tags (with local `build:` contexts).
+Kubernetes SOC base uses the same registry. Build/push with:
+
+```bash
+./scripts/build-platform-images.sh
+./scripts/build-platform-images.sh --push
 ```
 
 ## Legacy Stacks
 
 - `baseline.yml` — Original "Olympiad" deployment (Console + Pi-hole + Portainer + nginx-proxy)
 - `portainer-deploy.yml` — Standalone Portainer
-- `soc-baseline.yml` — Symlink/reference to nexus-webtop-soc SOC stack
 - `docker-compose.yml` — Legacy root compose (deprecated)
+- SOC baseline compose → sibling `nexus-webtop-soc/deploy/compose/soc-baseline.yml`

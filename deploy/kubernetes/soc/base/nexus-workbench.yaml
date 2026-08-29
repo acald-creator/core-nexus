@@ -22,7 +22,7 @@ spec:
       - name: nexus-workbench
         securityContext:
           allowPrivilegeEscalation: false
-        image: local/nexus-workbench:latest
+        image: phoenixvlabs/nexus-workbench:latest
         imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8888

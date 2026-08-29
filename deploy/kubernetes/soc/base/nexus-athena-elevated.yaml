@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: nexus-athena-elevated
-        image: local/nexus-athena:latest
+        image: phoenixvlabs/nexus-athena:latest
         imagePullPolicy: IfNotPresent
         securityContext:
           privileged: false

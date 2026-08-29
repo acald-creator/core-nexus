@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 # build-platform-images.sh - Build, SBOM, and scan all platform images.
 #
+# Tags match deploy/compose/dev.yml and deploy/kubernetes/soc/base:
+#   phoenixvlabs/nexus-{console,api-gateway,ai-inference,mcp}:latest
+#
 # Usage:
 #   ./scripts/build-platform-images.sh              # Build all
 #   ./scripts/build-platform-images.sh console      # Build one
 #   ./scripts/build-platform-images.sh --push       # Build + push all
+#   REGISTRY=phoenixvlabs ./scripts/build-platform-images.sh --push
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"

@@ -17,7 +17,7 @@ Kubernetes Secret when a cluster is already running.
 
 | Overlay | Role |
 |---------|------|
-| `base` | Shared Deployments (no Vault) |
+| `base` | Shared Deployments (no Vault); images `phoenixvlabs/nexus-*` |
 | `overlays/dev` | Disposable lab (same base) |
 | `overlays/test` | Adds system charts + Wazuh |
 | `overlays/prod` | Helm MinIO; Vault stays external |
