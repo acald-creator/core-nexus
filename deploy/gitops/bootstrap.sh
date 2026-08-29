@@ -15,9 +15,11 @@ kubectl get ns argocd >/dev/null 2>&1 || kubectl create namespace argocd
 kubectl get ns flux-system >/dev/null 2>&1 || kubectl create namespace flux-system
 
 echo "==> Argo CD (${ARGO_VERSION})"
-kubectl apply -n argocd -f "https://raw.githubusercontent.com/argoproj/argo-cd/${ARGO_VERSION}/manifests/install.yaml"
+# Server-side apply avoids CRD annotation size limit on kubectl client-side apply.
+kubectl apply --server-side --force-conflicts -n argocd \
+  -f "https://raw.githubusercontent.com/argoproj/argo-cd/${ARGO_VERSION}/manifests/install.yaml"
 echo "    waiting for argocd-server..."
-kubectl -n argocd rollout status deployment/argocd-server --timeout=180s || true
+kubectl -n argocd rollout status deployment/argocd-server --timeout=240s || true
 
 echo "==> Flux controllers (source + image-reflector + image-automation)"
 if command -v flux >/dev/null 2>&1; then
