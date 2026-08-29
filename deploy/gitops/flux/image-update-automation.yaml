@@ -21,9 +21,10 @@ spec:
       messageTemplate: |
         chore(gitops): update image pins
 
-        {% for image in .Updated.Images -%}
-        - {{ image }}
-        {% endfor %}
+        Images:
+        {{ range .Updated.Images -}}
+        - {{.}}
+        {{ end -}}
     push:
       branch: main
   update:
