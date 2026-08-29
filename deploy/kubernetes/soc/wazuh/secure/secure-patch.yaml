@@ -18,12 +18,21 @@ spec:
             - name: DISABLE_SECURITY_PLUGIN
               value: "false"
             - name: OPENSEARCH_JAVA_OPTS
-              value: "-Xms512m -Xmx512m"
+              # ~4Gi Rancher Desktop: keep heap small; security plugin still needs ~1Gi cgroup.
+              value: "-Xms384m -Xmx384m"
+            - name: DISABLE_PERFORMANCE_ANALYZER_AGENT_CLI
+              value: "true"
             - name: OPENSEARCH_INITIAL_ADMIN_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: wazuh-secrets
                   key: OPENSEARCH_INITIAL_ADMIN_PASSWORD
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 100m
+            limits:
+              memory: 1280Mi
           volumeMounts:
             - name: indexer-certs
               mountPath: /usr/share/opensearch/config/certs
@@ -32,13 +41,16 @@ spec:
               mountPath: /usr/share/opensearch/config/opensearch.yml
               subPath: opensearch.yml
               readOnly: true
+          # Replace base httpGet (HTTPS breaks it once security is on).
           readinessProbe:
+            $patch: replace
             tcpSocket:
               port: 9200
             initialDelaySeconds: 40
             periodSeconds: 15
             failureThreshold: 12
           livenessProbe:
+            $patch: replace
             tcpSocket:
               port: 9200
             initialDelaySeconds: 60
@@ -97,3 +109,9 @@ spec:
                 secretKeyRef:
                   name: wazuh-secrets
                   key: WAZUH_API_PASSWORD
+          resources:
+            requests:
+              memory: 512Mi
+              cpu: 100m
+            limits:
+              memory: 1536Mi

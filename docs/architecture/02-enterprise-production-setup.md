@@ -11,8 +11,9 @@ UDS/Zarf can later package and deliver this same architecture for air-gapped or 
 | Go script and k3d | Pulumi with Python | **Domains 3.1 and 4.7:** Infrastructure as Code declares cloud infrastructure state, reduces configuration drift, and allows testing of infrastructure logic. |
 | Docker Compose | Kubernetes manifests | **Domain 3.4:** Kubernetes provides resilience and self-healing. If a container crashes, Kubernetes can restart it automatically. |
 | Local host volumes | Kubernetes volumes, including `emptyDir` where appropriate | **Domain 3.2:** Ephemeral memory-backed volumes can keep selected transient logs off the host disk. Persistent data still needs explicit storage and retention design. |
-| Portainer manual UI | Argo CD GitOps | **Domain 1.3:** Production changes are made through reviewed Git commits instead of manual UI clicks. |
-| Vault dev mode | Vault HA with auto-unseal | **Domain 1.4:** Vault can run in high availability mode and use a KMS-backed auto-unseal workflow. |
+| Portainer manual UI | Argo CD + Flux GitOps | **Domain 1.3:** Production changes are made through reviewed Git commits instead of manual UI clicks. |
+| Vault dev mode | Vault HA with auto-unseal (`nexus-hashistack` / shared) | **Domain 1.4:** Vault can run in high availability mode and use a KMS-backed auto-unseal workflow. |
+| MinIO lab buckets | Cloudflare R2 (blobs) + D1 (metadata) | **Domain 3.2 / supply chain:** Durable artifact store with queryable provenance indexes. |
 
 ## 2. Secrets and Secure Software Factory Alignment
 
@@ -36,9 +37,10 @@ Underground Nexus can support multiple deployment methods during the transition.
 | --- | --- |
 | Docker Compose / Docker scripts | Current lab deployment path and quick local validation. |
 | Kubernetes manifests | Production-style workload definitions and portability layer. |
-| Pulumi | Infrastructure provisioning and environment creation. |
-| Argo CD | GitOps reconciliation for Kubernetes workloads. |
+| Flux CD + Argo CD | **Default programmatic fabric:** Flux for sync/image automation; Argo CD for app delivery and governance. |
+| Pulumi | Optional infrastructure provisioning (cloud accounts, clusters) — not a GitOps substitute. |
 | UDS / Zarf | Air-gapped delivery, baseline platform services, and packaged deployment option. |
+| Object store | MinIO in lab; Cloudflare R2 + D1 in production (S3-shaped app interface). |
 
 ## 4. Kubernetes Sidecar Pattern
 
@@ -62,10 +64,16 @@ Important caveat: this only controls the lifecycle of the shared handoff volume.
 
 ### 5. DevSecOps Pipeline (Flux CD + Argo CD GitOps)
 
-To automate the production architecture, Underground Nexus utilizes a combined **Flux CD** and **Argo CD** GitOps pipeline:
+**Locked default:** Underground Nexus uses **Flux CD and Argo CD together** as the programmable fabric + factory delivery loop (not Portainer, not webtop-driven deploys).
+
+**Bootstrap sketch:** `deploy/gitops/` — Argo owns Application sync; Flux owns image-reflector + image-automation only (no competing Flux Kustomizations). First workload: `deploy/kubernetes/soc/overlays/gitops-lab`. SSF OCI wiring: `deploy/gitops/ssf-follow-on.md`.
 
 * **Flux CD (Synchronization & Image Automation)**: Acting as the low-level sync engine, Flux monitors the Git repositories, Helm charts, and image registries. Its *Image Automation Controller* detects newly built images (e.g. `nexus-workbench:latest` or `ai-inference:latest`), automatically commits the updated tags back to Git, and syncs basic infrastructure manifests.
-* **Argo CD (Governance & visualization)**: Argo CD acts as the primary deployment orchestrator and dashboard. It pulls the updated manifests from Git, dynamically inflates Helm charts (such as HashiCorp Vault and Bitnami MinIO) via Kustomize's `helmCharts` generator, provides rich visual topology maps of application states, manages SSO authentication, and enforces RBAC policy control for the operational team.
+* **Argo CD (Governance & visualization)**: Argo CD acts as the primary deployment orchestrator and dashboard. It pulls the updated manifests from Git, dynamically inflates Helm charts (such as HashiCorp Vault and object-store charts where still used) via Kustomize's `helmCharts` generator, provides rich visual topology maps of application states, manages SSO authentication, and enforces RBAC policy control for the operational team.
+
+Secure software factory CI feeds signed images into this loop. **Default factory tool:** [`nebucloud/ssf`](https://github.com/nebucloud/ssf) + [kiln](https://github.com/nebucloud/kiln) (sign/attest/SBOM/policy on build outputs). Flux Image Automation / Argo then promote verified digests. Do not stand up a second Cosign/SBOM stack inside `core-nexus` unless SSF cannot cover the artifact type.
+
+The older `nebucloud/secure-software-factory` monorepo (Fabric/xDS-oriented) is not the active Nexus factory default.
 
 ```mermaid
 flowchart TD

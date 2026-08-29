@@ -121,10 +121,14 @@ Keep Phase 2 and Phase 3 items explicitly out of scope.
 | Repository | Role | Key artifacts |
 | --- | --- | --- |
 | `core-nexus` | Architecture hub, platform definitions, deployment manifests | `docs/architecture/`, `platform/`, `deploy/` |
-| `nexus-athena` | Red-team container image (Kali-based offensive tooling) | `Dockerfile.*`, `architecture.md` |
-| `athena-agents` | LLM-driven adversary emulation framework (OPAR loop) | `orchestrator/`, `config/`, `eval/`, `crates/` |
-| `nexus-webtop-soc` | SOC analyst webtop + baseline compose stack | `deploy/compose/soc-baseline.yml`, `scripts/` |
-| `nexus-webtop-workbench` | Analyst workbench desktop image | Dockerfile, validation scripts |
+| `nexus-hashistack` | Local/shared Vault (+ Consul) packs; AppRole export for `--from-vault` | `scripts/`, `docs/nexus-wiring.md` |
+| `nexus-athena` | Red-team container image (Kali-based offensive tooling) | `Dockerfile.*`, deploy profiles |
+| `athena-agents` | LLM-driven adversary emulation framework (OPAR loop) | `orchestrator/`, `config/`, `eval/` |
+| `nexus-webtop-soc` | **Transitional** SOC compose recipes only; desktop webtop **retired** | `deploy/compose/` until fully replaced by `core-nexus` k8s SOC |
+| `nexus-webtop-workbench` | **Retired** analyst desktop image; use Jupyter workbench + Console | archive path |
+
+**Keep as human surfaces:** Nexus Console, Jupyter purple workspace, isolated Athena.
+**GitOps default:** Flux + Argo CD. **Prod objects:** Cloudflare R2 + D1 (lab: MinIO).
 
 When working on LLM agent workflows, the primary implementation lives in `athena-agents`. Architecture and integration docs live in `core-nexus`. The container runtime for agent execution lives in `nexus-athena`.
 

@@ -1,0 +1,23 @@
+# App-of-apps root. Placeholders rewritten by bootstrap.sh.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nexus-root
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: __NEXUS_GIT_URL__
+    targetRevision: __NEXUS_GIT_BRANCH__
+    path: deploy/gitops/argo/applications
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

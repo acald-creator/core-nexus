@@ -1,0 +1,45 @@
+# Commits image policy pins into Git. Requires Secret flux-system/flux-git-auth
+# (see git-secret.example.yaml). Adjust url/branch to match your remote.
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageUpdateAutomation
+metadata:
+  name: nexus-images
+  namespace: flux-system
+spec:
+  interval: 10m
+  sourceRef:
+    kind: GitRepository
+    name: core-nexus
+  git:
+    checkout:
+      ref:
+        branch: main
+    commit:
+      author:
+        email: flux@underground-nexus.local
+        name: flux-image-automation
+      messageTemplate: |
+        chore(gitops): update image pins
+
+        {% for image in .Updated.Images -%}
+        - {{ image }}
+        {% endfor %}
+    push:
+      branch: main
+  update:
+    path: ./deploy/kubernetes/soc/overlays/gitops-lab
+    strategy: Setters
+---
+# Minimal GitRepository for image automation commits (not used for full cluster sync).
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: core-nexus
+  namespace: flux-system
+spec:
+  interval: 5m
+  url: https://github.com/acald-creator/core-nexus.git
+  ref:
+    branch: main
+  secretRef:
+    name: flux-git-auth

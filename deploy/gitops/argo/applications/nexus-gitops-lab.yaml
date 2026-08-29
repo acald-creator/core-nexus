@@ -1,0 +1,32 @@
+# First GitOps workload: Console + API gateway (gitops-lab overlay).
+# Repo URL/branch inherited from cluster when using ApplicationSet later;
+# for the sketch, root Application syncs this directory — set repo on each app.
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nexus-gitops-lab
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: underground-nexus
+    nexus.underground.io/plane: fabric
+spec:
+  project: default
+  source:
+    # bootstrap.sh does not rewrite this file; align with NEXUS_GIT_URL or edit after apply.
+    repoURL: https://github.com/acald-creator/core-nexus.git
+    targetRevision: main
+    path: deploy/kubernetes/soc/overlays/gitops-lab
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: soc
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  ignoreDifferences:
+    - group: apps
+      kind: Deployment
+      jsonPointers:
+        - /spec/replicas

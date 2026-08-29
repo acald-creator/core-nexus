@@ -6,40 +6,33 @@ inclusion: manual
 ---
 
 ## When to Apply
-- Working in nexus-webtop-soc or SOC-related compose stacks
+- Working on headless SOC (Wazuh, Suricata) in `core-nexus` k8s or transitional compose
 - Analyzing Wazuh alerts, Suricata rules, or sensor telemetry
 - Building detection rules or tuning alert thresholds
-- Investigating incidents using the analyst webtop
-- Configuring the SOC baseline stack
+- Investigating via Nexus Console, Jupyter purple workspace, or `nexus-tui` (not webtop desktops)
 
 ## Approach
-1. Start with the compose stack topology: `deploy/compose/soc-baseline.yml`
+1. Prefer `deploy/kubernetes/soc/` in core-nexus; treat `nexus-webtop-soc` compose as transitional only
 2. Identify which service generated the alert (Wazuh manager, Suricata sensor, or custom)
 3. Check Suricata rule files for existing coverage of the indicator
 4. Cross-reference with Wazuh decoder/rule XML for correlation
-5. Use the analyst webtop for visual investigation (XFCE + browser + CLI tools)
+5. Investigate in Console / Jupyter / TUI — not XFCE webtops
 6. Document findings as structured JSON ground-truth records
 7. If new detection is needed, write rule + test case together
-8. Validate with `scripts/validate-analyst-image.sh` after changes
+8. Validate manifests/scripts appropriate to the path you changed (kustomize / compose)
 
 ## Key Patterns
-- Compose services use dotted names: `wazuh.manager`, `suricata.sensor`, `webtop.analyst`
-- Bootstrap security after `down -v`: `scripts/bootstrap-wazuh-security.sh`
-- Suricata config: `deploy/suricata/suricata.yaml`
-- Image override: `WEBTOP_ANALYST_IMAGE` env var
-- Detection services are dedicated containers, NOT inside the desktop image
-- Analyst image acceptance gate: healthchecks, curl, tool availability
+- Detection services are dedicated containers, NOT inside desktop images
+- Webtop analyst images are retired as product surfaces (`docs/architecture/01` §0)
+- Secrets: Vault via hashistack + `sync-vault-to-k8s.sh`
 
 ## Pitfalls
-- Don't add SOC control-plane services into the desktop image
-- Don't modify cert paths in bootstrap script without updating indexer layout
+- Don't add SOC control-plane services into desktop images
 - Don't hardcode credentials in Dockerfiles or scripts
-- The webtop is for analyst workflow, not for running detection engines
-- Always run acceptance gate before considering changes complete
+- Don't revive webtops as the recommended analyst path
 
 ## References
-- `nexus-webtop-soc/deploy/compose/soc-baseline.yml` — full stack
-- `nexus-webtop-soc/deploy/suricata/suricata.yaml` — sensor config
-- `nexus-webtop-soc/scripts/bootstrap-wazuh-security.sh` — security init
-- `nexus-webtop-soc/scripts/validate-analyst-image.sh` — acceptance gate
-- `nexus-webtop-soc/docs/soc-baseline.md` — operations guide
+- `docs/architecture/01-component-architecture.md` §0
+- `deploy/kubernetes/soc/` — in-repo SOC path
+- `platform/soc/README.md`
+- Transitional: `nexus-webtop-soc` compose recipes only

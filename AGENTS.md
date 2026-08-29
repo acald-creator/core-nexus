@@ -39,7 +39,10 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 ## Guardrails
 
 - Do not add SOC control-plane services into desktop images.
+- Do not treat `nexus-webtop-*` as recommended product surfaces; prefer Console, Jupyter purple workspace, and isolated Athena (`docs/architecture/01` §0).
 - Do not add offensive tooling here — it belongs in `nexus-athena` or `athena-agents`.
 - LLM agents must operate within allowlist and capability-gate constraints.
 - Autonomous response is a later capability; human approval comes first.
 - Keep credentials and certificates out of committed files.
+- Prefer Flux + Argo CD for programmatic fabric delivery; review external secure-software-factory repos before inventing a parallel pipeline.
+

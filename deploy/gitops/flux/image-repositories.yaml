@@ -1,0 +1,20 @@
+# Flux watches published nexus images. Point image to your registry if different.
+# Private registries need an imagePullSecret referenced on ImageRepository.spec.secretRef.
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: nexus-console
+  namespace: flux-system
+spec:
+  image: phoenixvlabs/nexus-console
+  interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: nexus-api-gateway
+  namespace: flux-system
+spec:
+  image: phoenixvlabs/nexus-api-gateway
+  interval: 5m

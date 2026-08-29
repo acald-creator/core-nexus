@@ -4,3 +4,4 @@ kustomize
 .env.vault
 .env
 deploy/kubernetes/soc/wazuh/.certs/
+.tmp-review/

@@ -14,8 +14,8 @@ Credentials are **not** hardcoded on the Deployments. They come from Secret
 
 | Profile | Indexer | Apply |
 |---------|---------|-------|
-| **HTTP lab** | Security plugin off | `kubectl apply -k deploy/kubernetes/soc/wazuh` |
-| **TLS lab** | Security + TLS | `kubectl apply -k deploy/kubernetes/soc/overlays/wazuh-secure` |
+| **HTTP lab** | Security plugin off (~fits 4Gi RD) | `kubectl apply -k deploy/kubernetes/soc/wazuh` |
+| **TLS lab** | Security + TLS (**needs ≥8Gi node RAM**) | `kubectl apply -k deploy/kubernetes/soc/overlays/wazuh-secure` |
 
 ## Apply (HTTP lab)
 
@@ -37,8 +37,12 @@ kubectl rollout restart deployment/wazuh-indexer deployment/wazuh-manager -n soc
 
 Manager uses `INDEXER_URL=https://wazuh-indexer:9200` with
 `FILEBEAT_SSL_VERIFICATION_MODE=none` for this lab. Replace with proper CA trust
-before production. The full `overlays/test` stack also includes this secure
-component (plus system charts that need Helm).
+before production.
+
+Passwords must satisfy Wazuh API rules (upper + lower + digit + symbol). Hashistack
+`seed-nexus-secrets.sh` defaults to lab-strength values; plain `changeme` causes
+manager Error 5007 and CrashLoopBackOff. The full `overlays/test` stack also includes
+this secure component (plus system charts that need Helm).
 
 Point the API Gateway at the manager:
 

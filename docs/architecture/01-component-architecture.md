@@ -2,6 +2,30 @@
 
 This document maps the current Underground Nexus components to a refined target architecture. The goal is not to discard the current Docker lab, but to make each component clearer, safer, and easier to move into Kubernetes, GitOps, and eventually UDS/Zarf packaging.
 
+## 0. Product Narrative (locked)
+
+Underground Nexus is a **programmable fabric** plus a **secure software factory**, with an attached **red / blue / purple range**.
+
+| Plane | Purpose | Primary surfaces |
+| --- | --- | --- |
+| Fabric | Deployable components, namespaces, identity, secrets, observability | Kubernetes manifests/overlays, Vault, MinIO (lab) / R2+D1 (prod) |
+| Secure software factory | Build → SBOM → sign → attest → promote | CI + **Flux** (image automation / sync) + **Argo CD** (app delivery & governance) |
+| Blue | SOC detection and ops UX | Headless Wazuh + sensors + AI triage + **Nexus Console** (+ optional `nexus-tui`) |
+| Purple | Evaluate detections / models against ground truth | **Jupyter** agentic workspace + MCP |
+| Red | Controlled stimulation / emulation | **Isolated Athena** + `athena-agents` |
+
+**Human client surfaces (keep):** Nexus Console, Jupyter purple workspace, isolated Athena.
+
+**Retire as product images:** `nexus-webtop-soc` and `nexus-webtop-workbench` full Linux desktops. Do not put SOC control-plane or factory trust into desktop images. Transitional compose recipes may live in those repos until headless SOC in `core-nexus` is sufficient, then archive.
+
+**GitOps default:** Argo CD + Flux CD together (see `02-enterprise-production-setup.md` §5). Pulumi remains optional for cloud/infra provisioning, not a substitute for the GitOps loop.
+
+**Object storage:** Lab uses MinIO (S3 API). Production prefers Cloudflare **R2** for blobs and **D1** for artifact/run metadata indexes, behind the same application object-store interface.
+
+**Secure software factory implementation:** Prefer [`nebucloud/ssf`](https://github.com/nebucloud/ssf) (Go CLI: sign/attest/SBOM/policy via Cosign shellouts; `ssf.yaml` → kiln hermetic steps). Builds stay in [kiln](https://github.com/nebucloud/kiln); SSF secures outputs. Do **not** reinvent a parallel factory inside `core-nexus`. The older monorepo `nebucloud/secure-software-factory` (xDS + Hyperledger Fabric scaffolding) is a separate lineage — not the default Nexus factory path unless explicitly revived.
+
+Existing SSF phases (2.4a–d) are early but real (binary artifact + pipeline + CUE); OCI and Flux/Argo wiring are follow-ons for Nexus image promotion.
+
 ## 1. Deployment Progression
 
 Underground Nexus can support multiple deployment methods during the transition.
@@ -59,12 +83,13 @@ graph LR
 | NGINX proxy | Lab HTTP routing | Replace with Kubernetes ingress or UDS/Istio gateways in production |
 | Nexus Console | Primary Platform UI | Custom React/Vite dashboard serving as the unified launchpad for all Underground Nexus services |
 | Portainer | Manual host container UI | Lab-only; relegated to baseline container management, replaced by Nexus Console as primary UI |
-| MinIO | Lab object storage for `/nexus-bucket` artifacts | Kubernetes-native MinIO (`StatefulSet` for base, Helm Distributed cluster for prod) |
-| Vault dev mode | Development secrets service | Vault HA via Helm chart for prod; `StatefulSet` file backend for test |
-| `nexus-webtop-soc` | Legacy SOC desktop with Suricata | Split into dedicated Wazuh SOC services and sensors; legacy webtop client removed |
-| `nexus-athena` | Kali red-team container | Custom local build; keep as isolated lab traffic generator with 5 runtime profiles (standard, packet-lab, exploit-lab, agent, agent-ics) |
+| MinIO | Lab object storage for `/nexus-bucket` artifacts | Lab S3 backend; production blobs on Cloudflare R2 + metadata on D1 (S3-shaped app interface) |
+| Vault dev mode | Development secrets service | Vault HA via Helm chart for prod; owned by `nexus-hashistack` / shared Vault (not in-cluster from core-nexus) |
+| `nexus-webtop-soc` | Legacy SOC desktop with Suricata | **Retire** desktop image; keep headless Wazuh/sensor recipes only until `deploy/kubernetes/soc` is enough |
+| `nexus-webtop-workbench` | Legacy analyst desktop | **Retire**; replaced by Jupyter purple workspace + Console |
+| `nexus-athena` | Kali red-team container | Keep isolated red range with runtime profiles; not an analyst or factory client |
 | `athena-agents` | LLM adversary orchestration | OPAR execution loop with configurable LLM backend, tool registry, safety controls, and ground-truth emission |
-| `nexus-workbench` | Agentic Workspace | JupyterLab environment serving as the unified analyst client |
+| `nexus-workbench` / `platform/workbench` | Agentic Workspace | JupyterLab purple workspace (sole purple human client) |
 | `nexus-tui` | Terminal SOC console | Charmbracelet TUI for alert triage, agent feed, approvals, and skill browsing in SSH/air-gapped environments |
 | Code server | Development editor | Merged into Agentic Workspace concepts (JupyterLab / VS Code) |
 | Docker Swarm | Overlay networking experiment | De-emphasize for future architecture unless a specific lab requires it |
@@ -168,17 +193,17 @@ Panels:
 
 This complements (does not replace) the browser-based Nexus Console and Workbench.
 
-### Workbench
+### Workbench (purple)
 
-`nexus-workbench` should remain the analyst and administration desktop.
+The purple human surface is a **JupyterLab agentic workspace** (`platform/workbench` / `nexus-workbench` image), not a full Linux webtop.
 
 Refinement goals:
 
-- Provide browser access to Wazuh, Grafana, documentation, and runbooks using JupyterLab.
-- Keep Terraform or Pulumi tooling here by default.
-- Treat QEMU/KVM/libvirt as an optional privileged profile.
-- Avoid host Docker socket mounts in the default profile, running as unprivileged `nonroot` (UID `65532`) on a secure Chainguard base.
-- Keep red-team tooling in Athena instead of the workbench.
+- Evaluate detections and models against Athena ground-truth labels; use MCP for approved tool context.
+- Deep-link to Wazuh, Grafana, and runbooks via Console where possible; notebooks for analysis.
+- Optional IaC notebooks/CLIs; prefer GitOps (Argo/Flux) for cluster changes over long-lived admin desktops.
+- Avoid host Docker socket mounts in the default profile; run unprivileged on a minimal base.
+- Keep red-team tooling in Athena; keep SOC engines out of the workbench image.
 
 ## 4. Event and Logging Architecture
 
@@ -291,20 +316,20 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 
 | Decision | Recommended default | Component docs |
 | --- | --- | --- |
-| SOC platform | Wazuh manager, indexer, dashboard, agents, plus hybrid Suricata/runtime sensor | `nexus-webtop-soc` (headless services) |
-| Security event store | Wazuh indexer | `nexus-webtop-soc` (headless services) |
+| Product spine | Programmable fabric + secure software factory; R/B/P range attached | This document §0 |
+| GitOps | Flux (sync / image automation) + Argo CD (apps / governance) | `deploy/gitops/`, `02` §5 |
+| SOC platform | Headless Wazuh + hybrid Suricata/runtime sensors | `deploy/kubernetes/soc`, transitional compose in webtop-soc |
+| Security event store | Wazuh indexer | SOC k8s / compose |
 | Platform log store | Loki, with Vector aggregation | Core Nexus |
-| Workbench default profile | Unified Agentic Workspace (JupyterLab) | `nexus-workbench` |
-| Workbench privileged profile | Explicit opt-in for virtualization or Docker administration | `nexus-workbench` |
-| Athena default profile | Isolated red-team lab container without SSH or Docker socket | `nexus-athena` |
-| Athena elevated profile | Explicit packet-capture, exploit-lab, or LLM-agent capabilities | `nexus-athena` |
+| Purple workspace | JupyterLab agentic workspace | `platform/workbench` |
+| Blue UI | Nexus Console (+ optional `nexus-tui`) | `platform/nexus-console` |
+| Red range | Isolated Athena profiles + `athena-agents` | `nexus-athena`, `athena-agents` |
+| Desktop webtops | Retired as product images | `nexus-webtop-*` archive path |
 | LLM adversary orchestration | OPAR loop with safety controls and ground-truth emission | `athena-agents` |
-| Agent memory | Git-based skills (source of truth) + MinIO sync for headless agents | Core Nexus `docs/skills/` |
-| Terminal SOC console | Charmbracelet TUI for air-gapped/SSH environments | Core Nexus `cmd/nexus-tui` |
-| Primary UI | Custom Nexus Console Launchpad | `nexus-console` |
-| Secrets manager | Vault HA via Helm (prod); Vault `StatefulSet` (test/dev) | Core Nexus |
+| Agent memory | Git-based skills (source of truth) + object-store sync for headless agents | Core Nexus `docs/skills/` |
+| Secrets manager | Vault via `nexus-hashistack` / shared Vault (not deployed from core-nexus) | `12`, hashistack |
 | UDS role | Platform baseline and Zarf delivery, not the secrets backend | Core Nexus |
-| MinIO role | Kubernetes-native Object storage (StatefulSet / Distributed Helm) | Core Nexus |
+| Object storage | MinIO (lab); Cloudflare R2 blobs + D1 metadata (prod) | Gateway / factory adapters |
 
 ### Milestone 1: Clarify Current Lab Profiles
 
@@ -315,21 +340,22 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 
 ### Milestone 2: Refine Component Images
 
-- Convert `nexus-webtop-soc` into separate headless SOC services and sensors (legacy webtop client removed).
-- Keep `nexus-athena` and `nexus-athena-elevated` focused on isolated red-team lab scenarios.
-- Transition analyst workflows exclusively to the unified `nexus-workbench` Agentic Workspace.
-- Define image signing, SBOM, and version pinning standards across repos.
+- Finish headless SOC in `core-nexus`; mark `nexus-webtop-*` desktop images retired/archived.
+- Keep Athena isolated (profiles + agents); Jupyter as sole purple client; Console as blue/ops UI.
+- Define image signing, SBOM, and version pinning standards (factory review of existing repos comes next).
 
 ### Milestone 3: Add Kubernetes Workload Definitions
 
 - Add manifests or Helm charts for SOC services.
-- Add runtime profiles for Athena and Workbench.
-- Add storage definitions for Wazuh, MinIO, and any persistent data.
-- Add network policies for lab, SOC, and admin zones.
+- Add runtime profiles for Athena and Jupyter workbench.
+- Abstract object store (MinIO lab / R2 prod) and D1 metadata schema for artifacts.
+- Add network policies for fabric, blue, purple, and red zones.
 
 ### Milestone 4: Add GitOps and UDS Delivery
 
-- Use Pulumi for infrastructure provisioning where needed.
-- Use Argo CD for GitOps reconciliation.
-- Package the architecture with Zarf for UDS-based connected or air-gapped delivery.
+- Stand up **Flux + Argo CD** as the default programmatic fabric loop (image automation + app governance).
+- Sketch bootstrap lives in `deploy/gitops/` (Argo app-of-apps + Flux image automation; first app = `overlays/gitops-lab`).
+- SSF OCI follow-on: `deploy/gitops/ssf-follow-on.md` → work in `nebucloud/ssf`.
+- Use Pulumi only where cloud/infra provisioning still needs it.
+- Package with Zarf for UDS-based connected or air-gapped delivery when required.
 - Decide which UDS Core services replace or wrap current platform services.

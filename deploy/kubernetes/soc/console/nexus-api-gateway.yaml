@@ -1,0 +1,113 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-api-gateway
+  namespace: soc
+  labels:
+    app: nexus-api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nexus-api-gateway
+  template:
+    metadata:
+      labels:
+        app: nexus-api-gateway
+    spec:
+      containers:
+        - name: api-gateway
+          image: phoenixvlabs/nexus-api-gateway:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3100
+              name: http
+          env:
+            - name: NEXUS_GW_PORT
+              value: "3100"
+            - name: NEXUS_GW_DEBUG
+              value: "true"
+            - name: NEXUS_GW_LOG_LEVEL
+              value: info
+            - name: NEXUS_GW_AUTH_PROVIDER
+              value: local
+            - name: NEXUS_GW_SERVICE_REGISTRY_PATH
+              value: /app/config/services.json
+            - name: NEXUS_GW_AI_INFERENCE_URL
+              value: http://ai-inference:8000
+            - name: NEXUS_GW_ATHENA_AGENTS_URL
+              value: http://athena-agents.soc.svc.cluster.local:8080
+            - name: NEXUS_GW_MINIO_ENDPOINT
+              value: minio:9000
+            - name: NEXUS_GW_MINIO_PUBLIC_ENDPOINT
+              value: localhost:9000
+            - name: NEXUS_GW_MINIO_BUCKET
+              value: nexus-memory
+            - name: NEXUS_GW_WAZUH_API_URL
+              value: https://wazuh-manager.soc.svc.cluster.local:55000
+            - name: NEXUS_GW_WAZUH_API_USER
+              value: wazuh-wui
+            - name: NEXUS_GW_CORS_ALLOWED_ORIGINS
+              value: '["http://localhost:3000","http://nexus-console.soc.svc.cluster.local"]'
+            - name: NEXUS_GW_VAULT_URL
+              value: http://host.docker.internal:8200
+            - name: NEXUS_GW_JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_JWT_SECRET
+            - name: NEXUS_GW_MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_MINIO_ACCESS_KEY
+            - name: NEXUS_GW_MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_MINIO_SECRET_KEY
+            - name: NEXUS_GW_WAZUH_API_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_WAZUH_API_PASSWORD
+            - name: NEXUS_GW_VAULT_ROLE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_VAULT_ROLE_ID
+                  optional: true
+            - name: NEXUS_GW_VAULT_SECRET_ID
+              valueFrom:
+                secretKeyRef:
+                  name: nexus-gateway-secrets
+                  key: NEXUS_GW_VAULT_SECRET_ID
+                  optional: true
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3100
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: "100m"
+              memory: 256Mi
+            limits:
+              cpu: "500m"
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nexus-api-gateway
+  namespace: soc
+  labels:
+    app: nexus-api-gateway
+spec:
+  selector:
+    app: nexus-api-gateway
+  ports:
+    - name: http
+      port: 3100
+      targetPort: 3100
