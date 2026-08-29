@@ -69,3 +69,21 @@ def test_presigned_url_rewrites_internal_minio_host():
     url = client.get_presigned_url("pcaps/a.pcap")
     assert url.startswith("http://localhost:9000/")
     assert "minio:9000" not in url
+
+
+def test_from_settings_r2_uses_account_endpoint():
+    from src.clients.minio_client import ObjectStoreClient
+    from src.config import GatewaySettings
+
+    settings = GatewaySettings(
+        jwt_secret="x",
+        wazuh_api_url="https://wazuh:55000",
+        minio_access_key="ak",
+        minio_secret_key="sk",
+        object_store_backend="r2",
+        r2_account_id="abc123",
+        minio_endpoint="minio:9000",
+    )
+    client = ObjectStoreClient.from_settings(settings)
+    assert client._endpoint == "abc123.r2.cloudflarestorage.com"
+    assert client._bucket == "nexus-memory"

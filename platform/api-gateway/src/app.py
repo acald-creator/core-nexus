@@ -29,14 +29,7 @@ async def lifespan(app: FastAPI):
         user=settings.wazuh_api_user,
         password=settings.wazuh_api_password,
     )
-    app.state.minio_client = MinIOClient(
-        endpoint=settings.minio_endpoint,
-        access_key=settings.minio_access_key,
-        secret_key=settings.minio_secret_key,
-        secure=settings.minio_secure,
-        bucket=settings.minio_bucket,
-        public_endpoint=settings.minio_public_endpoint,
-    )
+    app.state.minio_client = MinIOClient.from_settings(settings)
     app.state.athena_client = AthenaClient(base_url=settings.athena_agents_url)
     app.state.ai_inference_client = AIInferenceClient(base_url=settings.ai_inference_url)
 
@@ -48,6 +41,7 @@ async def lifespan(app: FastAPI):
         auth_provider=settings.auth_provider,
         wazuh_url=settings.wazuh_api_url,
         minio_endpoint=settings.minio_endpoint,
+        object_store_backend=settings.object_store_backend,
         athena_url=settings.athena_agents_url,
         ai_inference_url=settings.ai_inference_url,
     )

@@ -1,9 +1,24 @@
-"""Wrapper around minio SDK for object listing and pre-signed URLs."""
+"""S3-compatible object store client (MinIO lab, Cloudflare R2 prod).
+
+Uses the MinIO Python SDK against any S3 API. Backend is selected via
+NEXUS_GW_OBJECT_STORE_BACKEND=minio|r2 — credentials stay on the same
+NEXUS_GW_MINIO_* env vars (access/secret/bucket) so Vault paths and
+sync scripts do not fork.
+"""
+from __future__ import annotations
+
 from datetime import timedelta
+from typing import TYPE_CHECKING
+
 from minio import Minio
 
+if TYPE_CHECKING:
+    from src.config import GatewaySettings
 
-class MinIOClient:
+
+class ObjectStoreClient:
+    """List objects and mint browser-reachable pre-signed GET URLs."""
+
     def __init__(
         self,
         endpoint: str,
@@ -12,11 +27,57 @@ class MinIOClient:
         secure: bool,
         bucket: str,
         public_endpoint: str | None = None,
+        region: str | None = None,
     ):
-        self._client = Minio(endpoint, access_key=access_key, secret_key=secret_key, secure=secure)
+        kwargs: dict = {
+            "endpoint": endpoint,
+            "access_key": access_key,
+            "secret_key": secret_key,
+            "secure": secure,
+        }
+        if region:
+            kwargs["region"] = region
+        self._client = Minio(**kwargs)
         self._bucket = bucket
         self._endpoint = endpoint
         self._public_endpoint = public_endpoint
+
+    @classmethod
+    def from_settings(cls, settings: GatewaySettings) -> ObjectStoreClient:
+        """Build a client for MinIO (lab) or Cloudflare R2 (prod)."""
+        backend = settings.object_store_backend
+        if backend == "r2":
+            account = settings.r2_account_id
+            default_lab = settings.minio_endpoint in ("minio:9000", "localhost:9000", "")
+            if settings.minio_endpoint and not default_lab:
+                endpoint = settings.minio_endpoint
+            elif account:
+                endpoint = f"{account}.r2.cloudflarestorage.com"
+            else:
+                raise ValueError(
+                    "NEXUS_GW_R2_ACCOUNT_ID (or a non-lab NEXUS_GW_MINIO_ENDPOINT) "
+                    "is required when NEXUS_GW_OBJECT_STORE_BACKEND=r2"
+                )
+            endpoint = endpoint.removeprefix("https://").removeprefix("http://")
+            return cls(
+                endpoint=endpoint,
+                access_key=settings.minio_access_key,
+                secret_key=settings.minio_secret_key,
+                secure=True,
+                bucket=settings.minio_bucket,
+                public_endpoint=settings.minio_public_endpoint,
+                region=settings.object_store_region or "auto",
+            )
+
+        return cls(
+            endpoint=settings.minio_endpoint,
+            access_key=settings.minio_access_key,
+            secret_key=settings.minio_secret_key,
+            secure=settings.minio_secure,
+            bucket=settings.minio_bucket,
+            public_endpoint=settings.minio_public_endpoint,
+            region=settings.object_store_region or None,
+        )
 
     def bucket_exists(self) -> bool:
         """Check if the configured bucket exists."""
@@ -52,3 +113,7 @@ class MinIOClient:
         finally:
             response.close()
             response.release_conn()
+
+
+# Back-compat alias — routes and tests historically imported MinIOClient.
+MinIOClient = ObjectStoreClient

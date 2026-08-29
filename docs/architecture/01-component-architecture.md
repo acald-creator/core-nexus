@@ -20,7 +20,7 @@ Underground Nexus is a **programmable fabric** plus a **secure software factory*
 
 **GitOps default:** Argo CD + Flux CD together (see `02-enterprise-production-setup.md` §5). Pulumi remains optional for cloud/infra provisioning, not a substitute for the GitOps loop.
 
-**Object storage:** Lab uses MinIO (S3 API). Production prefers Cloudflare **R2** for blobs and **D1** for artifact/run metadata indexes, behind the same application object-store interface.
+**Object storage:** Lab uses MinIO (S3 API). Production prefers Cloudflare **R2** for blobs (`NEXUS_GW_OBJECT_STORE_BACKEND=r2`) and **D1** for artifact/run metadata indexes. Gateway client: `platform/api-gateway` ObjectStoreClient — see `OBJECT_STORE.md`.
 
 **Secure software factory implementation:** Prefer [`nebucloud/ssf`](https://github.com/nebucloud/ssf) (Go CLI: sign/attest/SBOM/policy via Cosign shellouts; `ssf.yaml` → kiln hermetic steps). Builds stay in [kiln](https://github.com/nebucloud/kiln); SSF secures outputs. Do **not** reinvent a parallel factory inside `core-nexus`. The older monorepo `nebucloud/secure-software-factory` (xDS + Hyperledger Fabric scaffolding) is a separate lineage — not the default Nexus factory path unless explicitly revived.
 

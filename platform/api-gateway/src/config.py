@@ -39,9 +39,13 @@ class GatewaySettings(BaseSettings):
     wazuh_api_password: str = Field(default="", description="Wazuh API password")
     ai_inference_url: str = "http://ai-inference:8000"
     athena_agents_url: str = "http://athena-agents:8080"
+    # Object store: MinIO (lab) or Cloudflare R2 (prod). Same access/secret/bucket envs.
+    object_store_backend: Literal["minio", "r2"] = "minio"
+    object_store_region: str | None = None  # R2: "auto"; MinIO: usually unset
+    r2_account_id: str | None = None  # required when backend=r2 unless minio_endpoint set
     minio_endpoint: str = "minio:9000"
-    minio_access_key: str = Field(description="MinIO access key — required")
-    minio_secret_key: str = Field(description="MinIO secret key — required")
+    minio_access_key: str = Field(description="S3 access key (MinIO or R2) — required")
+    minio_secret_key: str = Field(description="S3 secret key (MinIO or R2) — required")
     minio_secure: bool = False
     minio_bucket: str = "nexus-memory"
     # Host:port the browser uses to fetch pre-signed URLs (rewritten from minio_endpoint).
