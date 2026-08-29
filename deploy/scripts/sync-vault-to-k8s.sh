@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pull secrets from an *external* Vault (nexus-hashistack locally) into Kubernetes:
 #   wazuh-secrets          ← secret/soc/wazuh
-#   nexus-gateway-secrets  ← secret/soc/wazuh + secret/nexus/dev (+ optional AppRole env)
+#   nexus-gateway-secrets  ← secret/soc/wazuh + secret/nexus/dev|prod (+ optional AppRole env)
 #
 # Prerequisites:
 #   cd ../nexus-hashistack && ./scripts/nexus-dev-up.sh
@@ -10,6 +10,10 @@
 # Optional AppRole injection (from hashistack export):
 #   source ../nexus-hashistack/.approle/gateway.env   # sets VAULT_ROLE_ID / VAULT_SECRET_ID
 #   ./deploy/scripts/sync-vault-to-k8s.sh
+#
+# R2 / non-lab gateway credentials:
+#   NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
+#   (default path is nexus/dev — lab MinIO keys)
 set -euo pipefail
 
 VAULT_ADDR="${VAULT_ADDR:-http://localhost:8200}"
@@ -17,10 +21,13 @@ VAULT_TOKEN="${VAULT_TOKEN:-myroot}"
 NAMESPACE="${NAMESPACE:-soc}"
 INDEXER_USERNAME="${INDEXER_USERNAME:-admin}"
 WAZUH_API_USER="${WAZUH_API_USER:-wazuh-wui}"
+# KV path under secret/data/ — lab MinIO (nexus/dev) or R2 (nexus/prod)
+NEXUS_VAULT_GW_PATH="${NEXUS_VAULT_GW_PATH:-nexus/dev}"
 
 echo "Syncing secrets from HashiCorp Vault to Kubernetes..."
 echo "Vault Address: ${VAULT_ADDR}"
 echo "K8s Namespace: ${NAMESPACE}"
+echo "Gateway KV:    secret/${NEXUS_VAULT_GW_PATH}"
 
 kv_get() {
   local path="$1"
@@ -48,25 +55,36 @@ if [ "$SOC_STATUS" -ne 200 ]; then
   exit 1
 fi
 
-DEV_RAW="$(kv_get nexus/dev)"
-DEV_STATUS="$(parse_status "$DEV_RAW")"
-DEV_BODY="$(parse_body "$DEV_RAW")"
-if [ "$DEV_STATUS" -ne 200 ]; then
-  echo "ERROR: Failed to read secret/nexus/dev (HTTP $DEV_STATUS)" >&2
-  echo "$DEV_BODY" >&2
+GW_RAW="$(kv_get "${NEXUS_VAULT_GW_PATH}")"
+GW_STATUS="$(parse_status "$GW_RAW")"
+GW_BODY="$(parse_body "$GW_RAW")"
+if [ "$GW_STATUS" -ne 200 ]; then
+  echo "ERROR: Failed to read secret/${NEXUS_VAULT_GW_PATH} (HTTP $GW_STATUS)" >&2
+  echo "$GW_BODY" >&2
   exit 1
 fi
 
-eval "$(python3 - "$SOC_BODY" "$DEV_BODY" <<'PY'
+eval "$(python3 - "$SOC_BODY" "$GW_BODY" "${NEXUS_VAULT_GW_PATH}" <<'PY'
 import json, sys, shlex
 soc = json.loads(sys.argv[1])["data"]["data"]
-dev = json.loads(sys.argv[2])["data"]["data"]
+gw = json.loads(sys.argv[2])["data"]["data"]
+path = sys.argv[3]
+lab = path.rstrip("/") == "nexus/dev"
 pairs = {
     "INDEXER_PASS": soc.get("OPENSEARCH_INITIAL_ADMIN_PASSWORD", ""),
     "API_PASS": soc.get("WAZUH_API_PASSWORD", ""),
-    "JWT_SECRET": dev.get("NEXUS_GW_JWT_SECRET", "dev-secret-do-not-use-in-production"),
-    "MINIO_AK": dev.get("NEXUS_GW_MINIO_ACCESS_KEY", "minioadmin"),
-    "MINIO_SK": dev.get("NEXUS_GW_MINIO_SECRET_KEY", "minioadmin"),
+    "JWT_SECRET": gw.get(
+        "NEXUS_GW_JWT_SECRET",
+        "dev-secret-do-not-use-in-production" if lab else "",
+    ),
+    "MINIO_AK": gw.get(
+        "NEXUS_GW_MINIO_ACCESS_KEY",
+        "minioadmin" if lab else "",
+    ),
+    "MINIO_SK": gw.get(
+        "NEXUS_GW_MINIO_SECRET_KEY",
+        "minioadmin" if lab else "",
+    ),
 }
 for k, v in pairs.items():
     print(f"{k}={shlex.quote(str(v))}")
@@ -75,6 +93,12 @@ PY
 
 if [ -z "${INDEXER_PASS}" ] || [ -z "${API_PASS}" ]; then
   echo "ERROR: soc/wazuh passwords empty." >&2
+  exit 1
+fi
+
+if [ -z "${JWT_SECRET}" ] || [ -z "${MINIO_AK}" ] || [ -z "${MINIO_SK}" ]; then
+  echo "ERROR: secret/${NEXUS_VAULT_GW_PATH} missing JWT or object-store keys." >&2
+  echo "  For R2: seed secret/nexus/prod (see overlays/r2/README.md)." >&2
   exit 1
 fi
 

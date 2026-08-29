@@ -1,0 +1,15 @@
+# Non-secret R2 settings. Replace REPLACE_ME_* before apply (or via CI).
+# Credentials stay in Secret nexus-gateway-secrets (Vault secret/nexus/prod).
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nexus-object-store
+  namespace: soc
+  labels:
+    app.kubernetes.io/part-of: underground-nexus
+    app.kubernetes.io/component: object-store
+data:
+  R2_ACCOUNT_ID: REPLACE_ME_CLOUDFLARE_ACCOUNT_ID
+  BUCKET: nexus-memory
+  # Host only (no scheme) — custom domain or *.r2.dev public bucket host
+  PUBLIC_ENDPOINT: REPLACE_ME_R2_PUBLIC_HOST

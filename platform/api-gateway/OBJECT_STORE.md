@@ -17,3 +17,20 @@ route code — both use the MinIO Python SDK (S3 API).
 D1 is reserved for **artifact/run metadata indexes** (not blobs). Wire a
 separate index client when Flux/SSF digests need queryable provenance; keep
 blobs on R2.
+
+## Kubernetes
+
+| Overlay | Backend |
+|---------|---------|
+| `deploy/kubernetes/soc/overlays/dev` | MinIO (lab) |
+| `deploy/kubernetes/soc/overlays/gitops-lab` | MinIO (lab) |
+| `deploy/kubernetes/soc/overlays/r2` | R2 (`NEXUS_GW_OBJECT_STORE_BACKEND=r2`) |
+
+R2 overlay: edit `object-store-config.yaml`, seed Vault `secret/nexus/prod`, then:
+
+```bash
+NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
+kubectl apply -k deploy/kubernetes/soc/overlays/r2
+```
+
+Details: `deploy/kubernetes/soc/overlays/r2/README.md`.

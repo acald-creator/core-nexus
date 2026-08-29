@@ -1,0 +1,30 @@
+# Point the gateway at Cloudflare R2 (S3 API). Lab MinIO defaults stay on
+# overlays/dev and overlays/gitops-lab.
+# Non-secret R2 fields use placeholder values; kustomize replacements fill
+# them from ConfigMap nexus-object-store (avoids value+valueFrom merge bugs).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nexus-api-gateway
+  namespace: soc
+spec:
+  template:
+    spec:
+      containers:
+        - name: api-gateway
+          env:
+            - name: NEXUS_GW_OBJECT_STORE_BACKEND
+              value: "r2"
+            - name: NEXUS_GW_MINIO_SECURE
+              value: "true"
+            - name: NEXUS_GW_OBJECT_STORE_REGION
+              value: "auto"
+            # Cleared so from_settings uses R2_ACCOUNT_ID → <id>.r2.cloudflarestorage.com
+            - name: NEXUS_GW_MINIO_ENDPOINT
+              value: ""
+            - name: NEXUS_GW_R2_ACCOUNT_ID
+              value: REPLACE_ME_CLOUDFLARE_ACCOUNT_ID
+            - name: NEXUS_GW_MINIO_BUCKET
+              value: nexus-memory
+            - name: NEXUS_GW_MINIO_PUBLIC_ENDPOINT
+              value: REPLACE_ME_R2_PUBLIC_HOST

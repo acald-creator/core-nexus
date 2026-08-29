@@ -17,12 +17,14 @@ cd ../nexus-hashistack
 | Secret | Source |
 |--------|--------|
 | `wazuh-secrets` | Vault `secret/soc/wazuh` via `./deploy/scripts/sync-vault-to-k8s.sh` |
-| `nexus-gateway-secrets` | Vault `secret/nexus/dev` + wazuh password (+ optional AppRole ids) |
+| `nexus-gateway-secrets` | Vault `secret/nexus/dev` (lab) or `secret/nexus/prod` (R2) + wazuh password (+ optional AppRole ids) |
 
 ```bash
 # After Vault is up — also picks up VAULT_ROLE_ID/SECRET_ID if exported in the shell
 source ../nexus-hashistack/.approle/gateway.env 2>/dev/null || true
 ./deploy/scripts/sync-vault-to-k8s.sh
+# R2 overlay:
+# NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
 ```
 
 ## Apply (base spine)
@@ -45,6 +47,8 @@ kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
 |---------|------|
 | `base` | Gateway, Console, AI, MCP, Athena, MinIO (images `phoenixvlabs/nexus-*`) |
 | `overlays/dev` | Same base (disposable lab) |
+| `overlays/gitops-lab` | Thin Console + gateway; Flux image pins |
+| `overlays/r2` | Console + gateway on Cloudflare R2 (no in-cluster MinIO) |
 | `overlays/wazuh-secure` | Wazuh only with TLS/security indexer |
 | `overlays/test` | System charts + Wazuh secure component (needs Helm) |
 | `overlays/prod` | Helm MinIO; Vault stays external |
