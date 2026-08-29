@@ -2,16 +2,13 @@
 # Flux ImageUpdateAutomation (Setters) rewrites newTag markers below.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
-
 namespace: soc
-
 resources:
   - ../../console
-
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console
-    newTag: latest # {"$imagepolicy": "flux-system:nexus-console:tag"}
+    newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-console:tag"}
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
-    newTag: latest # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
+    newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
