@@ -68,7 +68,7 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 29** (U) — Run Modbus agent against OpenPLC, watch safe-range enforcement
 - [ ] **Day 30** (U) — Attempt boundary violation, verify agent halts and emits needs_review
 - [ ] **Day 31** (D) — Share: "Day 31 — AI agent tried to write outside safe range, got blocked"
-- [ ] **Day 32** (B) — Implement Wazuh alert transformation in Gateway (map to SOCAlert schema)
+- [x] **Day 32** (B) — Implement Wazuh alert transformation in Gateway (map to SOCAlert schema) — *done early as Day 11; Indexer-vs-Manager hardening can still land later*
 - [ ] **Day 33** (B) — Add alert acknowledgment endpoint to Gateway
 - [ ] **Day 34** (B) — Wire Console alerts badge to live unacknowledged count
 - [ ] **Day 35** (U) — Run a full session: agent generates traffic → alerts appear in Console
@@ -166,12 +166,24 @@ Skills generated: X | Agent sessions: Y
 | 9 | 2026-08-26 | U | Console Agent Feed via Day9 GT→SSE bridge; Juice Shop 6 http-request acts; 8 SSE events | code-console-host-opar-event-bridge.md |
 | 10 | 2026-08-27 | D | Share writeup: SOC console watching Athena vs Juice Shop; honest gap + bridge narrative | |
 | 11 | 2026-08-28 | B | Gateway alerts: SOCAlert map, filters, triage 404/504; Properties 5–7 | |
+| 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
+
+### Parallel platform work (not day-numbered, Aug 28–30)
+
+Does **not** auto-complete calendar days, but changes the backdrop for upcoming ones:
+
+- **Object store:** R2 overlay for non-lab (`object_store_backend=r2`); MinIO remains lab default — Day 7 path still valid
+- **Secrets:** Vault moved to `nexus-hashistack`; gateway hydrate via AppRole; Console lab bypass / local-user allowlist
+- **SOC k8s:** Gateway + Console Deployments, Wazuh Vault-synced secrets, indexer TLS overlay, Jupyter + Athena range overlay; webtop-soc remote retired from k8s base
+- **Day 9 bridge:** still present, gated in compose (`6eeeaae`) — Day 13 still required to retire the shim
+- **Day 12:** approvals route still scaffold (no `models/approvals.py`, no Property 8 tests)
+- **Day 14:** k8s SOC spine advanced, but the Use-day (generate Athena traffic → triage real alerts in Console) is not done
 
 ### Phase 2
 
 | Day | Date | Type | Summary | Skill Generated |
 |-----|------|------|---------|-----------------|
-| | | | | |
+| 32 | 2026-08-28 | B | See Phase 1 note — checked early via Day 11 | |
 
 ### Phase 3
 
