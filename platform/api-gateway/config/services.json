@@ -1,75 +1,47 @@
 {
   "services": [
     {
-      "id": "wazuh-dash",
-      "name": "Wazuh Dashboard",
-      "description": "Security event investigation (run SOC baseline stack separately)",
+      "id": "wazuh-alerts",
+      "name": "Wazuh Alerts",
+      "description": "SOC alerts via gateway (Wazuh Manager in cluster — no separate dashboard deployed)",
       "category": "security",
-      "url": "https://localhost:5601",
-      "iconId": "shield",
-      "healthEndpoint": "/api/status"
-    },
-    {
-      "id": "grafana",
-      "name": "Grafana",
-      "description": "Platform observability and metrics (not in dev stack)",
-      "category": "security",
-      "url": "http://localhost:3002",
-      "iconId": "chart",
-      "healthEndpoint": "/api/health"
-    },
-    {
-      "id": "minio",
-      "name": "MinIO Console",
-      "description": "Artifact storage \u2014 PCAPs, SBOMs, skills, sessions",
-      "category": "storage",
-      "url": "http://minio:9001",
-      "iconId": "bucket",
-      "healthEndpoint": "/minio/health/live"
+      "url": "http://nexus-console.soc.svc.cluster.local",
+      "iconId": "shield"
     },
     {
       "id": "jupyter",
       "name": "Jupyter Workbench",
-      "description": "Analyst agentic workspace (not in dev stack)",
+      "description": "Purple analyst workspace (nexus-workbench in gitops-range)",
       "category": "workbenches",
-      "url": "http://localhost:8888",
+      "url": "http://nexus-workbench.soc.svc.cluster.local:8888",
       "iconId": "notebook",
       "healthEndpoint": "/api/status"
     },
     {
-      "id": "portainer",
-      "name": "Portainer",
-      "description": "Container management (not in dev stack)",
-      "category": "infrastructure",
-      "url": "https://localhost:9443",
-      "iconId": "container",
-      "healthEndpoint": "/api/status"
+      "id": "artifacts",
+      "name": "Artifacts",
+      "description": "Run and artifact index (R2 + D1 via gateway)",
+      "category": "storage",
+      "url": "http://nexus-console.soc.svc.cluster.local",
+      "iconId": "bucket"
     },
     {
-      "id": "pihole",
-      "name": "Pi-Hole",
-      "description": "Lab DNS filtering (not in dev stack)",
+      "id": "gateway-docs",
+      "name": "API Gateway Docs",
+      "description": "OpenAPI docs on the API gateway",
       "category": "infrastructure",
-      "url": "http://localhost:8081/admin",
-      "iconId": "dns"
+      "url": "http://127.0.0.1:3100",
+      "iconId": "docs",
+      "healthEndpoint": "/docs"
     },
     {
       "id": "vault",
       "name": "Vault UI",
-      "description": "Secrets management (not in dev stack)",
+      "description": "Secrets — nexus-hashistack on the host (Rancher Desktop)",
       "category": "infrastructure",
-      "url": "http://localhost:8200",
+      "url": "http://host.docker.internal:8200",
       "iconId": "lock",
       "healthEndpoint": "/v1/sys/health"
-    },
-    {
-      "id": "ai-inference",
-      "name": "AI Inference API",
-      "description": "AI triage enrichment and hardware detection",
-      "category": "agents",
-      "url": "http://ai-inference:8000",
-      "iconId": "brain",
-      "healthEndpoint": "/"
     }
   ]
 }

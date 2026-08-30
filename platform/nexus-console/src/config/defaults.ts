@@ -4,6 +4,11 @@ const host = import.meta.env.VITE_NEXUS_HOST || 'localhost';
 const apiGatewayUrl =
   import.meta.env.VITE_API_GATEWAY_URL || `http://${host}:3100`;
 
+/**
+ * Launchpad deep-links for the GitOps lab spine.
+ * Browser URLs use localhost port-forwards; in-app paths stay on the Console origin.
+ * Gateway health probes use platform/api-gateway/config/services.json (cluster DNS).
+ */
 export const defaultConfig: NexusConfig = {
   apiGatewayUrl,
   healthPollIntervalMs: 30000,
@@ -13,75 +18,49 @@ export const defaultConfig: NexusConfig = {
     import.meta.env.VITE_AUTH_ENDPOINT || `${apiGatewayUrl}/api/v1/auth/login`,
   services: [
     {
-      id: 'wazuh-dash',
-      name: 'Wazuh Dashboard',
-      description: 'Security events (run SOC baseline stack separately)',
+      id: 'wazuh-alerts',
+      name: 'Wazuh Alerts',
+      description:
+        'SOC alerts via gateway (Wazuh Manager in cluster — no separate dashboard deployed)',
       category: 'security',
-      url: `https://${host}:5601`,
+      url: '/alerts',
       iconId: 'shield',
-      healthEndpoint: '/api/status',
-    },
-    {
-      id: 'grafana',
-      name: 'Grafana',
-      description: 'Platform observability and metrics (not in dev stack)',
-      category: 'security',
-      url: `http://${host}:3002`,
-      iconId: 'chart',
-      healthEndpoint: '/api/health',
-    },
-    {
-      id: 'minio',
-      name: 'MinIO Console',
-      description: 'Artifact storage — PCAPs, SBOMs, skills, sessions',
-      category: 'storage',
-      url: `http://${host}:9001`,
-      iconId: 'bucket',
-      healthEndpoint: '/minio/health/live',
     },
     {
       id: 'jupyter',
       name: 'Jupyter Workbench',
-      description: 'Analyst agentic workspace (not in dev stack)',
+      description:
+        'Purple analyst workspace — kubectl -n soc port-forward svc/nexus-workbench 8888:8888',
       category: 'workbenches',
       url: `http://${host}:8888`,
       iconId: 'notebook',
       healthEndpoint: '/api/status',
     },
     {
-      id: 'portainer',
-      name: 'Portainer',
-      description: 'Container management (not in dev stack)',
-      category: 'infrastructure',
-      url: `https://${host}:9443`,
-      iconId: 'container',
-      healthEndpoint: '/api/status',
+      id: 'artifacts',
+      name: 'Artifacts',
+      description: 'Run and artifact index (R2 + D1 via gateway)',
+      category: 'storage',
+      url: '/artifacts',
+      iconId: 'bucket',
     },
     {
-      id: 'pihole',
-      name: 'Pi-Hole',
-      description: 'Lab DNS filtering (not in dev stack)',
+      id: 'gateway-docs',
+      name: 'API Gateway Docs',
+      description:
+        'OpenAPI — kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100',
       category: 'infrastructure',
-      url: `http://${host}:8081/admin`,
-      iconId: 'dns',
+      url: `http://${host}:3100/docs`,
+      iconId: 'docs',
     },
     {
       id: 'vault',
       name: 'Vault UI',
-      description: 'Secrets (nexus-hashistack sidecar — not in this compose)',
+      description: 'Secrets — nexus-hashistack sidecar (localhost:8200)',
       category: 'infrastructure',
       url: `http://${host}:8200`,
       iconId: 'lock',
       healthEndpoint: '/v1/sys/health',
-    },
-    {
-      id: 'ai-inference',
-      name: 'AI Inference API',
-      description: 'AI triage enrichment and hardware detection',
-      category: 'agents',
-      url: `http://${host}:8000`,
-      iconId: 'brain',
-      healthEndpoint: '/health',
     },
   ],
 };

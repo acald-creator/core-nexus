@@ -36,11 +36,13 @@ kubectl apply -k deploy/kubernetes/soc/overlays/dev
 kubectl rollout restart deployment/nexus-api-gateway -n soc
 ```
 
-Port-forward for local browser:
+Port-forward for local browser (Console launchpad deep-links):
 
 ```bash
 kubectl -n soc port-forward svc/nexus-console 3000:80
 kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
+kubectl -n soc port-forward svc/nexus-workbench 8888:8888   # Jupyter tile
+# Vault UI: nexus-hashistack on localhost:8200 (no k8s forward)
 # Console image should be built with VITE_API_GATEWAY_URL=http://localhost:3100
 ```
 

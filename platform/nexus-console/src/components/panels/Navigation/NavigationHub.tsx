@@ -1,4 +1,5 @@
 import { useConfig } from '../../../config/ConfigContext';
+import { useHealthMonitor } from '../../../hooks/useHealthMonitor';
 import { groupBy } from '../../../utils/filters';
 import { ServiceCard } from './ServiceCard';
 import type { ServiceCategory } from '../../../config/types';
@@ -16,6 +17,7 @@ const CATEGORY_ORDER: ServiceCategory[] = ['security', 'agents', 'workbenches', 
 
 export function NavigationHub() {
   const config = useConfig();
+  const { statusMap } = useHealthMonitor();
   const grouped = groupBy(config.services, (s) => s.category);
 
   return (
@@ -29,7 +31,11 @@ export function NavigationHub() {
             <h3 className={styles.categoryHeader}>{CATEGORY_LABELS[category]}</h3>
             <div className={styles.grid}>
               {services.map((service) => (
-                <ServiceCard key={service.id} service={service} />
+                <ServiceCard
+                  key={service.id}
+                  service={service}
+                  healthStatus={statusMap.get(service.id)?.status ?? 'unknown'}
+                />
               ))}
             </div>
           </section>

@@ -1,3 +1,4 @@
+import { Link } from 'react-router';
 import { StatusDot } from '../../common/StatusDot';
 import type { ServiceEntry } from '../../../config/types';
 import styles from './Navigation.module.css';
@@ -7,7 +8,34 @@ interface ServiceCardProps {
   healthStatus?: 'healthy' | 'degraded' | 'offline' | 'unknown';
 }
 
+function isInternalPath(url: string): boolean {
+  return url.startsWith('/');
+}
+
 export function ServiceCard({ service, healthStatus = 'unknown' }: ServiceCardProps) {
+  const body = (
+    <>
+      <div className={styles.cardHeader}>
+        <span className={styles.icon}>{getIcon(service.iconId)}</span>
+        <StatusDot status={healthStatus} label={`${service.name}: ${healthStatus}`} />
+      </div>
+      <h3 className={styles.cardTitle}>{service.name}</h3>
+      <p className={styles.cardDesc}>{service.description}</p>
+    </>
+  );
+
+  if (isInternalPath(service.url)) {
+    return (
+      <Link
+        to={service.url}
+        className={styles.card}
+        aria-label={`Open ${service.name}`}
+      >
+        {body}
+      </Link>
+    );
+  }
+
   return (
     <a
       href={service.url}
@@ -16,12 +44,7 @@ export function ServiceCard({ service, healthStatus = 'unknown' }: ServiceCardPr
       className={styles.card}
       aria-label={`Open ${service.name}`}
     >
-      <div className={styles.cardHeader}>
-        <span className={styles.icon}>{getIcon(service.iconId)}</span>
-        <StatusDot status={healthStatus} label={`${service.name}: ${healthStatus}`} />
-      </div>
-      <h3 className={styles.cardTitle}>{service.name}</h3>
-      <p className={styles.cardDesc}>{service.description}</p>
+      {body}
     </a>
   );
 }
@@ -36,6 +59,7 @@ function getIcon(iconId: string): string {
     dns: '🌐',
     lock: '🔐',
     brain: '🧠',
+    docs: '📖',
   };
   return icons[iconId] || '🔧';
 }
