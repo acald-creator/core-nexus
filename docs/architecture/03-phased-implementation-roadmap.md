@@ -8,29 +8,40 @@ This roadmap connects the current Linux-based bootstrap environment, the practic
 
 **Status:** Current state
 
-**Primary goal:** Secure the software supply chain and protect ongoing development of Enterprise Platform, SecureOS, Platform UI, and the secure software factory.
+**Primary goal:** Operate the **fabric + factory + range** spine on hardened Linux /
+Docker / Kubernetes: headless SOC (Wazuh + Suricata), Nexus Console, Jupyter purple
+workspace, isolated Athena + `athena-agents`, GitOps (Flux + Argo), and
+Vault-backed secrets via `nexus-hashistack`.
 
-SecureOS is still in early userspace development. It may render early UI elements such as a top bar or terminal, but it is not ready to host the Enterprise Platform control plane or Underground Nexus AI-SOC workloads.
+SecureOS / Enterprise Platform hosting of Nexus workloads is **out of scope** for
+Phase 1 (see Phase 2–3 and docs `04` / `09`). Nexus may *observe* factory and lab
+build activity; it is not waiting on SecureOS to be useful.
 
 ### Architecture
 
 | Area | Phase 1 approach |
 | --- | --- |
-| Host OS | Hardened standard Linux distribution, such as Alpine or Ubuntu |
-| Execution | Docker Compose baseline (Nexus Console, Portainer) + KuberNexus (k3d) for workloads |
-| Primary UI | `nexus-console` (Custom React/Vite Launchpad Dashboard) |
-| SOC platform | Phase 1 target baseline built: Wazuh, Suricata, MinIO running in KuberNexus (k3d) |
-| Workbench | `nexus-workbench` (JupyterLab) providing the unified agentic workspace |
-| Athena | `nexus-athena` (Kali Linux build) with standard, packet-lab, exploit-lab, agent, and agent-ics profiles |
-| LLM Agents | `athena-agents` OPAR loop with Ollama backend, tool registry, safety controls, and skill persistence |
-| Agent Memory | Git-based skills (`docs/skills/`) + MinIO sync (`nexus-memory/`) + session logs |
-| Terminal Console | `nexus-tui` (Go/Charmbracelet) for alert triage, agent feed, approvals in air-gapped environments |
-| Secrets | Vault dev mode for local learning; begin designing Vault HA for production-like paths |
-| Supply chain | Cosign, SBOMs, attestations, vulnerability scans, registry controls |
+| Host OS | Hardened standard Linux distribution |
+| Execution | Docker Compose lab + Kubernetes (e.g. Rancher Desktop / k3d) |
+| GitOps | Flux image automation + Argo CD app sync (`deploy/gitops/`, ADR 0003) |
+| Primary UI | `nexus-console` |
+| SOC platform | Wazuh + Suricata (hybrid sensor, ADR 0007); thin spine may omit Suricata for RAM |
+| Workbench | `nexus-workbench` (JupyterLab) purple workspace |
+| Athena | `nexus-athena` with standard / packet-lab / exploit-lab / agent profiles |
+| LLM Agents | `athena-agents` OPAR with safety controls and skill persistence (Phase 1 capable) |
+| Agent Memory | Git-based skills (`docs/skills/`) + object-store sync |
+| Terminal Console | `nexus-tui` (optional) |
+| Secrets | Vault via `nexus-hashistack` (ADR 0008) |
+| Objects | MinIO lab; R2 + D1 production-like (ADR 0005) |
+| Supply chain | `nebucloud/ssf` + kiln / Cosign; publish workflow (ADR 0004) |
+| Portainer | Lab-only visibility — not production GitOps (ADR 0001) |
 
 ### Underground Nexus Role
 
-Underground Nexus acts as the guardian of the factory. It monitors build servers, artifact pipelines, package outputs, approved test environments, and developer workflow anomalies. Platform UI may be one workload under development, but it is not the destination for Nexus threat findings.
+Underground Nexus exercises detection and purple evaluation against labeled red
+traffic, and guards the near-term software factory loop (signed images → Flux →
+Argo). Platform UI workloads under development are monitored like any other app;
+they are not the destination for Nexus threat findings.
 
 ### Security+ Alignment
 
@@ -42,42 +53,39 @@ Underground Nexus acts as the guardian of the factory. It monitors build servers
 
 ```mermaid
 graph TD
-    subgraph "Standard Linux Infrastructure (Current Base)"
+    subgraph "Standard Linux Infrastructure"
         A[Hardened Linux OS]
-        B[Enterprise Platform SSF and Artifact Pipeline]
+        B[SSF CI + Registry]
         A --> B
     end
 
-    subgraph "Underground Nexus (Guardian)"
-        C[Wazuh / Suricata SOC Baseline]
+    subgraph "Underground Nexus Fabric"
+        C[Wazuh / Suricata SOC]
         D[AI Triage Enrichment]
-        E[Purple Team Workbench]
-        B -->|Telemetry and Build Events| C
+        E[Purple Jupyter Workbench]
+        F[Nexus Console]
+        B -->|Signed images via Flux/Argo| F
         C --> D
+        F --> C
+        E --> C
     end
 
-    subgraph "Target Platform In Development"
-        F[SecureOS Alpha Build]
-        G[Early Userspace Milestones]
-        F --> G
-        E -.->|Compiles and Tests| F
+    subgraph "Red Range"
+        G[Athena + athena-agents]
+        G -->|Labeled traffic| C
     end
-
-    style A fill:#475569,stroke:#fff
-    style C fill:#1e3a8a,stroke:#fff
-    style D fill:#0f172a,stroke:#eab308,color:#fff
-    style F fill:#0f172a,stroke:#eab308,color:#fff
 ```
 
 ### Exit Criteria
 
 - [x] Current Docker lab profiles are documented.
-- [x] SOC baseline exists with Wazuh and Suricata separated from the webtop, running on KuberNexus (k3d).
-- [x] Primary UI replaced with Custom Nexus Console Launchpad.
+- [x] SOC baseline exists with Wazuh and Suricata paths (Suricata may be omitted from thin GitOps for resources).
+- [x] Primary UI is Nexus Console (webtops retired as product — ADR 0006).
 - [x] Workbench and Athena have standard and elevated runtime profiles.
-- [x] LLM agent workflow operational (athena-agents OPAR loop with safety controls, skill persistence, and ground-truth emission).
-- [ ] SBOM, signing, vulnerability scanning, and attestation workflows are documented.
-- [ ] Vault production direction is selected, even if only dev mode exists locally.
+- [x] LLM agent workflow operational (athena-agents OPAR with safety controls).
+- [x] Vault ownership decided: consume `nexus-hashistack` / shared Vault (ADR 0008).
+- [ ] SBOM, signing, vulnerability scanning, and attestation workflows fully documented and routine in CI.
+- [ ] Suricata on by default in a documented full-SOC overlay (not only `overlays/test`).
 
 ## Phase 2: Hermetic Migration
 

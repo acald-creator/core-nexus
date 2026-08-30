@@ -10,7 +10,9 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 ## Key References
 
 - `docs/architecture/` — numbered architecture docs (source of truth)
+- `docs/decisions/` — Architecture Decision Records (locked defaults; prefer over chat)
 - `docs/00-ai-collaboration.md` — shared vocabulary, model roles, non-negotiable decisions
+- `docs/skills/architecture-adr-decision-register.md` — skill for loading ADRs into agent memory
 - `platform/` — component definitions (athena, soc, workbench, sensors, ai-inference, mcp)
 - `deploy/` — compose, kubernetes, UDS manifests
 
@@ -44,5 +46,6 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 - LLM agents must operate within allowlist and capability-gate constraints.
 - Autonomous response is a later capability; human approval comes first.
 - Keep credentials and certificates out of committed files.
-- Prefer Flux + Argo CD for programmatic fabric delivery; review external secure-software-factory repos before inventing a parallel pipeline.
+- Prefer Flux + Argo CD for programmatic fabric delivery (ADR 0003); use `nebucloud/ssf` + kiln for factory signing (ADR 0004) — do not invent a parallel Cosign stack in this repo.
+- Suricata remains in the cybersecurity / hybrid-sensor plan (ADR 0007) even when omitted from a thin lab overlay.
 

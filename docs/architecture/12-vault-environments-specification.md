@@ -14,6 +14,8 @@ This document defines the architecture, storage layouts, unseal mechanisms, and 
 | Kubernetes | Optional `deploy/scripts/sync-vault-to-k8s.sh` (one-shot); later ESO/injector |
 
 Do not re-add Vault Deployments, Helm charts, or `-dev` patches under `deploy/kubernetes/`.
+Topologies below are operated by **hashistack / platform Vault ops** (ADR 0008), not
+synced as Argo applications from this repository.
 
 ---
 

@@ -44,7 +44,7 @@ graph LR
     subgraph "Production Model"
         B1[Kubernetes Manifests]
         B2[Pulumi Infrastructure]
-        B3[Argo CD GitOps]
+        B3[Flux + Argo CD GitOps]
     end
 
     subgraph "Air-Gapped Option"
@@ -69,7 +69,7 @@ graph LR
 | Docker lab | Fast local experimentation and current working deployment | Current |
 | Kubernetes production model | Portable workload definitions and production-style operations | Proposed |
 | Pulumi | Infrastructure provisioning | Proposed |
-| Argo CD | GitOps reconciliation | Proposed |
+| Argo CD + Flux | GitOps app delivery + image automation | Sketch live (`deploy/gitops/`) |
 | UDS / Zarf | Air-gapped delivery and hardened platform baseline | Proposed option |
 
 ## 2. Current Component Map
@@ -84,7 +84,7 @@ graph LR
 | Nexus Console | Primary Platform UI | Custom React/Vite dashboard serving as the unified launchpad for all Underground Nexus services |
 | Portainer | Manual host container UI | Lab-only; relegated to baseline container management, replaced by Nexus Console as primary UI |
 | MinIO | Lab object storage for `/nexus-bucket` artifacts | Lab S3 backend; production blobs on Cloudflare R2 + metadata on D1 (S3-shaped app interface) |
-| Vault dev mode | Development secrets service | Vault HA via Helm chart for prod; owned by `nexus-hashistack` / shared Vault (not in-cluster from core-nexus) |
+| Vault dev mode | Development secrets service | Owned by `nexus-hashistack` / shared Vault (ADR 0008); not deployed from core-nexus |
 | `nexus-webtop-soc` | Legacy SOC desktop with Suricata | **Retire** desktop image; keep headless Wazuh/sensor recipes only until `deploy/kubernetes/soc` is enough |
 | `nexus-webtop-workbench` | Legacy analyst desktop | **Retire**; replaced by Jupyter purple workspace + Console |
 | `nexus-athena` | Kali red-team container | Keep isolated red range with runtime profiles; not an analyst or factory client |
@@ -245,23 +245,30 @@ Some current services are useful lab components but need clearer production role
 | Service | Lab role | Production question |
 | --- | --- | --- |
 | Pi-hole | DNS filtering and lab DNS | Keep as lab-only; do not treat Istio as a direct Pi-hole replacement |
-| MinIO | Local object storage for artifacts and datasets | Migrated to Kubernetes-native StatefulSet (base) and Distributed Helm HA (prod) |
-| Vault | Dev secrets | Migrated to official HashiCorp Vault Helm chart (HA/Raft) for prod |
+| MinIO | Local object storage for artifacts and datasets | **Lab default.** Production-like blobs use Cloudflare R2; metadata uses D1 (ADR 0005). In-cluster MinIO HA is optional/air-gap only. |
+| Vault | Dev secrets via sidecar | **External:** `nexus-hashistack` / shared Vault (ADR 0008). Never deploy Vault from core-nexus GitOps. |
 | Nexus Console | Primary Platform UI | Custom React app serving as the launchpad for all Underground Nexus services |
-| Portainer | Manual container UI | Relegated to baseline host management only |
+| Portainer | Manual container UI | Lab-only host visibility; Flux + Argo for production-like GitOps (ADR 0001, 0003) |
 | Code server | Developer editor | Merge into workbench or keep as separate development service? |
 
 ### Secrets Management
 
-Vault is the best fit for Underground Nexus if the broader secure software factory is loosely based on FRSCA. FRSCA uses Vault as part of the secure build pipeline model, alongside Kubernetes, Tekton, Tekton Chains, Sigstore, SPIFFE/SPIRE, policy controls, and signed provenance.
+Vault is the preferred secrets manager for Underground Nexus. Ownership is
+**outside** this repository: lab/local Vault via `nexus-hashistack`, later a
+shared platform Vault (ADR 0008). Historical FRSCA-style factories also use Vault
+for build trust — Nexus’s default factory is `nebucloud/ssf` + kiln (ADR 0004),
+not a Tekton Chains stack inside core-nexus.
 
 Recommended Vault roles:
 
-- **Local lab (`base` / `test`):** Run Vault dev mode or lightweight `StatefulSet` file backend for local integration testing.
-- **Production (`prod`):** Run Vault HA via the official HashiCorp Helm chart with Integrated Storage (Raft) and auto-unseal backed by a KMS or equivalent trusted key source.
-- **Build factory:** Store signing material, short-lived credentials, registry tokens, and pipeline secrets.
-- **Runtime platform:** Store SOC, Wazuh, MinIO, database, API, and service credentials.
-- **Deployment:** Feed Kubernetes secrets through an explicit sync or injection pattern rather than committing secrets to Git.
+- **Local lab:** Run Vault from `nexus-hashistack` (dev or file backend). Do **not**
+  add Vault Helm/StatefulSet manifests under core-nexus.
+- **Production-like:** HA Vault with auto-unseal, operated by hashistack / platform
+  Vault ops — consumed by Nexus via AppRole and `sync-vault-to-k8s.sh`.
+- **Build factory:** Store signing material, short-lived credentials, registry tokens,
+  and pipeline secrets (factory CI + Vault).
+- **Runtime platform:** Store SOC, Wazuh, object-store, database, API, and service credentials.
+- **Deployment:** Feed Kubernetes secrets through explicit sync or injection — never commit secrets to Git.
 
 Secrets should be separated by trust boundary:
 
@@ -274,26 +281,30 @@ Secrets should be separated by trust boundary:
 
 For a production-like path, prefer short-lived or identity-bound credentials over long-lived static secrets. GitHub OIDC, SPIFFE/SPIRE workload identity, Vault dynamic secrets, and keyless Sigstore/Cosign flows all fit this direction.
 
-### MinIO Use Cases
+### Object Storage (MinIO lab / R2+D1 prod)
 
-MinIO is useful for Underground Nexus when the system needs S3-compatible object storage that is separate from live application state.
+S3-compatible object storage holds artifacts separate from live application state.
+Per ADR 0005: **MinIO for lab**; **Cloudflare R2** for production-like blobs and
+**D1** for artifact/run metadata (`platform/nexus-metadata`).
 
-Good local lab use cases:
+Good lab (MinIO) use cases:
 
 - Store PCAP files from Wireshark, Suricata, Zeek, or Athena exercises.
 - Store exported Wazuh alerts, Suricata `eve.json`, and AI training datasets.
 - Store generated SBOMs, attestations, signed image metadata, and scan reports.
-- Share files between Athena, Workbench, SOC tooling, and code-server through a controlled bucket interface instead of broad host mounts.
-- Practice S3-compatible workflows without depending on AWS.
+- Share files between Athena, Workbench, SOC tooling through a controlled bucket interface.
+- Practice S3-compatible workflows without depending on a public cloud account.
 
-Good production or production-like use cases:
+Good production-like (R2 + D1) use cases:
 
-- Store immutable lab evidence and incident-response artifacts.
-- Store model training datasets and evaluation outputs for AI triage.
-- Store Velero backup targets if the deployment needs an in-cluster or self-hosted S3-compatible endpoint.
-- Store pipeline artifacts, release bundles, SBOM archives, and Zarf package artifacts.
+- Immutable lab evidence and incident-response artifact blobs on R2.
+- Model training datasets and evaluation outputs.
+- Pipeline artifacts, SBOM archives, and release bundles.
+- Queryable run/artifact indexes on D1 via the gateway.
 
-MinIO should not be the primary SOC event database. Wazuh indexer should handle security investigation data, while Loki should handle platform logs. MinIO can archive selected exports from those systems when long-term object storage is useful.
+Neither MinIO nor R2 is the primary SOC event database. Wazuh indexer handles
+security investigation data; Loki handles platform logs. Object storage archives
+selected exports when long-term blob retention is useful.
 
 ## 7. UDS Core Baseline
 
@@ -308,7 +319,8 @@ Expected UDS Core capabilities:
 - **Tetragon:** Runtime security via eBPF.
 - **Velero:** Backup and recovery.
 
-Secrets remain a separate design decision. Vault HA, Kubernetes secrets with external secret integration, or another secret manager should be selected explicitly.
+Secrets remain a separate design decision. Prefer Vault via `nexus-hashistack` /
+shared Vault (ADR 0008), not UDS as the secrets backend.
 
 ## 8. Planning Milestones
 
@@ -318,7 +330,7 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 | --- | --- | --- |
 | Product spine | Programmable fabric + secure software factory; R/B/P range attached | This document §0 |
 | GitOps | Flux (sync / image automation) + Argo CD (apps / governance) | `deploy/gitops/`, `02` §5 |
-| SOC platform | Headless Wazuh + hybrid Suricata/runtime sensors | `deploy/kubernetes/soc`, transitional compose in webtop-soc |
+| SOC platform | Headless Wazuh + hybrid Suricata/runtime sensors | `deploy/kubernetes/soc`, ADR 0007 |
 | Security event store | Wazuh indexer | SOC k8s / compose |
 | Platform log store | Loki, with Vector aggregation | Core Nexus |
 | Purple workspace | JupyterLab agentic workspace | `platform/workbench` |
@@ -353,9 +365,9 @@ Secrets remain a separate design decision. Vault HA, Kubernetes secrets with ext
 
 ### Milestone 4: Add GitOps and UDS Delivery
 
-- Stand up **Flux + Argo CD** as the default programmatic fabric loop (image automation + app governance).
-- Sketch bootstrap lives in `deploy/gitops/` (Argo app-of-apps + Flux image automation; first app = `overlays/gitops-lab`).
-- SSF OCI follow-on: `deploy/gitops/ssf-follow-on.md` → work in `nebucloud/ssf`.
+- Stand up **Flux + Argo CD** as the default programmatic fabric loop (image automation + app governance) — ADR 0003.
+- Sketch bootstrap lives in `deploy/gitops/` (Argo app-of-apps + Flux image automation; lab Console/gateway app = `overlays/r2`; range = `overlays/gitops-range`).
+- SSF OCI follow-on: `deploy/gitops/ssf-follow-on.md` → work in `nebucloud/ssf` (ADR 0004).
 - Use Pulumi only where cloud/infra provisioning still needs it.
 - Package with Zarf for UDS-based connected or air-gapped delivery when required.
 - Decide which UDS Core services replace or wrap current platform services.

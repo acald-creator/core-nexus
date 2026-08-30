@@ -66,20 +66,20 @@ Important caveat: this only controls the lifecycle of the shared handoff volume.
 
 **Locked default:** Underground Nexus uses **Flux CD and Argo CD together** as the programmable fabric + factory delivery loop (not Portainer, not webtop-driven deploys).
 
-**Bootstrap sketch:** `deploy/gitops/` — Argo owns Application sync; Flux owns image-reflector + image-automation only (no competing Flux Kustomizations). First workload: `deploy/kubernetes/soc/overlays/gitops-lab`. SSF OCI wiring: `deploy/gitops/ssf-follow-on.md`.
+**Bootstrap sketch:** `deploy/gitops/` — Argo owns Application sync; Flux owns image-reflector + image-automation only (no competing Flux Kustomizations). Lab Console + gateway: `deploy/kubernetes/soc/overlays/r2`. Range: `overlays/gitops-range`. MinIO-era pins: `overlays/gitops-lab`. SSF OCI wiring: `deploy/gitops/ssf-follow-on.md`. ADR 0003.
 
-* **Flux CD (Synchronization & Image Automation)**: Acting as the low-level sync engine, Flux monitors the Git repositories, Helm charts, and image registries. Its *Image Automation Controller* detects newly built images (e.g. `nexus-workbench:latest` or `ai-inference:latest`), automatically commits the updated tags back to Git, and syncs basic infrastructure manifests.
-* **Argo CD (Governance & visualization)**: Argo CD acts as the primary deployment orchestrator and dashboard. It pulls the updated manifests from Git, dynamically inflates Helm charts (such as HashiCorp Vault and object-store charts where still used) via Kustomize's `helmCharts` generator, provides rich visual topology maps of application states, manages SSO authentication, and enforces RBAC policy control for the operational team.
+* **Flux CD (Image Automation)**: Watches published `phoenixvlabs/nexus-*` images, updates Git pins via ImageUpdateAutomation.
+* **Argo CD (Governance & visualization)**: Primary deployment orchestrator and dashboard. Syncs kustomize overlays for Console, gateway, workbench, Athena, and related SOC paths. Does **not** deploy Vault from this repo (ADR 0008). Inflates Helm only where overlays still declare charts (e.g. optional object-store lab paths).
 
-Secure software factory CI feeds signed images into this loop. **Default factory tool:** [`nebucloud/ssf`](https://github.com/nebucloud/ssf) + [kiln](https://github.com/nebucloud/kiln) (sign/attest/SBOM/policy on build outputs). Flux Image Automation / Argo then promote verified digests. Do not stand up a second Cosign/SBOM stack inside `core-nexus` unless SSF cannot cover the artifact type.
+Secure software factory CI feeds signed images into this loop. **Default factory tool:** [`nebucloud/ssf`](https://github.com/nebucloud/ssf) + [kiln](https://github.com/nebucloud/kiln) (ADR 0004). Flux Image Automation / Argo then promote verified tags. Do not stand up a second Cosign/SBOM stack inside `core-nexus` unless SSF cannot cover the artifact type.
 
 The older `nebucloud/secure-software-factory` monorepo (Fabric/xDS-oriented) is not the active Nexus factory default.
 
 ```mermaid
 flowchart TD
     subgraph "Secure Software Factory"
-        A[Workbench IDE] -->|Push Changes| B[GitHub Code Repo]
-        B -->|Trigger Build| C[CI Registry: local/nexus-*]
+        A[GitHub / kiln] -->|Push Changes| B[GitHub Code Repo]
+        B -->|Trigger Build| C[CI Registry: phoenixvlabs/nexus-*]
     end
 
     subgraph "GitOps Control Loop"
@@ -89,12 +89,12 @@ flowchart TD
         E -->|4. Syncs State| F[Kubernetes Cluster]
     end
 
-    F -->|5. Deploys Workloads| G[SOC, Athena, Workbench, Vault]
+    F -->|5. Deploys Workloads| G[SOC Console Gateway Workbench Athena]
 ```
 
-### Developer Jumpbox: `nexus-workbench`
-* **Role**: A containerized, secure JupyterLab workspace running on a Chainguard Python base, with standard data analysis libraries, `hvac` for secrets integration, Pulumi/Terraform, and Git tooling.
-* **Security+ alignment**: **Domain 4.1, Secure Baselines.** Standardizes development environments and eliminates local laptop configuration drift.
+### Developer workspace: Jupyter purple workbench
+* **Role**: Containerized JupyterLab workspace (`platform/workbench`) with analysis libraries, `hvac` for secrets, and Git tooling — not a full Linux desktop.
+* **Security+ alignment**: **Domain 4.1, Secure Baselines.**
 
 ### Version Control: GitHub
 * **Role**: The source of truth for infrastructure manifests, deployment configurations, model parameters, and policies.
@@ -111,7 +111,7 @@ flowchart TD
 The following guidelines outline non-negotiable workload security practices for deploying pods in the SOC environment:
 
 ### DOs
-* **DO use minimal, hardened base images**: Build custom workbench and triage containers using verified secure bases (e.g., `cgr.dev/chainguard/python:latest-dev` for JupyterLab, `python:3.10-slim` for inference APIs) to keep the cluster CVE footprint at zero.
+* **DO use minimal, hardened base images**: Build custom workbench and triage containers using verified secure bases (e.g., `cgr.dev/chainguard/python:latest-dev` for JupyterLab, `python:3.10-slim` for inference APIs) to **reduce** the cluster CVE surface.
 * **DO run workloads as non-root users**: Enforce non-root execution inside pod specifications (e.g. running the JupyterLab workbench under user `65532` and standard Athena pods under user `1000`).
 * **DO request minimal Linux capabilities**: Only add specific privileges needed by a container (e.g., `capabilities.add: ["NET_ADMIN", "NET_RAW"]` for packet capture in the elevated `nexus-athena-elevated` pod, or `IPC_LOCK` for Vault memory locking).
 * **DO manage secrets centrally via HashiCorp Vault**: Read and write credentials programmatically using Vault APIs (e.g. `hvac` Python client) or Vault agent sidecar injectors. 
@@ -120,10 +120,10 @@ The following guidelines outline non-negotiable workload security practices for 
 * **DO disable privilege escalation explicitly**: Always set container-level `securityContext.allowPrivilegeEscalation: false` in all container specifications to block processes from utilizing setuid/setgid binaries to escalate privileges.
 
 ### DON'Ts
-* **DON'T mount the host Docker socket (`/var/run/docker.sock`) by default**: Standard analyst desktops, database indices, and triage APIs must run with absolute socket isolation. Only mount the docker socket on explicitly approved, elevated testing profiles in isolated namespaces.
+* **DON'T mount the host Docker socket (`/var/run/docker.sock`) by default**: Console, Jupyter workbench, database indices, and triage APIs must run with absolute socket isolation. Only mount the docker socket on explicitly approved, elevated testing profiles in isolated namespaces.
 * **DON'T run workloads in privileged mode (`privileged: true`) by default**: Always set `privileged: false` and `allowPrivilegeEscalation: false` for all baseline SOC and triage applications.
 * **DON'T store plaintext secrets in git**: Credentials, API tokens, and private keys must never be committed to Git repositories. Utilize Vault or sealed secret wrappers.
-* **DON'T colocate network sensor binaries (like Suricata) inside the desktop workspace**: Run packet sniffers as sidecars or daemonsets, sharing alerts through local memory volumes (`emptyDir`) or structured logging pipelines to isolate offensive/defensive domains.
+* **DON'T colocate network sensor binaries (like Suricata) inside a desktop workspace**: Run packet sniffers as DaemonSets, sidecars, or dedicated capture pods (ADR 0007), sharing alerts through volumes or structured logging — not webtop images.
 * **DON'T allow unrestricted cross-namespace communication**: Restrict network traffic using `NetworkPolicies` so that test attacker workloads (Athena) cannot access admin panels or indices directly.
 
 ---

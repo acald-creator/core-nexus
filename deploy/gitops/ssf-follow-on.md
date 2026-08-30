@@ -6,7 +6,8 @@ Do not duplicate Cosign/SBOM tooling inside core-nexus.
 ## Goal
 
 Publish **signed OCI images** for Nexus workloads so Flux ImagePolicy can pin
-semver (or digest) and Argo can sync `deploy/kubernetes/soc/overlays/gitops-lab`.
+semver (or digest) and Argo can sync `deploy/kubernetes/soc/overlays/r2`
+(and range via `overlays/gitops-range`).
 
 ```
 kiln build nexus-console
@@ -49,5 +50,5 @@ Lab notes: `deploy/gitops/flux/image-repositories-local.example.yaml` documents 
 - [ ] `ssf sign` works on an OCI image in a lab registry
 - [ ] Image tagged `v0.1.0` (not only `latest`)
 - [ ] Flux `ImagePolicy/nexus-console` shows that version
-- [ ] Git shows Flux commit under `overlays/gitops-lab`
+- [ ] Git shows Flux commit under `overlays/r2` (and/or `gitops-range`)
 - [ ] Argo Application `nexus-gitops-lab` Healthy + Synced

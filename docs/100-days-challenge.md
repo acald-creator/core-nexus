@@ -2,6 +2,9 @@
 
 A hybrid build + use challenge: implement the platform AND use it for real security operations.
 
+> **Note:** Challenge “Phase 1/2/3” below are **calendar buckets** (day ranges). They are
+> **not** the architecture roadmap phases in `docs/architecture/03-phased-implementation-roadmap.md`.
+
 **Start date:** 2026-08-18
 **End date:** 2026-11-25
 

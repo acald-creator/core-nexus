@@ -46,8 +46,9 @@ deploy/gitops/
   ssf-follow-on.md          ← next work in nebucloud/ssf (OCI → this loop)
 ```
 
-First Argo target overlay: `deploy/kubernetes/soc/overlays/gitops-lab`
-(resources from `deploy/kubernetes/soc/console` — Console + gateway only).
+First Argo target overlay for Console + gateway: `deploy/kubernetes/soc/overlays/r2`
+(R2 object store). Range workloads: `overlays/gitops-range`. MinIO-era local pins:
+`overlays/gitops-lab` (not the live Argo lab destination — ADR 0003).
 
 ## Prerequisites
 

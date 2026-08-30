@@ -17,6 +17,8 @@ Read the planning documents in this order:
 13. `docs/architecture/12-vault-environments-specification.md`
 14. `docs/architecture/13-agent-workflows-and-memory.md`
 
+Locked defaults: `docs/decisions/` (ADRs). Product narrative: `01` §0.
+
 `README.md` and `CHANGELOG.md` remain the public-facing project files.
 
 Model-specific entrypoints:

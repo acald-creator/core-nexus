@@ -4,7 +4,8 @@ Architecture hub and platform source for **Underground Nexus**: a **programmable
 
 This repository holds numbered architecture docs, platform components (Console, API gateway, workbench, sensors, metadata), and deploy manifests (Compose lab + Kubernetes/GitOps). Sibling repos own Vault, Athena runtime, and agent orchestration.
 
-Canonical narrative: [`docs/architecture/01-component-architecture.md`](docs/architecture/01-component-architecture.md) §0. Collaboration rules: [`docs/00-ai-collaboration.md`](docs/00-ai-collaboration.md).
+Canonical narrative: [`docs/architecture/01-component-architecture.md`](docs/architecture/01-component-architecture.md) §0.  
+Locked decisions: [`docs/decisions/`](docs/decisions/). Collaboration rules: [`docs/00-ai-collaboration.md`](docs/00-ai-collaboration.md).
 
 ## What it is
 

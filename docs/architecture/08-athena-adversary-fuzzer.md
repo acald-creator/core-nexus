@@ -6,11 +6,16 @@ This component must remain isolated. It should never run against production syst
 
 ## 1. Athena Evolution
 
-| Phase | Athena model | Purpose |
+These rows are **Athena component maturity**, not architecture roadmap Phase 2/3
+(SecureOS / hermetic). OPAR in `athena-agents` is **Phase 1 capable** on the
+fabric/range spine (ADR 0002). Architecture Phase 2/3 remain future Enterprise
+Platform / gVisor targets (`03`, `04`, `09`).
+
+| Athena stage | Model | Purpose |
 | --- | --- | --- |
-| Phase 1: Bootstrap | Isolated `nexus-athena` Kali container | Generate controlled lab traffic and validate Wazuh/Suricata detections. |
-| Phase 2: LLM-Driven Emulation | OPAR agent loop with LLM planning (`athena-agents`) | Produce adaptive, labeled attack datasets using autonomous agent orchestration. Compare Linux/Kubernetes signals against SecureOS telemetry. |
-| Phase 3: High-assurance target | Headless adversary fuzzer inside a gVisor sandbox with LLM planning | Continuously test designated sandbox workloads and feed signed ground-truth data into the AI-SOC loop. Agent skills persist across runs for compounding effectiveness. |
+| Bootstrap (arch Phase 1) | Isolated `nexus-athena` Kali container | Generate controlled lab traffic and validate Wazuh/Suricata detections. |
+| LLM-Driven Emulation (arch Phase 1+) | OPAR agent loop (`athena-agents`) | Adaptive, labeled attack datasets with allowlist/capability gates. Optional SecureOS signal comparison later. |
+| High-assurance target (arch Phase 2–3) | Headless adversary fuzzer in gVisor with LLM planning | Continuous sandbox stimulation with signed ground-truth; skills persist across runs. |
 
 ## 2. Architectural Shift: Continuous ML Data Generation
 
@@ -18,7 +23,7 @@ Machine learning models need balanced datasets. If the AI-SOC only sees normal t
 
 The goal is not random attack automation. The goal is repeatable adversarial scenarios with clear ground-truth labels.
 
-With LLM agent orchestration (Phase 2+), this shifts from static scenario replay to adaptive stimulation. The LLM plans multi-step attack chains, mutates payloads based on target responses, and generates novel variations that exercise detection coverage gaps the SOC has not seen before.
+With LLM agent orchestration (Athena LLM-Driven Emulation stage), this shifts from static scenario replay to adaptive stimulation. The LLM plans multi-step attack chains, mutates payloads based on target responses, and generates novel variations that exercise detection coverage gaps the SOC has not seen before.
 
 Example scenarios:
 

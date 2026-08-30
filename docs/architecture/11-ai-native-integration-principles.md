@@ -103,7 +103,7 @@ Implementation in Kiro uses `~/.kiro/skills/` with a `Stop` hook for auto-genera
 ### Cross-Reference
 
 - `athena-agents/` — Full OPAR loop implementation with LLM backend, tool registry, and ground-truth emission.
-- `docs/architecture/08-athena-adversary-fuzzer.md` — Athena evolution roadmap (Phase 2/3 are implemented by athena-agents).
+- `docs/architecture/08-athena-adversary-fuzzer.md` — Athena evolution roadmap (`athena-agents` OPAR is Phase 1 capable; architecture Phase 2/3 remain SecureOS/hermetic targets).
 - `platform/athena/` — Platform-level Athena component definitions.
 - `config/tool-registry.toml` (in athena-agents) — Offensive tool catalog with capability gates.
 
