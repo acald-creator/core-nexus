@@ -45,8 +45,8 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 9** (U) — Use Console to monitor a live Athena agent session
 - [x] **Day 10** (D) — Share: "Day 10 — My SOC console watching an AI agent hack"
 - [x] **Day 11** (B) — Implement alerts route in Gateway (pull from Wazuh API)
-- [ ] **Day 12** (B) — Implement approvals route in Gateway (pull from athena-agents)
-- [ ] **Day 13** (B) — Implement SSE agent events route (stream from athena-agents)
+- [x] **Day 12** (D) — Catch-up: document current core-nexus platform state (R2, Vault/hashistack, SOC k8s, Gateway/Console)
+- [x] **Day 13** (D) — Catch-up: audit 100 Days vs repo — stubs, supersessions, deferred Builds
 - [ ] **Day 14** (U) — Start SOC baseline stack, generate Athena traffic, triage first real alerts
 - [ ] **Day 15** (U) — Correlate Console alerts with nexus-tui feed for the same session
 - [ ] **Day 16** (D) — Write a Suricata rule for something Athena generated
@@ -54,6 +54,11 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional)
 - [ ] **Day 19** (U) — Run agent + monitor from terminal only (air-gapped simulation)
 - [ ] **Day 20** (D) — Phase 1 retrospective — update ROADMAP, share progress
+
+### Deferred Builds (was Days 12–13 B — do before or interleaved with Days 14–20)
+
+- [ ] **Approvals typed Gateway contract** — `ApprovalAction` models, pending-default sort (Property 8), decision 404/409/502 (was Day 12 B)
+- [ ] **athena-agents SSE event API** — real `/sessions` + `/events`; retire Day 9 GT→SSE bridge (was Day 13 B)
 
 ## Phase 2: Detection Engineering (Days 21-40) — "Catch the Agent"
 
@@ -70,7 +75,7 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 31** (D) — Share: "Day 31 — AI agent tried to write outside safe range, got blocked"
 - [x] **Day 32** (B) — Implement Wazuh alert transformation in Gateway (map to SOCAlert schema) — *done early as Day 11; Indexer-vs-Manager hardening can still land later*
 - [ ] **Day 33** (B) — Add alert acknowledgment endpoint to Gateway
-- [ ] **Day 34** (B) — Wire Console alerts badge to live unacknowledged count
+- [ ] **Day 34** (B) — Wire Console alerts badge to live unacknowledged count — *partial via Day 6; needs Day 33 ack API to be meaningful*
 - [ ] **Day 35** (U) — Run a full session: agent generates traffic → alerts appear in Console
 - [ ] **Day 36** (U) — Correlate agent ground-truth with Wazuh alerts (true positive rate)
 - [ ] **Day 37** (D) — Calculate detection coverage metric, add to tracking table
@@ -166,18 +171,20 @@ Skills generated: X | Agent sessions: Y
 | 9 | 2026-08-26 | U | Console Agent Feed via Day9 GT→SSE bridge; Juice Shop 6 http-request acts; 8 SSE events | code-console-host-opar-event-bridge.md |
 | 10 | 2026-08-27 | D | Share writeup: SOC console watching Athena vs Juice Shop; honest gap + bridge narrative | |
 | 11 | 2026-08-28 | B | Gateway alerts: SOCAlert map, filters, triage 404/504; Properties 5–7 | |
+| 12 | 2026-08-29 | D | Catch-up: platform state — R2 overlay, hashistack Vault, SOC k8s Gateway/Console/Wazuh, Day 9 bridge gated | |
+| 13 | 2026-08-30 | D | Catch-up: full repo audit vs 100 Days; approvals+SSE Builds deferred; architecture overclaim note | |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
-### Parallel platform work (not day-numbered, Aug 28–30)
+### Parallel platform work (Aug 28–30) — folded into Days 12–13 docs
 
-Does **not** auto-complete calendar days, but changes the backdrop for upcoming ones:
+Does **not** complete Use-days 14+ or the deferred Approvals/SSE Builds:
 
-- **Object store:** R2 overlay for non-lab (`object_store_backend=r2`); MinIO remains lab default — Day 7 path still valid
-- **Secrets:** Vault moved to `nexus-hashistack`; gateway hydrate via AppRole; Console lab bypass / local-user allowlist
-- **SOC k8s:** Gateway + Console Deployments, Wazuh Vault-synced secrets, indexer TLS overlay, Jupyter + Athena range overlay; webtop-soc remote retired from k8s base
-- **Day 9 bridge:** still present, gated in compose (`6eeeaae`) — Day 13 still required to retire the shim
-- **Day 12:** approvals route still scaffold (no `models/approvals.py`, no Property 8 tests)
-- **Day 14:** k8s SOC spine advanced, but the Use-day (generate Athena traffic → triage real alerts in Console) is not done
+- **Object store:** R2 overlay for non-lab; MinIO remains lab default (Day 7 path still valid)
+- **Secrets:** Vault owned by `nexus-hashistack`; gateway AppRole hydrate; Console lab bypass / local-user allowlist
+- **SOC k8s:** Gateway + Console Deployments, Wazuh Vault-synced secrets, indexer TLS, Jupyter + Athena range overlay; webtop-soc remote retired from k8s base
+- **Day 9 bridge:** still present, gated in compose — real athena-agents SSE still deferred
+- **Approvals:** route scaffold only (no typed models / Property 8)
+- **Metadata:** D1 artifact index Worker + gateway client (adjacent to artifacts, not a challenge day)
 
 ### Phase 2
 
