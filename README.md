@@ -1,18 +1,107 @@
-# Underground Nexus
+# Underground Nexus (`core-nexus`)
 
-An AI-native security operations platform with LLM-driven adversary emulation, automated detection engineering, and skill-driven agent memory.
+Architecture hub and platform source for **Underground Nexus**: a **programmable fabric** and **secure software factory**, with an attached **red / blue / purple range**.
 
-Underground Nexus combines a SOC detection pipeline (Wazuh + Suricata), autonomous red-team agents (OPAR loop), and a unified operator interface (web console + terminal TUI) into a closed-loop system where the agent generates labeled attack traffic, sensors detect it, and the platform measures coverage gaps.
+This repository holds numbered architecture docs, platform components (Console, API gateway, workbench, sensors, metadata), and deploy manifests (Compose lab + Kubernetes/GitOps). Sibling repos own Vault, Athena runtime, and agent orchestration.
 
-## Quick Start (Dev Stack)
+Canonical narrative: [`docs/architecture/01-component-architecture.md`](docs/architecture/01-component-architecture.md) §0. Collaboration rules: [`docs/00-ai-collaboration.md`](docs/00-ai-collaboration.md).
 
-Preferred: start Vault beside this stack, then bring up compose with exported secrets.
+## What it is
+
+| Plane | Role | Surfaces in this ecosystem |
+| --- | --- | --- |
+| **Fabric** | Deployable workloads, identity, secrets, observability | Kubernetes overlays, Vault (via `nexus-hashistack`), GitOps |
+| **Factory** | Build → SBOM → sign → attest → promote | CI + [`nebucloud/ssf`](https://github.com/nebucloud/ssf) / [kiln](https://github.com/nebucloud/kiln) + **Flux** (image automation) + **Argo CD** (app delivery) |
+| **Blue** | Detection and ops UX | Headless Wazuh + sensors + AI triage + **Nexus Console** (optional `nexus-tui`) |
+| **Purple** | Ground-truth evaluation | **Jupyter** workbench + MCP |
+| **Red** | Controlled stimulation / emulation | Isolated **Athena** + `athena-agents` |
+
+**Keep as human clients:** Nexus Console, Jupyter purple workspace, isolated Athena.  
+**Retired as product desktops:** `nexus-webtop-soc` / `nexus-webtop-workbench` (archive compose only — do not treat as recommended surfaces).
+
+**Objects:** lab MinIO (S3); production **Cloudflare R2** (blobs) + **D1** (artifact/run metadata).  
+**Secrets:** Vault lives in [`nexus-hashistack`](https://github.com/acald-creator/nexus-hashistack) — not deployed from this repo.
+
+## Architecture (lab spine)
+
+```mermaid
+flowchart TB
+  subgraph clients [Human clients]
+    Console[Nexus Console]
+    Jupyter[Jupyter workbench]
+    Athena[Isolated Athena]
+  end
+
+  subgraph fabric [Fabric]
+    Argo[Argo CD]
+    Flux[Flux image automation]
+    GW[API Gateway]
+    Vault[Vault - hashistack]
+  end
+
+  subgraph factory [Factory]
+    CI[GitHub Actions]
+    SSF[ssf + Cosign]
+    Hub[Registry phoenixvlabs]
+  end
+
+  subgraph store [Objects]
+    R2[R2 / MinIO]
+    D1[D1 metadata Worker]
+  end
+
+  subgraph blue [Blue]
+    Wazuh[Wazuh manager + indexer]
+  end
+
+  CI --> SSF --> Hub
+  Flux -->|pin tags in Git| Argo
+  Hub --> Flux
+  Argo --> Console
+  Argo --> GW
+  Argo --> Jupyter
+  Argo --> Athena
+  Console --> GW
+  GW --> R2
+  GW --> D1
+  GW --> Wazuh
+  Vault -.->|sync-vault-to-k8s| GW
+```
+
+GitOps bootstrap sketch: [`deploy/gitops/`](deploy/gitops/). First Argo apps sync Console+gateway (`overlays/r2`) and range Jupyter+Athena (`overlays/gitops-range`).
+
+## Repositories
+
+| Repository | Role |
+| --- | --- |
+| **core-nexus** (this repo) | Architecture, Console, gateway, workbench defs, SOC/k8s deploy, skills |
+| **nexus-hashistack** | Local/shared Vault (+ optional Consul); AppRole export for `--from-vault` |
+| **nexus-athena** | Red-team container image and execution environment |
+| **athena-agents** | LLM OPAR orchestrator (allowlist + capability gates) |
+| **nebucloud/ssf** + **kiln** | Secure software factory CLI / hermetic build (not duplicated here) |
+| **nexus-webtop-*** | **Retired** — archive only |
+
+## Platform components
+
+| Component | Path | Notes |
+| --- | --- | --- |
+| Nexus Console | `platform/nexus-console/` | React ops UI — launchpad, alerts, approvals, artifacts |
+| API Gateway | `platform/api-gateway/` | FastAPI — JWT auth, Wazuh/object-store/D1 proxies |
+| Jupyter workbench | `platform/workbench/` | Purple analyst workspace (`nexus-workbench` image) |
+| Metadata Worker | `platform/nexus-metadata/` | Cloudflare Worker + D1 artifact/run index |
+| AI inference | `platform/ai-inference/` | Triage enrichment (optional in thin spine) |
+| nexus-tui | `cmd/nexus-tui/` | Terminal client for constrained environments |
+| Skills | `docs/skills/` | Versioned agent memory (git ↔ local ↔ object store) |
+
+## Quick start
+
+### Compose lab (with Vault)
 
 ```bash
-# Terminal A — nexus-hashistack (Vault :8200)
+# Terminal A — Vault
 cd ../nexus-hashistack
 ./scripts/nexus-dev-up.sh
-./scripts/admin-bootstrap-approle.sh
+./scripts/admin-bootstrap-approle.sh   # optional
 ./scripts/export-core-nexus-env.sh
 cp .env.core-nexus ../core-nexus/.env.vault
 
@@ -21,197 +110,63 @@ cd ../core-nexus
 ./scripts/dev-stack.sh up --from-vault
 ./scripts/seed-minio-skills.sh
 
-open http://localhost:3000          # Console (gateway local login)
-open http://localhost:3100/docs     # API Gateway
-open http://localhost:8200          # Vault UI (sidecar)
+open http://localhost:3000   # Console (gateway local login)
+open http://localhost:3100/docs
+open http://localhost:8200   # Vault UI (sidecar)
 ```
 
-Offline / no Vault (compose defaults only):
+Without Vault: `./scripts/dev-stack.sh up` (compose defaults). Strict labs: `NEXUS_REQUIRE_VAULT=1 ./scripts/dev-stack.sh up --from-vault`.
+
+Console login is **gateway JWT** (`authProvider: local`), not Vault userpass. Vault appears as a Console deep-link. See [`docs/architecture/12-vault-environments-specification.md`](docs/architecture/12-vault-environments-specification.md).
+
+### Kubernetes / GitOps lab
 
 ```bash
-./scripts/dev-stack.sh up
+# Bootstrap Argo + Flux image automation (see deploy/gitops/README.md)
+export NEXUS_GIT_URL="https://github.com/acald-creator/core-nexus.git"
+./deploy/gitops/bootstrap.sh
+
+# Secrets into cluster (R2 lab uses nexus/prod)
+source ../nexus-hashistack/.approle/gateway.env 2>/dev/null || true
+NEXUS_VAULT_GW_PATH=nexus/prod ./deploy/scripts/sync-vault-to-k8s.sh
+
+# Port-forwards for Console launchpad
+kubectl -n soc port-forward svc/nexus-console 3000:80
+kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
+kubectl -n soc port-forward svc/nexus-workbench 8888:8888
 ```
 
-Strict labs can refuse defaults: `NEXUS_REQUIRE_VAULT=1 ./scripts/dev-stack.sh up --from-vault`.
+Publish/sign images: `.github/workflows/publish-platform-images.yml` (Docker Hub + Cosign; optional `ssf` once installed).
 
-Console login uses the **API Gateway** (`authProvider: local`), not Vault user auth. The Vault tile is a deep-link to the hashistack sidecar. See `docs/architecture/12-vault-environments-specification.md`.
+## Documentation
 
-## Architecture
+| Start here | Purpose |
+| --- | --- |
+| [`docs/00-doc-index.md`](docs/00-doc-index.md) | Ordered reading list |
+| [`docs/architecture/01-component-architecture.md`](docs/architecture/01-component-architecture.md) | Locked product narrative + component map |
+| [`docs/architecture/02-enterprise-production-setup.md`](docs/architecture/02-enterprise-production-setup.md) | K8s, Flux+Argo, factory loop |
+| [`docs/architecture/03-phased-implementation-roadmap.md`](docs/architecture/03-phased-implementation-roadmap.md) | Phase 1–3 maturity |
+| [`docs/architecture/13-agent-workflows-and-memory.md`](docs/architecture/13-agent-workflows-and-memory.md) | OPAR, skills, safety |
 
-```mermaid
-graph TD
-    subgraph "Operator Layer"
-        Console[Nexus Console :3000]
-        TUI[nexus-tui Terminal]
-    end
+Agent entrypoints: [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), [`GEMINI.md`](GEMINI.md).
 
-    subgraph "API Layer"
-        GW[API Gateway :3100]
-    end
-
-    subgraph "Agent Layer"
-        OPAR[athena-agents OPAR Loop]
-        Skills[Skill Library MinIO]
-        LLM[Ollama / vLLM]
-    end
-
-    subgraph "Execution Layer"
-        Athena[nexus-athena Container]
-    end
-
-    subgraph "Detection Layer"
-        Suricata[Suricata Sensor]
-        Wazuh[Wazuh Manager + Indexer]
-        AI[AI Inference :8000]
-    end
-
-    subgraph "Storage"
-        MinIO[MinIO :9000]
-    end
-
-    Console --> GW
-    TUI --> GW
-    GW --> Wazuh
-    GW --> MinIO
-    GW --> AI
-    GW --> OPAR
-    OPAR --> LLM
-    OPAR --> Skills
-    OPAR --> Athena
-    Athena -->|Labeled Traffic| Suricata
-    Suricata --> Wazuh
-    Wazuh --> AI
-
-    style Console fill:#3178c6,stroke:#fff,color:#fff
-    style GW fill:#04b575,stroke:#fff,color:#fff
-    style OPAR fill:#7f1d1d,stroke:#fff,color:#fff
-    style Athena fill:#7f1d1d,stroke:#fff,color:#fff
-```
-
-## Repositories
-
-| Repository | Purpose |
-|------------|---------|
-| **core-nexus** (this repo) | Architecture hub, Nexus Console, API Gateway, AI Inference, nexus-tui, deploy manifests, skills |
-| **nexus-hashistack** | Sole local Vault (+ optional Consul) pack — run beside this repo; core-nexus only consumes |
-| **nexus-athena** | Kali-based red-team container with 5 runtime profiles |
-| **athena-agents** | LLM-driven OPAR orchestrator (Python + Rust) |
-| **nexus-webtop-soc** | **Retired** — archive compose recipes only; use `deploy/kubernetes/soc/` |
-| **nexus-webtop-workbench** | **Retired** — use Jupyter `platform/workbench` + Console |
-
-## Components
-
-| Component | Location | Port | Purpose |
-|-----------|----------|------|---------|
-| Nexus Console | `platform/nexus-console/` | 3000 | React dashboard — navigation, health, agent feed, alerts, approvals, skills, artifacts |
-| API Gateway | `platform/api-gateway/` | 3100 | FastAPI aggregation layer — JWT auth, proxies all backends |
-| AI Inference | `platform/ai-inference/` | 8000 | Threat scoring, triage enrichment, vector memory |
-| nexus-tui | `cmd/nexus-tui/` | — | Go terminal console for SSH/air-gapped environments |
-| Agent Memory | `docs/skills/` | — | Git-based skills + MinIO sync + session logs |
-| MinIO | compose service | 9000/9001 | Object storage (PCAPs, SBOMs, skills, sessions) |
-
-## Repository Layout
-
-```text
-.
-├── cmd/
-│   └── nexus-tui/              # Go terminal SOC console
-├── deploy/
-│   └── compose/
-│       ├── dev.yml             # Unified dev stack (recommended)
-│       ├── baseline.yml        # Legacy Olympiad stack
-│       └── README.md
-├── docs/
-│   ├── 00-ai-collaboration.md
-│   ├── 00-doc-index.md
-│   ├── architecture/           # 14 numbered architecture docs
-│   ├── decisions/
-│   ├── reports/
-│   ├── scenarios/
-│   ├── skills/                 # Portable agent memory (skills + sessions)
-│   └── 100-days-challenge.md
-├── images/
-│   └── docker/                 # Legacy DinD deployment image
-├── platform/
-│   ├── ai-inference/           # FastAPI AI triage service
-│   ├── api-gateway/            # FastAPI aggregation gateway
-│   ├── athena/                 # Athena component reference
-│   ├── mcp/                    # MCP server scaffold
-│   ├── nexus-console/          # React 19 dashboard
-│   ├── sensors/                # Sensor notes → system/suricata + Tetragon
-│   ├── soc/                    # SOC notes → deploy/kubernetes/soc/
-│   └── workbench/              # JupyterLab integration
-├── scripts/
-│   ├── dev-stack.sh            # Dev compose helper
-│   ├── seed-minio-skills.sh    # Upload skills to MinIO
-│   └── sync-skills.sh          # Sync skills: git ↔ local ↔ MinIO
-└── supply-chain/
-```
-
-## Architecture Documents
-
-Start with [docs/00-doc-index.md](docs/00-doc-index.md).
-
-| # | Document | Topic |
-|---|----------|-------|
-| 1 | [Component Architecture](docs/architecture/01-component-architecture.md) | Current component map and target roles |
-| 2 | [Enterprise Production Setup](docs/architecture/02-enterprise-production-setup.md) | Kubernetes, Pulumi, Argo CD, UDS/Zarf |
-| 3 | [Phased Implementation Roadmap](docs/architecture/03-phased-implementation-roadmap.md) | Phase 1-3 maturity model |
-| 4 | [AI-Native Platform Proposal](docs/architecture/04-ai-native-platform-proposal.md) | Long-horizon Enterprise Platform/SecureOS |
-| 5 | [Sensor Deep Dive](docs/architecture/05-sensor-deep-dive.md) | Hybrid Suricata + runtime telemetry |
-| 6 | [AI-SOC Inference Engine](docs/architecture/06-ai-soc-inference-engine.md) | AI triage and model governance |
-| 7 | [MCP Workbench](docs/architecture/07-mcp-workbench.md) | MCP server and purple-team MLOps |
-| 8 | [Athena Adversary Fuzzer](docs/architecture/08-athena-adversary-fuzzer.md) | LLM-driven adversarial data generation |
-| 9 | [Production Deployment Lifecycle](docs/architecture/09-production-deployment-lifecycle.md) | Future bare-metal lifecycle |
-| 10 | [AI-Infused Security+ Labs](docs/architecture/10-ai-infused-security-plus-labs.md) | Lab scenarios |
-| 11 | [AI-Native Integration Principles](docs/architecture/11-ai-native-integration-principles.md) | Stimulation, emulation, skill memory |
-| 12 | [Vault Environments](docs/architecture/12-vault-environments-specification.md) | Vault intent (implemented in nexus-hashistack) |
-| 13 | [Agent Workflows and Memory](docs/architecture/13-agent-workflows-and-memory.md) | OPAR loop, skills, nexus-tui, safety |
-
-## Agent Skill Memory
-
-Skills encode proven approaches so agents skip rediscovery on repeat encounters:
+## Skills sync
 
 ```bash
-# Check sync status
 ./scripts/sync-skills.sh status
-
-# Push git skills to local Kiro
-./scripts/sync-skills.sh push-local
-
-# Push to MinIO for headless agents
-./scripts/sync-skills.sh push-minio
+./scripts/sync-skills.sh push-local    # → ~/.kiro/skills/
+./scripts/sync-skills.sh push-minio    # → object store for headless agents
 ```
 
-Skills live at three levels:
-- `docs/skills/` — git (versioned, source of truth)
-- `~/.kiro/skills/` — local (Kiro reads here)
-- MinIO `nexus-memory/skills/` — platform (OPAR agents read here)
+Source of truth: `docs/skills/` (git).
 
-## Athena Agent Profiles
+## Guardrails
 
-The `nexus-athena` container supports 5 runtime profiles:
-
-| Profile | Purpose | Capabilities |
-|---------|---------|-------------|
-| `standard` | Basic red-team | Unprivileged |
-| `packet-lab` | Packet capture | NET_ADMIN, NET_RAW |
-| `exploit-lab` | Metasploit, exploit dev | NET_ADMIN, NET_RAW, SYS_PTRACE |
-| `agent` | LLM-driven OPAR | Network to LLM endpoint |
-| `agent-ics` | Autonomous ICS/OT | ICS_WRITE, CAN_INJECT + agent |
-
-## AI Collaboration
-
-- [AGENTS.md](AGENTS.md) — Kiro/Codex agent instructions
-- [CLAUDE.md](CLAUDE.md) — Claude architecture critique
-- [GEMINI.md](GEMINI.md) — Gemini research synthesis
-- [docs/00-ai-collaboration.md](docs/00-ai-collaboration.md) — Shared vocabulary, model roles, non-negotiable decisions
-
-## Current Phase
-
-**Phase 1: Bootstrap** — 5 of 7 exit criteria complete.
-
-See [Phase 1 details](docs/architecture/03-phased-implementation-roadmap.md).
+- Do not put SOC control-plane or factory trust into desktop images.
+- Offensive tooling belongs in `nexus-athena` / `athena-agents`, not this repo’s default images.
+- LLM agents stay inside allowlist and capability-gate constraints; human approval before autonomous response.
+- Prefer Flux + Argo for fabric delivery; do not invent a second Cosign/SBOM stack beside `nebucloud/ssf`.
+- Keep credentials and certificates out of git.
 
 ## License
 
