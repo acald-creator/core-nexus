@@ -1,6 +1,6 @@
-# Publish Console + API gateway images to Docker Hub, sign with nebucloud/ssf.
+# Publish Console + API gateway images to Docker Hub; sign with Cosign (SSF-compatible).
 #
-# Secrets: DOCKER_USERNAME, DOCKER_PASSWORD, COSIGN_PRIVATE_KEY, COSIGN_PASSWORD (optional)
+# Secrets: DOCKER_USERNAME, DOCKER_PASSWORD, COSIGN_PRIVATE_KEY, COSIGN_PASSWORD (empty OK)
 # Triggers: workflow_dispatch (tag input) or push tags matching v*
 name: Publish platform images
 
@@ -64,20 +64,19 @@ jobs:
             ${{ env.REGISTRY_NS }}/${{ matrix.name }}:latest
           build-args: ${{ matrix.build_args }}
 
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "1.25.x"
+      # nebucloud/ssf is private — CI cannot `go install` it without a read token.
+      # Cosign is what ssf shells out to for OCI sign; use it directly until SSF is
+      # public or NEBUCLOUD_READ_TOKEN is wired for `go install` / checkout.
+      - name: Install cosign
+        uses: sigstore/cosign-installer@v3
 
-      - name: Install ssf
-        run: go install github.com/nebucloud/ssf/cmd/ssf@main
-
-      - name: Sign with ssf
+      - name: Sign image
         env:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
         run: |
           set -euo pipefail
           printf '%s' "$COSIGN_PRIVATE_KEY" > cosign.key
-          ssf sign --key "file://$(pwd)/cosign.key" \
+          cosign sign --yes --key cosign.key \
             "${{ env.REGISTRY_NS }}/${{ matrix.name }}:${{ steps.meta.outputs.tag }}"
           rm -f cosign.key
