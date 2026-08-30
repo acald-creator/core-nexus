@@ -8,7 +8,7 @@ resources:
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console
-    newTag: v0.1.0 # {"$imagepolicy": "flux-system:nexus-console:tag"}
+    newTag: v0.1.1 # {"$imagepolicy": "flux-system:nexus-console:tag"}
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
-    newTag: v0.2.0 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
+    newTag: v0.2.1 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
