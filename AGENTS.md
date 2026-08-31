@@ -35,6 +35,8 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 | `athena-agents` | LLM-driven adversary emulation framework (OPAR loop) |
 | `nexus-athena` | Red-team container image and execution environment |
 | `nexus-hashistack` | Sole owner of local Vault (+ Consul) packs and AppRole export for `dev-stack.sh --from-vault` |
+| `nebucloud/ssf` + `nebucloud/kiln` | Secure software factory (sign/attest vs hermetic build) — ADR 0004 |
+| `nebucloud/factory-agents` | Factory AI secure coding / review (planned; ADR 0009) — not in core-nexus |
 | `nexus-webtop-soc` | **Retired** desktop webtop; archive compose recipes only — prefer `deploy/kubernetes/soc/` |
 | `nexus-webtop-workbench` | **Retired** analyst desktop — prefer Jupyter `platform/workbench` + Console |
 
@@ -47,5 +49,6 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 - Autonomous response is a later capability; human approval comes first.
 - Keep credentials and certificates out of committed files.
 - Prefer Flux + Argo CD for programmatic fabric delivery (ADR 0003); use `nebucloud/ssf` + kiln for factory signing (ADR 0004) — do not invent a parallel Cosign stack in this repo.
+- Factory AI coding/review agents live in `nebucloud/factory-agents` (ADR 0009); kiln remains hermetic build; reuse OPAR safety patterns from `athena-agents` without red skill packs.
 - Suricata remains in the cybersecurity / hybrid-sensor plan (ADR 0007) even when omitted from a thin lab overlay.
 

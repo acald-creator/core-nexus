@@ -15,7 +15,7 @@ inclusion: manual
 ## Approach
 
 1. Read `docs/decisions/README.md` for the index of Accepted ADRs.
-2. Open the relevant ADR (`0002`–`0008`) before changing related docs or manifests.
+2. Open the relevant ADR (`0002`–`0009`) before changing related docs or manifests.
 3. Cross-check `docs/architecture/01-component-architecture.md` §0 (product narrative).
 4. Update the ADR if the decision changes; do not silently override in a random doc.
 5. Prefer one-line consequences in PRs: “per ADR 0003, Argo path remains overlays/r2.”
@@ -31,6 +31,7 @@ inclusion: manual
 | Console, Jupyter, Athena; webtops retired | 0006 |
 | Suricata hybrid sensor (still in plan) | 0007 |
 | Vault via nexus-hashistack | 0008 |
+| Factory AI coding/review (sibling repo; kiln = callee) | 0009 |
 | Lab-only Portainer / no Vault-in-core-nexus | 0001 + 0008 |
 
 ADR shape: Status → Context → Decision → Consequences.
@@ -41,6 +42,8 @@ ADR shape: Status → Context → Decision → Consequences.
 - Do not drop Suricata from the cybersecurity plan because the thin spine omits it.
 - Do not map athena-agents OPAR to architecture Phase 2/3 SecureOS — OPAR is Phase 1 capable.
 - Do not invent a second factory stack inside core-nexus.
+- Do not treat kiln as a coding-agent workspace — kiln is hermetic build/task execution (ADR 0004 + 0009).
+- Do not host factory coding LLMs in `platform/ai-inference` (triage-only).
 
 ## References
 

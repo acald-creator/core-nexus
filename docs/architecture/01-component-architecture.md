@@ -24,6 +24,8 @@ Underground Nexus is a **programmable fabric** plus a **secure software factory*
 
 **Secure software factory implementation:** Prefer [`nebucloud/ssf`](https://github.com/nebucloud/ssf) (Go CLI: sign/attest/SBOM/policy via Cosign shellouts; `ssf.yaml` → kiln hermetic steps). Builds stay in [kiln](https://github.com/nebucloud/kiln); SSF secures outputs. Do **not** reinvent a parallel factory inside `core-nexus`. The older monorepo `nebucloud/secure-software-factory` (xDS + Hyperledger Fabric scaffolding) is a separate lineage — not the default Nexus factory path unless explicitly revived.
 
+**Factory AI (secure coding / review):** Sibling [`nebucloud/factory-agents`](https://github.com/nebucloud/factory-agents) (ADR 0009) — review agent first, coding agent second; kiln is the hermetic verify/build **callee**, not the agent workspace. Wire human gates via Console Approvals / gateway; keep coding LLMs out of `platform/ai-inference`.
+
 Existing SSF phases (2.4a–d) are early but real (binary artifact + pipeline + CUE); OCI and Flux/Argo wiring are follow-ons for Nexus image promotion.
 
 ## 1. Deployment Progression

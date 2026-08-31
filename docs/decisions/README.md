@@ -13,6 +13,7 @@ agents or humans need the locked defaults.
 | [0006](0006-human-clients-and-webtop-retirement.md) | Human clients; webtops retired | Accepted |
 | [0007](0007-hybrid-sensor-suricata.md) | Hybrid sensor: Suricata + runtime telemetry | Accepted |
 | [0008](0008-vault-ownership-nexus-hashistack.md) | Vault ownership: nexus-hashistack | Accepted |
+| [0009](0009-factory-ai-secure-coding-review-agents.md) | Factory AI: secure coding / review agents | Accepted |
 
 ## Format
 

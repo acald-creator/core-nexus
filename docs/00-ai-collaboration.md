@@ -70,6 +70,7 @@ These roles are defaults, not hard rules. Any model may review any document, but
 - Vault is the preferred production-like secrets manager, **owned by nexus-hashistack / shared Vault** — not deployed from core-nexus (ADR 0008).
 - GitOps default: **Flux** (image automation) + **Argo CD** (app delivery) (ADR 0003).
 - Factory default: **nebucloud/ssf + kiln**; do not duplicate Cosign stacks in core-nexus (ADR 0004).
+- Factory AI (secure coding / review): sibling **`nebucloud/factory-agents`**; review-first; kiln is callee for hermetic verify/build — not the agent workspace; do not host coding LLMs in `platform/ai-inference` (ADR 0009).
 - Human clients: Nexus Console, Jupyter purple workspace, isolated Athena; webtops retired (ADR 0006).
 - Platform UI is monitored like any other workload, but threat findings go to approved Nexus/SOC clients.
 - Autonomous response is a later capability. Human approval and auditability come first.
