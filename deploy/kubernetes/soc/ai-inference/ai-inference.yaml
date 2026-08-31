@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-inference
+  namespace: soc
+  labels:
+    app: ai-inference
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-inference
+  template:
+    metadata:
+      labels:
+        app: ai-inference
+        zarf.dev/agent: skip
+    spec:
+      initContainers:
+        - name: preflight-cookbook
+          image: phoenixvlabs/nexus-ai-inference:latest
+          imagePullPolicy: IfNotPresent
+          command: ["python", "preflight.py"]
+          volumeMounts:
+            - name: models-volume
+              mountPath: /models
+      containers:
+        - name: ai-inference
+          securityContext:
+            allowPrivilegeEscalation: false
+          image: phoenixvlabs/nexus-ai-inference:latest
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: NEXUS_AI_DB_PATH
+              value: /data/triage.db
+          volumeMounts:
+            - name: models-volume
+              mountPath: /models
+            - name: data-volume
+              mountPath: /data
+          ports:
+            - containerPort: 8000
+              name: api
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: api
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: api
+            initialDelaySeconds: 10
+            periodSeconds: 20
+          resources:
+            limits:
+              cpu: "1"
+              memory: 1Gi
+            requests:
+              cpu: "100m"
+              memory: 128Mi
+      volumes:
+        - name: models-volume
+          emptyDir: {}
+        # Lab: emptyDir is fine. Promote to PVC when triage history must survive restarts.
+        - name: data-volume
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-inference
+  namespace: soc
+  labels:
+    app: ai-inference
+spec:
+  ports:
+    - port: 8000
+      targetPort: 8000
+      name: api
+  selector:
+    app: ai-inference

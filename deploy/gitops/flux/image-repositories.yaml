@@ -37,3 +37,12 @@ metadata:
 spec:
   image: phoenixvlabs/nexus-athena
   interval: 5m
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImageRepository
+metadata:
+  name: nexus-ai-inference
+  namespace: flux-system
+spec:
+  image: phoenixvlabs/nexus-ai-inference
+  interval: 5m

@@ -1,10 +1,11 @@
-# Thin GitOps lab: Console + API gateway (see ../../console).
+# Thin GitOps lab: Console + API gateway + AI triage (see ../../console).
 # Flux ImageUpdateAutomation (Setters) rewrites newTag markers below.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: soc
 resources:
   - ../../console
+  - ../../ai-inference
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console
@@ -12,3 +13,6 @@ images:
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
     newTag: v0.2.3 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
+  - name: phoenixvlabs/nexus-ai-inference
+    newName: phoenixvlabs/nexus-ai-inference
+    newTag: v0.2.3 # {"$imagepolicy": "flux-system:nexus-ai-inference:tag"}

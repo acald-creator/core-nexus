@@ -6,7 +6,7 @@ resources:
   - nexus-gateway-secrets.yaml
   - nexus-api-gateway.yaml
   - nexus-console.yaml
-  - ai-inference.yaml
+  - ../ai-inference
   - nexus-mcp.yaml
   - nexus-workbench.yaml
   - nexus-athena.yaml

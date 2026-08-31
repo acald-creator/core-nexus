@@ -8,6 +8,8 @@ kind: Kustomization
 namespace: soc
 resources:
   - ../../console
+  # Gateway triage deep-links (NEXUS_GW_AI_INFERENCE_URL → ai-inference:8000).
+  - ../../ai-inference
   - object-store-config.yaml
 patches:
   - path: gateway-object-store-patch.yaml
@@ -60,3 +62,6 @@ images:
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
     newTag: v0.2.3 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
+  - name: phoenixvlabs/nexus-ai-inference
+    newName: phoenixvlabs/nexus-ai-inference
+    newTag: v0.2.3 # {"$imagepolicy": "flux-system:nexus-ai-inference:tag"}

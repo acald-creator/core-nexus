@@ -61,3 +61,18 @@ spec:
   filterTags:
     pattern: '^(?P<tag>[a-z0-9][a-z0-9._-]{2,127})$'
     extract: '$tag'
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta2
+kind: ImagePolicy
+metadata:
+  name: nexus-ai-inference
+  namespace: flux-system
+spec:
+  imageRepositoryRef:
+    name: nexus-ai-inference
+  policy:
+    semver:
+      range: ">=0.1.0"
+  filterTags:
+    pattern: '^v?(?P<version>[0-9]+\.[0-9]+\.[0-9]+.*)$'
+    extract: '$version'
