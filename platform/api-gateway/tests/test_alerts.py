@@ -215,6 +215,7 @@ async def test_triage_404_and_504(client, app, make_token):
 
     token = make_token()
     app.state.ai_inference_client.get_triage.return_value = None
+    app.state.wazuh_client.get_alerts.return_value = {"data": {"affected_items": []}}
     r404 = await client.get(
         "/api/v1/alerts/abc/triage",
         headers={"Authorization": f"Bearer {token}"},
@@ -227,3 +228,33 @@ async def test_triage_404_and_504(client, app, make_token):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert r504.status_code == 504
+
+
+@pytest.mark.asyncio
+async def test_triage_fallback_create_from_wazuh(client, app, make_token):
+    token = make_token()
+    app.state.ai_inference_client.get_triage.return_value = None
+    app.state.wazuh_client.get_alerts.return_value = {
+        "data": {
+            "affected_items": [
+                {
+                    "id": "alert-42",
+                    "rule": {"id": 5710, "level": 10, "description": "auth failed"},
+                }
+            ]
+        }
+    }
+    app.state.ai_inference_client.create_triage.return_value = {
+        "confidenceScore": 0.81,
+        "recommendedAction": "Draft containment policy for human approval.",
+        "reasoningExcerpt": "[Wazuh] Wazuh alert level 10",
+    }
+    response = await client.get(
+        "/api/v1/alerts/alert-42/triage",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["confidenceScore"] == 0.81
+    assert "human approval" in body["recommendedAction"]
+    app.state.ai_inference_client.create_triage.assert_awaited_once()

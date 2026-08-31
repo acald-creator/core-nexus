@@ -7,7 +7,14 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY main.py .
 COPY triage.py .
+COPY store.py .
 COPY preflight.py .
+
+RUN mkdir -p /data
+
+ENV NEXUS_AI_DB_PATH=/data/triage.db
+
+VOLUME ["/data"]
 
 EXPOSE 8000
 

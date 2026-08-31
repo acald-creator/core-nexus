@@ -50,16 +50,37 @@ async def list_alerts(
 
 @router.get("/alerts/{alert_id}/triage", response_model=TriageResponse)
 async def get_alert_triage(alert_id: str, request: Request):
-    """Get AI triage result for a specific alert."""
+    """Get AI triage for an alert — persisted lookup, else score from Wazuh payload."""
+    client = request.app.state.ai_inference_client
     try:
-        result = await request.app.state.ai_inference_client.get_triage(alert_id)
+        result = await client.get_triage(alert_id)
+        if result is None:
+            # E0 fallback: find alert in recent Wazuh window and POST for scoring.
+            raw_match: dict | None = None
+            try:
+                data = await request.app.state.wazuh_client.get_alerts(limit=200)
+                raw_items = data.get("data", {}).get("affected_items", [])
+                if isinstance(raw_items, list):
+                    for item in raw_items:
+                        if not isinstance(item, dict):
+                            continue
+                        rid = str(item.get("id") or item.get("_id") or item.get("alert_id") or "")
+                        if rid == alert_id:
+                            raw_match = item
+                            break
+            except Exception:
+                raw_match = None
+
+            if raw_match is not None:
+                result = await client.create_triage(raw_match)
+            else:
+                raise HTTPException(status_code=404, detail="No triage result available")
+    except HTTPException:
+        raise
     except httpx.TimeoutException:
         raise HTTPException(status_code=504, detail="AI Inference triage timed out")
     except Exception:
         raise HTTPException(status_code=502, detail="AI Inference service unavailable")
-
-    if result is None:
-        raise HTTPException(status_code=404, detail="No triage result available")
 
     try:
         return TriageResponse.model_validate(result)

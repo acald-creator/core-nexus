@@ -1,32 +1,49 @@
 # AI Inference Server
 
-This directory contains the Python-based AI-triage enrichment service (FastAPI) which processes security event logs from Wazuh and Suricata, performs hardware-aware pre-flight checks, and provides local vector RAG memory.
+FastAPI triage enrichment for Wazuh / Suricata / Athena-labeled events. Scores alerts and persists results so the API gateway can serve Console deep-links (`GET /api/v1/alerts/{id}/triage`).
 
-## Code Components
+This is a **NumPy baseline** (v1.1.0), not a production LLM runtime. Hardware scan endpoints recommend engines; they do not load vLLM/llama.cpp yet. Containment wording always requires **human approval**.
 
-- [main.py](file:///home/acald-creator/go/src/github.com/acald-creator/core-nexus/platform/ai-inference/main.py): Application entrypoint exposing API routing.
-- [triage.py](file:///home/acald-creator/go/src/github.com/acald-creator/core-nexus/platform/ai-inference/triage.py): Ingestion and scoring model implementation using NumPy.
-- [requirements.txt](file:///home/acald-creator/go/src/github.com/acald-creator/core-nexus/platform/ai-inference/requirements.txt): List of Python dependencies.
-- [Dockerfile](file:///home/acald-creator/go/src/github.com/acald-creator/core-nexus/platform/ai-inference/Dockerfile): Container builds file.
+## Components
 
-## Core API Endpoints
+| File | Role |
+|------|------|
+| `main.py` | FastAPI routes |
+| `triage.py` | Feature pack + scoring (severity, ports/rules, text, Suricata category / Wazuh groups+MITRE, Athena label) |
+| `store.py` | SQLite persistence (`NEXUS_AI_DB_PATH` or `./data/triage.db`) |
+| `preflight.py` | Optional hardware preflight helper |
+| `Dockerfile` | Image build; persists DB under `/data` |
 
-- **GET `/`**: Service configuration and operational status check.
-- **POST `/v1/triage`**: Ingest security events (Suricata or Wazuh alert logs) and output a standardized threat score, categorization, and action response.
-- **GET `/v1/hardware`**: Pre-flight node hardware scanning. Automatically detects CPU details and NVIDIA GPUs (`/dev/nvidia*`), recommending the appropriate inference backend (GGUF CPU vs GPU-accelerated FP8/AWQ).
-- **GET `/v1/models`**: Active and testing model metadata list.
-- **POST `/v1/memory/query`**: Local vector memory query (semantic/RAG overlap logic on alerts).
-- **GET `/v1/memory`**: View statistics on triaged history.
+## API
 
-## Local Building & Running
+| Method | Path | Notes |
+|--------|------|-------|
+| GET | `/` | Service status |
+| GET | `/health` | Liveness + record count |
+| POST | `/v1/triage` | Score one event or a batch; persist |
+| GET | `/v1/triage/{event_id}` | Lookup by alert/event id (gateway uses this) |
+| GET | `/v1/hardware` | Advisory CPU/GPU scan |
+| GET | `/v1/models` | Active model metadata |
+| GET | `/v1/memory` | Persistence stats |
+| POST | `/v1/memory/query` | Keyword overlap over recent triage text |
 
-### Building local Docker Image
+Responses include both snake_case and Console camelCase aliases (`confidenceScore`, `recommendedAction`, `reasoningExcerpt`).
+
+Athena-labeled traffic prefers `needs_human_review` over auto-contain language.
+
+## Local run
+
+```bash
+cd platform/ai-inference
+pip install -r requirements.txt
+uvicorn main:app --reload --port 8000
+```
+
 ```bash
 docker build -t local/ai-inference:latest platform/ai-inference/
+docker run --rm -p 8000:8000 -v ai-inference-data:/data local/ai-inference:latest
 ```
 
-### Running Locally
-```bash
-pip install -r platform/ai-inference/requirements.txt
-uvicorn platform.ai-inference.main:app --reload
-```
+## Gateway contract
+
+`platform/api-gateway` maps service fields via `to_console_triage`, then validates `TriageResponse`. On GET miss, the alerts route may POST the matching Wazuh alert for on-demand scoring.

@@ -13,7 +13,7 @@ kubectl exec -n soc nexus-workbench-5fd9bf9dc9-tjcdb -- bash -c 'bash -i >& /dev
 ```
 
 ## The Detection (Dual-Stack Correlation)
-This scenario perfectly demonstrates the power of our Phase 2 architecture, combining traditional network intrusion detection (Suricata) with kernel-native observability (Tetragon eBPF).
+This scenario demonstrates a **target** detection design that combines traditional network intrusion detection (Suricata) with kernel-native observability (Tetragon eBPF). That pairing aligns with the hybrid-sensor plan (ADR 0007); full Tetragon+gVisor rollout is architecture Phase 2+, not assumed present in every lab overlay.
 
 ### 1. The Network Signature (Suricata)
 If configured with the standard Emerging Threats ruleset, Suricata instantly flags the anomalous outbound connection on port 4444 as a potential reverse shell attempt based on network signatures. However, network telemetry alone cannot tell us *which* process inside the container spawned the traffic.

@@ -1,4 +1,4 @@
-# Publish Console + API gateway images to Docker Hub; sign with Cosign (SSF-compatible).
+# Publish Console, API gateway, and AI inference images to Docker Hub; sign with Cosign.
 #
 # Secrets: DOCKER_USERNAME, DOCKER_PASSWORD, COSIGN_PRIVATE_KEY, COSIGN_PASSWORD (empty OK)
 # Triggers: workflow_dispatch (tag input) or push tags matching v*
@@ -33,6 +33,10 @@ jobs:
           - name: nexus-api-gateway
             context: platform/api-gateway
             dockerfile: platform/api-gateway/Dockerfile
+            build_args: ""
+          - name: nexus-ai-inference
+            context: platform/ai-inference
+            dockerfile: platform/ai-inference/Dockerfile
             build_args: ""
     steps:
       - uses: actions/checkout@v4
