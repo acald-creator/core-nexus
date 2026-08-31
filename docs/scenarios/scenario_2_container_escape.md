@@ -44,4 +44,11 @@ When the exact same command was run inside the gVisor-backed `nexus-athena` pod,
 *Why?* Because gVisor intercepts all syscalls from the container and executes them in a specialized, user-space kernel (the `runsc` Sentry). The attacker's `cat /etc/shadow` command was processed entirely inside the sandbox and denied. The underlying host kernel was never touched, rendering the attack invisible to host-level eBPF hooks.
 
 ## Conclusion
-This proves the ultimate value of Phase 2. While Tetragon gives us incredible visibility into standard workloads, **gVisor provides impenetrable host-level isolation for high-assurance workloads**. If an attacker compromises Athena, they are trapped in a user-space matrix with zero access to the actual Kubernetes node.
+
+This scenario **illustrates a target-state** hermetic design (architecture Phase 2+),
+not a claim that Phase 2 is already proven in the lab. Tetragon improves visibility
+into standard workloads; gVisor is intended to **contain** high-assurance workloads
+by intercepting syscalls in user space. Isolation strength depends on RuntimeClass
+configuration and threat model — do not treat it as absolute or “impenetrable.”
+If Athena is compromised inside gVisor, the goal is that host-kernel attack surface
+is greatly reduced, not that escape is impossible by definition.

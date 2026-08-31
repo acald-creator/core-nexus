@@ -117,7 +117,7 @@
 
 ### Misconfiguration
 - *Improperly configuring systems, leading to unintended exposure.*
-  - **Nexus Mapping:** GitOps (Argo CD) acts as the primary mitigation by enforcing declarative configuration and automatically reverting any unauthorized manual changes (drift correction).
+  - **Nexus Mapping:** GitOps (**Flux** image automation + **Argo CD** app delivery) enforces declarative configuration and corrects drift by syncing to Git (ADR 0003).
 
 ### Mobile device
 - **Side loading / Jailbreaking:** *Installing unapproved apps or removing OS restrictions on mobile devices.*
@@ -125,7 +125,7 @@
 
 ### Zero-day
 - *A previously unknown vulnerability for which no patch currently exists.*
-  - **Nexus Mapping:** Core Nexus mitigates zero-days through defense-in-depth: gVisor sandboxing contains the exploit, read-only filesystems prevent persistence, and Tetragon eBPF monitors for anomalous behavior.
+  - **Nexus Mapping:** Core Nexus aims to **contain unknown vulnerabilities** via defense-in-depth (e.g. sandboxing where deployed, read-only filesystems, runtime telemetry). This is **not** a claim of zero-day detection or prevention.
 
 ## 2.4 Given a scenario, analyze indicators of malicious activity
 

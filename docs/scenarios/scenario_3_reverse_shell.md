@@ -41,4 +41,9 @@ Simultaneously, Tetragon captures the exact process execution at the kernel laye
 ```
 
 ## Conclusion
-By feeding both the Suricata alert and the Tetragon JSON event into the Underground Nexus AI-SOC, the Inference engine can autonomously correlate the network activity with the exact `bash` command that spawned it. This provides a complete attack chain analysis, enabling instantaneous, high-confidence response actions.
+
+Feeding Suricata alerts and Tetragon events into the AI-SOC enrichment path can
+**support** correlation of network activity with the spawning process for analyst
+review. That is **decision support**, not autonomous response: high-impact actions
+remain human-approved (see `docs/00-ai-collaboration.md` §4). Do not assume
+instantaneous or fully autonomous SOAR from this scenario.

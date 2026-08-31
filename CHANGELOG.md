@@ -1,6 +1,20 @@
-v0.8.0
+# Changelog
 
-**Assets**:
+Historical note: older `v0.8.0` / `pyrrhus/nexus0` signed assets below are from a
+prior packaging experiment. They are **not** the current Underground Nexus product
+spine (Console, API gateway, Flux + Argo, `phoenixvlabs/nexus-*`, R2/D1).
+
+For current architecture and decisions, see:
+
+- [`README.md`](README.md)
+- [`docs/architecture/01-component-architecture.md`](docs/architecture/01-component-architecture.md) §0
+- [`docs/decisions/`](docs/decisions/)
+
+---
+
+## Legacy: v0.8.0 (archive)
+
+**Assets** (historical):
 
 - pyrrhus/nexus0:latest
 - pyrrhus/nexus0:sha256-138dd9d7d21a53efc6b86a287e0d7fe86bd143fd3c673add5de796ba640579aa.sig

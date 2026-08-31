@@ -1,7 +1,7 @@
 # Agent Workflows and Memory
 
-**Status:** Active / Implemented
-**Context:** This document describes the LLM agent execution architecture, persistent memory system, and terminal operator interface that enable autonomous adversary emulation and skill-driven SOC workflows within Underground Nexus.
+**Status:** Active — OPAR / safety controls implemented in `athena-agents`; Console/TUI and skill sync paths exist in core-nexus. Vector memory and full SOC enrichment remain partial / evolving.
+**Context:** This document describes the LLM agent execution architecture, persistent memory system, and terminal operator interface that enable adversary emulation and skill-driven SOC workflows within Underground Nexus. Autonomous *response* is explicitly later; human approval comes first.
 
 ## 1. OPAR Execution Loop
 
