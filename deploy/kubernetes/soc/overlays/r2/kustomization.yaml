@@ -58,7 +58,7 @@ replacements:
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console
-    newTag: v0.2.2 # {"$imagepolicy": "flux-system:nexus-console:tag"}
+    newTag: v0.2.3 # {"$imagepolicy": "flux-system:nexus-console:tag"}
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
     newTag: v0.2.3 # {"$imagepolicy": "flux-system:nexus-api-gateway:tag"}
