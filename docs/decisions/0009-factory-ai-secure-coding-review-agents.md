@@ -94,8 +94,10 @@ agent runtime (review/coding)
 - Creating `nebucloud/factory-agents` (or renamed equivalent) is the
   implementation home; core-nexus adds integration narrative, gateway/MCP hooks,
   and Console Approvals wiring only.
-- Follow-on may add a short pointer under `deploy/gitops/` or
-  `docs/architecture/` once the sibling repo exists.
+- Sibling repo: [`nebucloud/factory-agents`](https://github.com/nebucloud/factory-agents)
+  (scaffold: review CLI + safety gates; F1 kiln verify and F2 LLM next).
+- Follow-on may add gateway/MCP/Console Approvals wiring in core-nexus once
+  the GitHub App check path is live.
 
 ## References
 

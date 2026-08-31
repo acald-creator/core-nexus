@@ -36,7 +36,7 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 | `nexus-athena` | Red-team container image and execution environment |
 | `nexus-hashistack` | Sole owner of local Vault (+ Consul) packs and AppRole export for `dev-stack.sh --from-vault` |
 | `nebucloud/ssf` + `nebucloud/kiln` | Secure software factory (sign/attest vs hermetic build) — ADR 0004 |
-| `nebucloud/factory-agents` | Factory AI secure coding / review (planned; ADR 0009) — not in core-nexus |
+| `nebucloud/factory-agents` | Factory AI secure coding / review — https://github.com/nebucloud/factory-agents (ADR 0009) |
 | `nexus-webtop-soc` | **Retired** desktop webtop; archive compose recipes only — prefer `deploy/kubernetes/soc/` |
 | `nexus-webtop-workbench` | **Retired** analyst desktop — prefer Jupyter `platform/workbench` + Console |
 
