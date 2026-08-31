@@ -78,8 +78,8 @@ agent runtime (review/coding)
 | Phase | Intent |
 | --- | --- |
 | F0 | This ADR + vocabulary in collaboration docs |
-| F1 | kiln verify pipelines on PR SHA (no LLM) |
-| F2 | Review agent + hub enforce + human gate |
+| F1 | kiln verify pipelines on PR SHA (no LLM) — **started** in [`nebucloud/factory-agents`](https://github.com/nebucloud/factory-agents) (`kiln-verify` / schema) |
+| F2 | Review agent + hub enforce + human gate — **started** (heuristics + Check Run JSON; GitHub App POST next) |
 | F3 | Coding agent (allowlisted paths, bot PRs) |
 | F4 | Signed model promote via purple workbench (arch 06/07) |
 
