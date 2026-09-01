@@ -176,9 +176,11 @@ Skills generated: X | Agent sessions: Y
 | 11 | 2026-08-28 | B | Gateway alerts: SOCAlert map, filters, triage 404/504; Properties 5–7 | |
 | 12 | 2026-08-29 | D | Catch-up: platform state — R2 overlay, hashistack Vault, SOC k8s Gateway/Console/Wazuh, Day 9 bridge gated | |
 | 13 | 2026-08-30 | D | Catch-up: full repo audit vs 100 Days; approvals+SSE Builds deferred; architecture overclaim note | |
+| 14 | 2026-08-31 | B | *(prep)* ai-inference triage persistence, Gateway contract, k8s thin-lab overlay — Day 14 Use still open | |
+| 15 | 2026-09-01 | D | Changelog Days 12–14 published to acaldwell.dev; Day 14/15 Use blocked on SOC baseline run | |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
-### Parallel platform work (Aug 28–30) — folded into Days 12–13 docs
+### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs
 
 Does **not** complete Use-days 14+ or the deferred Approvals/SSE Builds:
 
@@ -188,6 +190,8 @@ Does **not** complete Use-days 14+ or the deferred Approvals/SSE Builds:
 - **Day 9 bridge:** still present, gated in compose — real athena-agents SSE still deferred
 - **Approvals:** route scaffold only (no typed models / Property 8)
 - **Metadata:** D1 artifact index Worker + gateway client (adjacent to artifacts, not a challenge day)
+- **AI inference:** SQLite triage store, Gateway camelCase mapping, k8s overlay + Flux pin (`6077cbd`, `ece62c7`) — prep for Day 14 Use, not the Use run itself
+- **Factory ADR 0009:** `nebucloud/factory-agents` locked for secure coding/review agents (adjacent to Phase 4 supply-chain days)
 
 ### Phase 2
 
