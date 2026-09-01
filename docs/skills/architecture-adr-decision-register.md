@@ -15,7 +15,7 @@ inclusion: manual
 ## Approach
 
 1. Read `docs/decisions/README.md` for the index of Accepted ADRs.
-2. Open the relevant ADR (`0002`–`0009`) before changing related docs or manifests.
+2. Open the relevant ADR (`0002`–`0010`) before changing related docs or manifests.
 3. Cross-check `docs/architecture/01-component-architecture.md` §0 (product narrative).
 4. Update the ADR if the decision changes; do not silently override in a random doc.
 5. Prefer one-line consequences in PRs: “per ADR 0003, Argo path remains overlays/r2.”
@@ -32,6 +32,7 @@ inclusion: manual
 | Suricata hybrid sensor (still in plan) | 0007 |
 | Vault via nexus-hashistack | 0008 |
 | Factory AI coding/review (sibling repo; kiln = callee) | 0009 |
+| Shared LLM serving plane; kvcached on GPU (deferred) | 0010 (Proposed) |
 | Lab-only Portainer / no Vault-in-core-nexus | 0001 + 0008 |
 
 ADR shape: Status → Context → Decision → Consequences.
