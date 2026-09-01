@@ -21,7 +21,7 @@ export function ApprovalsPanel() {
       ) : pending.length === 0 ? (
         <div className={styles.empty}>
           <p>No pending approvals</p>
-          <p className={styles.emptyHint}>Actions flagged `needs_review` by the OPAR agent will appear here.</p>
+          <p className={styles.emptyHint}>OPAR agent actions and factory review findings (high/critical) appear here.</p>
         </div>
       ) : (
         <div className={styles.list}>

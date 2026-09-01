@@ -3,6 +3,8 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 from typing import Literal
 
+from src.services import factory_approvals
+
 router = APIRouter()
 
 
@@ -12,21 +14,34 @@ class DecisionRequest(BaseModel):
 
 @router.get("/approvals")
 async def list_approvals(request: Request, status: str | None = "pending"):
-    """List approval actions, defaulting to pending."""
+    """List approval actions (Athena OPAR + factory review), defaulting to pending."""
+    factory = factory_approvals.list_approvals(status=status)
     try:
-        approvals = await request.app.state.athena_client.get_approvals(status=status)
-        # Sort by submittedAt ascending (oldest first)
-        approvals.sort(key=lambda a: a.get("submittedAt", ""))
-        return approvals
+        athena = await request.app.state.athena_client.get_approvals(status=status)
     except Exception:
-        raise HTTPException(status_code=502, detail="athena-agents service unavailable")
+        if factory:
+            athena = []
+        else:
+            raise HTTPException(status_code=502, detail="athena-agents service unavailable")
+    merged = factory + athena
+    merged.sort(key=lambda a: a.get("submittedAt", ""))
+    return merged
 
 
 @router.post("/approvals/{approval_id}/decision")
 async def submit_decision(approval_id: str, body: DecisionRequest, request: Request):
     """Submit an approve/reject decision for a pending action."""
+    if factory_approvals.is_factory_approval_id(approval_id):
+        try:
+            factory_approvals.submit_decision(approval_id, body.decision)
+            return {"success": True}
+        except KeyError:
+            raise HTTPException(status_code=404, detail="Approval not found")
+        except ValueError:
+            raise HTTPException(status_code=409, detail="Approval no longer pending")
+
     try:
-        result = await request.app.state.athena_client.submit_decision(
+        await request.app.state.athena_client.submit_decision(
             approval_id=approval_id,
             decision=body.decision,
         )

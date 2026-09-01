@@ -39,6 +39,10 @@ class GatewaySettings(BaseSettings):
     wazuh_api_password: str = Field(default="", description="Wazuh API password")
     ai_inference_url: str = "http://ai-inference:8000"
     athena_agents_url: str = "http://athena-agents:8080"
+    factory_webhook_token: str | None = Field(
+        default=None,
+        description="Shared secret for POST /api/v1/factory/reviews (factory-agents webhook)",
+    )
     # Object store: MinIO (lab) or Cloudflare R2 (prod). Same access/secret/bucket envs.
     object_store_backend: Literal["minio", "r2"] = "minio"
     object_store_region: str | None = None  # R2: "auto"; MinIO: usually unset

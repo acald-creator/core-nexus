@@ -79,7 +79,7 @@ agent runtime (review/coding)
 | --- | --- |
 | F0 | This ADR + vocabulary in collaboration docs |
 | F1 | kiln verify pipelines on PR SHA (no LLM) — **started** in [`nebucloud/factory-agents`](https://github.com/nebucloud/factory-agents) (`kiln-verify` / schema) |
-| F2 | Review agent + hub enforce + human gate — **started** (heuristics + Check Run JSON; GitHub App POST next) |
+| F2 | Review agent + hub enforce + human gate — **live** (Check Run POST + gateway webhook for Console Approvals) |
 | F3 | Coding agent (allowlisted paths, bot PRs) |
 | F4 | Signed model promote via purple workbench (arch 06/07) |
 
@@ -95,9 +95,10 @@ agent runtime (review/coding)
   implementation home; core-nexus adds integration narrative, gateway/MCP hooks,
   and Console Approvals wiring only.
 - Sibling repo: [`nebucloud/factory-agents`](https://github.com/nebucloud/factory-agents)
-  (scaffold: review CLI + safety gates; F1 kiln verify and F2 LLM next).
-- Follow-on may add gateway/MCP/Console Approvals wiring in core-nexus once
-  the GitHub App check path is live.
+  (`check --post`, optional `--notify-gateway` for high/critical → gateway `/api/v1/factory/reviews`).
+- Gateway merges factory approvals into `GET /api/v1/approvals` when
+  `NEXUS_GW_FACTORY_WEBHOOK_TOKEN` is set.
+- Follow-on: GitHub App install for cross-repo checks; security-compliance-hub enforce.
 
 ## References
 

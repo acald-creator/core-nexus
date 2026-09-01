@@ -6,7 +6,14 @@ import jwt
 
 from src.config import get_settings
 
-PUBLIC_PATHS = {"/api/v1/auth/login", "/healthz", "/readyz", "/docs", "/openapi.json"}
+PUBLIC_PATHS = {
+    "/api/v1/auth/login",
+    "/api/v1/factory/reviews",
+    "/healthz",
+    "/readyz",
+    "/docs",
+    "/openapi.json",
+}
 
 
 class JWTAuthMiddleware(BaseHTTPMiddleware):

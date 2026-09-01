@@ -16,6 +16,7 @@ from src.routes import (
     agents,
     alerts,
     approvals,
+    factory,
     skills,
     artifacts,
     probes,
@@ -100,6 +101,7 @@ def create_app() -> FastAPI:
     app.include_router(agents.router, prefix="/api/v1/agents", tags=["agents"])
     app.include_router(alerts.router, prefix="/api/v1", tags=["alerts"])
     app.include_router(approvals.router, prefix="/api/v1", tags=["approvals"])
+    app.include_router(factory.router, prefix="/api/v1", tags=["factory"])
     app.include_router(skills.router, prefix="/api/v1", tags=["skills"])
     app.include_router(artifacts.router, prefix="/api/v1", tags=["artifacts"])
     app.include_router(metadata_index.router, prefix="/api/v1", tags=["metadata-index"])
