@@ -26,7 +26,9 @@ xDS) monorepo created pressure to reinvent Cosign/SBOM stacks inside `core-nexus
   when the public module is reachable (`go install github.com/nebucloud/ssf/cmd/ssf@latest`).
 
 Follow-on checklist: `deploy/gitops/ssf-follow-on.md`.
-Publish workflow: `.github/workflows/publish-platform-images.yml`.
+Publish workflow: `.github/workflows/publish-platform-images.yml` (multi-arch
+`linux/amd64,linux/arm64` via Buildx + QEMU; Cosign sign after push). Platform
+unit tests: `.github/workflows/platform-tests.yml`.
 
 ## Consequences
 

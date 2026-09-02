@@ -1,16 +1,19 @@
+# Sysbox-flavored monorepo image (images/docker/Dockerfile.sysbox.image).
 name: Build Sysbox Nexus Image
 
 on:
   push:
     branches:
       - main
-
-env:
-  TAG: latest
+    paths:
+      - "images/docker/Dockerfile.sysbox.image"
+      - "images/docker/**"
+      - ".github/workflows/build-nexus-sysbox-image.yml"
+  workflow_dispatch:
 
 jobs:
   build-and-sign:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -24,32 +27,38 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Build and push docker image
         id: build-and-push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
           file: images/docker/Dockerfile.sysbox.image
+          platforms: linux/amd64,linux/arm64
           push: true
+          provenance: false
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/core-nexus:latest-sysbox
             ${{ secrets.DOCKER_USERNAME }}/core-nexus:${{ github.sha }}-sysbox
 
       - name: Sign image with cosign
         shell: bash
-        run: |
-          cosign sign --yes -a commit=${{ github.sha }} \
-            -a "repo=${{ secrets.DOCKER_USERNAME }}/core-nexus" \
-            -a "workflow=${{ github.workflow }}" \
-            --key env://COSIGN_PRIVATE_KEY \
-            ${{ secrets.DOCKER_USERNAME }}/core-nexus:latest-sysbox && \
-          cosign sign --yes -a commit=${{ github.sha }} \
-            -a "repo=${{ secrets.DOCKER_USERNAME }}/core-nexus" \
-            -a "workflow=${{ github.workflow }}" \
-            --key env://COSIGN_PRIVATE_KEY \
-            ${{ secrets.DOCKER_USERNAME }}/core-nexus:${{ github.sha }}-sysbox
         env:
           COSIGN_PRIVATE_KEY: ${{ secrets.COSIGN_PRIVATE_KEY }}
+          IMAGE_NS: ${{ secrets.DOCKER_USERNAME }}
+        run: |
+          cosign sign --yes -a commit=${{ github.sha }} \
+            -a "repo=${IMAGE_NS}/core-nexus" \
+            -a "workflow=${{ github.workflow }}" \
+            --key env://COSIGN_PRIVATE_KEY \
+            "${IMAGE_NS}/core-nexus:latest-sysbox"
+          cosign sign --yes -a commit=${{ github.sha }} \
+            -a "repo=${IMAGE_NS}/core-nexus" \
+            -a "workflow=${{ github.workflow }}" \
+            --key env://COSIGN_PRIVATE_KEY \
+            "${IMAGE_NS}/core-nexus:${{ github.sha }}-sysbox"

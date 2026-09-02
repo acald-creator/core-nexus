@@ -1,0 +1,90 @@
+# Unit / component tests for SOC platform packages (gateway, triage, console).
+# Image publish stays in publish-platform-images.yml; security stays in security.yml.
+name: Platform tests
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "platform/api-gateway/**"
+      - "platform/ai-inference/**"
+      - "platform/nexus-console/**"
+      - ".github/workflows/platform-tests.yml"
+  pull_request:
+    paths:
+      - "platform/api-gateway/**"
+      - "platform/ai-inference/**"
+      - "platform/nexus-console/**"
+      - ".github/workflows/platform-tests.yml"
+  workflow_dispatch:
+
+jobs:
+  api-gateway:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: platform/api-gateway
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: |
+            platform/api-gateway/requirements.txt
+            platform/api-gateway/requirements-dev.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt -r requirements-dev.txt
+      - name: Pytest
+        env:
+          NEXUS_GW_JWT_SECRET: test-secret-key-for-testing-only
+          NEXUS_GW_WAZUH_API_URL: http://localhost:55000
+          NEXUS_GW_WAZUH_API_PASSWORD: test-password
+          NEXUS_GW_MINIO_ACCESS_KEY: test-access
+          NEXUS_GW_MINIO_SECRET_KEY: test-secret
+        run: python -m pytest -q
+
+  ai-inference:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: platform/ai-inference
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: platform/ai-inference/requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+      - name: Pytest
+        run: python -m pytest -q
+
+  nexus-console:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: platform/nexus-console
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: platform/nexus-console/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Unit tests
+        run: npm test
+      - name: Typecheck / build
+        run: npm run build
+        env:
+          VITE_API_GATEWAY_URL: http://localhost:3100
+          VITE_DEV_AUTH_BYPASS: "true"

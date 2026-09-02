@@ -19,6 +19,9 @@ FROM nginxinc/nginx-unprivileged:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
+# Base image already defaults to non-root; declare USER for Semgrep/policy scanners.
+USER nginx
+
 EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]

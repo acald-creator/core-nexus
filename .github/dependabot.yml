@@ -8,3 +8,57 @@ updates:
       - "dependencies"
       - "security"
     open-pull-requests-limit: 10
+
+  - package-ecosystem: "pip"
+    directory: "/platform/api-gateway"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "pip"
+    directory: "/platform/ai-inference"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "pip"
+    directory: "/platform/workbench"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "npm"
+    directory: "/platform/nexus-console"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "npm"
+    directory: "/platform/mcp"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 5
+
+  - package-ecosystem: "npm"
+    directory: "/platform/nexus-metadata"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "security"
+    open-pull-requests-limit: 5

@@ -20,8 +20,9 @@ env:
 
 jobs:
   publish:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: nexus-console
@@ -59,10 +60,13 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - uses: docker/setup-buildx-action@v3
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.dockerfile }}
@@ -72,6 +76,7 @@ jobs:
             ${{ env.REGISTRY_NS }}/${{ matrix.name }}:${{ steps.meta.outputs.tag }}
             ${{ env.REGISTRY_NS }}/${{ matrix.name }}:latest
           build-args: ${{ matrix.build_args }}
+          provenance: false
 
       # nebucloud/ssf is private — CI cannot `go install` it without a read token.
       # Cosign is what ssf shells out to for OCI sign; use it directly until SSF is
