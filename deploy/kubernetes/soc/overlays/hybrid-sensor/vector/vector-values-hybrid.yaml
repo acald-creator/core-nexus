@@ -24,13 +24,16 @@ customConfig:
         - tetragon_logs
       source: |
         pod = to_string(.kubernetes.pod_name) ?? ""
-        labels = .kubernetes.pod_labels ?? {}
+        labels = .kubernetes.pod_labels
         name = to_string(labels."app.kubernetes.io/name") ?? ""
         .nexus.source = if name != "" { name } else if contains(pod, "suricata") { "suricata" } else if contains(pod, "zeek") { "zeek" } else if contains(pod, "falco") { "falco" } else if contains(pod, "tetragon") { "tetragon" } else { "unknown" }
-        if is_string(.message) && starts_with(strip_whitespace(.message), "{") {
-          parsed, err = parse_json(.message)
-          if err == null {
-            .nexus.raw = parsed
+        if is_string(.message) {
+          msg = strip_whitespace!(.message)
+          if starts_with(msg, "{") {
+            parsed, err = parse_json(msg)
+            if err == null {
+              .nexus.raw = parsed
+            }
           }
         }
 
@@ -40,7 +43,10 @@ customConfig:
         - tag_source
       source: |
         src = to_string(.nexus.source) ?? "unknown"
-        raw = .nexus.raw ?? {}
+        raw = {}
+        if exists(.nexus.raw) && is_object(.nexus.raw) {
+          raw = .nexus.raw
+        }
         id = uuid_v4()
         . = {
           "id": id,
@@ -54,10 +60,20 @@ customConfig:
             .rule = { "level": raw.alert.severity, "description": raw.alert.signature }
           }
         } else if src == "falco" {
-          .rule = { "level": 10, "description": raw.rule ?? raw.output ?? "Falco alert" }
+          desc = "Falco alert"
+          if exists(raw.rule) {
+            desc = to_string!(raw.rule)
+          } else if exists(raw.output) {
+            desc = to_string!(raw.output)
+          }
+          .rule = { "level": 10, "description": desc }
           .falco = raw
         } else if src == "zeek" {
-          .rule = { "level": 5, "description": "Zeek " + to_string(raw._path ?? "log") }
+          path = "log"
+          if exists(raw._path) {
+            path = to_string!(raw._path)
+          }
+          .rule = { "level": 5, "description": "Zeek " + path }
           .zeek = raw
         } else if src == "tetragon" {
           .rule = { "level": 8, "description": "Tetragon event" }

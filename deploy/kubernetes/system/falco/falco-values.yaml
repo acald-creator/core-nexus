@@ -4,7 +4,8 @@ falcosidekick:
   enabled: false
 
 driver:
-  kind: ebpf
+  # modern_ebpf works on Rancher Desktop / lima without kernel headers (lab default).
+  kind: modern_ebpf
 
 falco:
   json_output: true

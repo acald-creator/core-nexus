@@ -21,7 +21,7 @@ cd ../core-nexus
 ## Apply
 
 ```bash
-kubectl apply -k deploy/kubernetes/soc/overlays/hybrid-sensor --enable-helm
+kubectl kustomize deploy/kubernetes/soc/overlays/hybrid-sensor --enable-helm | kubectl apply -f -
 kubectl -n soc rollout status deployment/nexus-api-gateway
 kubectl -n soc rollout status deployment/ai-inference
 kubectl -n kube-system rollout status daemonset/suricata

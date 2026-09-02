@@ -9,5 +9,6 @@ from pods labeled `app.kubernetes.io/name=falco`.
 kubectl apply -k deploy/kubernetes/system/falco
 ```
 
-Requires eBPF support (Rancher Desktop / Linux nodes). On macOS RD, ensure Kubernetes is
-enabled and the node has sufficient RAM (≥8 Gi recommended with other sensors).
+Requires eBPF support (Rancher Desktop / Linux nodes). Chart defaults to `modern_ebpf`
+for lab nodes without kernel headers. On macOS RD, if Falco init still fails, rely on
+**Tetragon** for runtime telemetry (ADR 0011) and disable Falco in the overlay.

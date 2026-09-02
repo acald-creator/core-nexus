@@ -9,3 +9,48 @@ helmCharts:
     releaseName: vector
     namespace: kube-system
     valuesFile: vector-values-hybrid.yaml
+
+# Helm chart omits metadata.namespace; parent compose must not override kube-system.
+patches:
+  - target:
+      kind: DaemonSet
+      name: vector
+    patch: |
+      - op: add
+        path: /metadata/namespace
+        value: kube-system
+  - target:
+      kind: ServiceAccount
+      name: vector
+    patch: |
+      - op: add
+        path: /metadata/namespace
+        value: kube-system
+  - target:
+      kind: ConfigMap
+      name: vector
+    patch: |
+      - op: add
+        path: /metadata/namespace
+        value: kube-system
+  - target:
+      kind: Service
+      name: vector
+    patch: |
+      - op: add
+        path: /metadata/namespace
+        value: kube-system
+  - target:
+      kind: Service
+      name: vector-headless
+    patch: |
+      - op: add
+        path: /metadata/namespace
+        value: kube-system
+  - target:
+      kind: ClusterRoleBinding
+      name: vector
+    patch: |
+      - op: replace
+        path: /subjects/0/namespace
+        value: kube-system
