@@ -32,7 +32,8 @@ inclusion: manual
 
 ## Pitfalls
 - Do not add a second `localhost` allowlist entry and expect the Juice Shop port to be selected
-- Do not list Grimoire as `localhost:4400`. `localhost` is already novel-directory `:8090`. Use `127.0.0.1:4400` or `grimoire.lab:3000`
+- Do not list Grimoire as `localhost:4400`. Use `127.0.0.1:4400` or `grimoire.lab:3000`
+- **Night Quire** API: `127.0.0.1:8090` (not `localhost` — ambiguous with other lab apps). Target: `athena-agents/config/targets/night-quire.toml`, allowlist label `night-quire-api`
 - `host.docker.internal` is for container-to-host. It is the wrong identity for a host-side orchestrator
 - A hardcoded base URL port (the `:8090` leftover from novel-directory) will aim Plan at the wrong service even when TCP checks the right one
 - Native host traffic never hits Suricata on `athena_lab`. Detection days require the agent container on the same network as the target
@@ -45,6 +46,7 @@ inclusion: manual
 - `nexus-athena/config/allowlist.json` + `allowlist.sha256`
 - `nexus-athena/config/targets/juice-shop.toml`
 - `nexus-athena/config/targets/grimoire.toml` and `grimoire-lab.toml`
+- `athena-agents/config/targets/night-quire.toml` — Night Quire reader API (`127.0.0.1:8090`); `nexus-athena/config/targets/novel-directory.toml` (legacy id)
 - `grimoire-workbench/docker-compose.athena.yml`
 - `nexus-athena/deploy/compose/athena-profiles.yml` — juice-shop service
 - Day 4 Juice Shop run: `/tmp/juice-shop-day4-gt.jsonl`

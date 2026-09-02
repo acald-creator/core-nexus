@@ -31,6 +31,41 @@ def test_suricata_category_and_athena_review():
     assert "containment" not in result["recommended_action"].lower() or "approval" in result["recommended_action"].lower()
 
 
+def test_athena_scenario_id_header_review():
+    model = TriageModel()
+    result = model.triage_event(
+        {
+            "id": "suri-2",
+            "dest_port": 8090,
+            "alert": {
+                "severity": 1,
+                "signature": "GET /api/v1/novels",
+                "category": "trojan-activity",
+            },
+            "X-Athena-Scenario-Id": "night-quire-recon-run",
+        }
+    )
+    assert result["athena_scenario"] == "night-quire-recon-run"
+    assert result["label"] == "needs_human_review"
+
+
+def test_athena_scenario_label_header_review():
+    model = TriageModel()
+    result = model.triage_event(
+        {
+            "id": "suri-3",
+            "dest_port": 8090,
+            "alert": {
+                "severity": 1,
+                "signature": "ET SCAN probe",
+                "category": "trojan-activity",
+            },
+            "X-Athena-Scenario": "night-quire",
+        }
+    )
+    assert result["athena_scenario"] == "night-quire"
+    assert result["label"] == "needs_human_review"
+
 def test_wazuh_groups_and_mitre():
     model = TriageModel()
     result = model.triage_event(

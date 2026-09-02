@@ -10,6 +10,8 @@ SEVERITY_ORDER = ("critical", "high", "medium", "low", "informational")
 ATHENA_SCENARIO_KEYS = (
     "X-Athena-Scenario",
     "x-athena-scenario",
+    "X-Athena-Scenario-Id",
+    "x-athena-scenario-id",
     "athena_scenario",
     "athenaScenario",
 )
@@ -42,6 +44,8 @@ def map_athena_scenario(raw: dict[str, Any]) -> str | None:
             lowered = {str(k).lower(): v for k, v in headers.items()}
             if "x-athena-scenario" in lowered and lowered["x-athena-scenario"]:
                 return str(lowered["x-athena-scenario"])
+            if "x-athena-scenario-id" in lowered and lowered["x-athena-scenario-id"]:
+                return str(lowered["x-athena-scenario-id"])
 
     decoder = raw.get("decoder")
     if isinstance(decoder, dict) and decoder.get("name") == "athena":

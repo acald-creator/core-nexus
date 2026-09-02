@@ -11,6 +11,8 @@ import numpy as np
 ATHENA_KEYS = (
     "X-Athena-Scenario",
     "x-athena-scenario",
+    "X-Athena-Scenario-Id",
+    "x-athena-scenario-id",
     "athena_scenario",
     "athenaScenario",
 )
@@ -51,6 +53,8 @@ class TriageModel:
                 lowered = {str(k).lower(): v for k, v in headers.items()}
                 if lowered.get("x-athena-scenario"):
                     return str(lowered["x-athena-scenario"])
+                if lowered.get("x-athena-scenario-id"):
+                    return str(lowered["x-athena-scenario-id"])
                 if lowered.get("x-athena-label"):
                     return str(lowered["x-athena-label"])
         return None

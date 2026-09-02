@@ -42,6 +42,23 @@ See `docs/architecture/11-ai-native-integration-principles.md` Section 4 for LLM
 - `deploy/kubernetes/overlays/prod/` — Production overlay
 - `scripts/run-athena-profile.sh` — Profile launcher script
 - `config/targets/grimoire.toml` / `grimoire-lab.toml` — Grimoire workbench UI (host `:4400`) or compose API (`grimoire.lab:3000`)
+- `config/targets/night-quire.toml` — **Night Quire** novel platform API (`127.0.0.1:8090`, web `:5173`); purple target for OPAR recon against public reader endpoints
+
+## Purple target: Night Quire
+
+Run OPAR against the live novel stack (requires Ollama + allowlist hash sync):
+
+```bash
+cd athena-agents
+shasum -a 256 config/allowlist.json | awk '{print $1}' > config/allowlist.sha256
+ATHENA_GT_OUTPUT=/tmp/night-quire-gt.jsonl \
+ATHENA_SCENARIO_LABEL=night-quire-recon \
+  python -m orchestrator --target night-quire --config-dir ./config
+```
+
+**SOC note:** Host-native traffic to `127.0.0.1:8090` does not traverse hybrid-sensor Suricata/Vector unless the agent runs on a shared capture path (container network or in-cluster target). Ground-truth JSONL + `eval/harness.py` remain the near-term purple correlation path (ADR 0011 H4).
+
+Traffic headers emitted: `X-Athena-Scenario`, `X-Athena-Scenario-Id`, `X-Athena-Run-ID` — consumed by `platform/ai-inference` triage and gateway alert mapping.
 
 ## Dockerfile (Platform Reference)
 
