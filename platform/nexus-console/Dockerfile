@@ -14,13 +14,11 @@ ENV VITE_AUTH_ENDPOINT=$VITE_AUTH_ENDPOINT
 ENV VITE_DEV_AUTH_BYPASS=$VITE_DEV_AUTH_BYPASS
 RUN npm run build
 
-# Stage 2: Serve the application with NGINX
-FROM nginx:alpine
+# Stage 2: Serve the application with NGINX (unprivileged — port 8080)
+FROM nginxinc/nginx-unprivileged:alpine
 
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-USER nginx
-
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]

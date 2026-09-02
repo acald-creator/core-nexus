@@ -20,12 +20,12 @@ spec:
           image: phoenixvlabs/nexus-console:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 80
+            - containerPort: 8080
               name: http
           readinessProbe:
             httpGet:
               path: /
-              port: 80
+              port: 8080
             initialDelaySeconds: 3
             periodSeconds: 10
           resources:
@@ -49,6 +49,6 @@ spec:
   ports:
     - name: http
       port: 80
-      targetPort: 80
+      targetPort: 8080
 # Browser login targets the gateway Service; bake VITE_API_GATEWAY_URL at image
 # build time (compose/lab) or put a reverse-proxy in front for cluster ingress.
