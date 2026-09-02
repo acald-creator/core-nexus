@@ -60,7 +60,7 @@ Skills generated: X | Agent sessions: Y
 
 ### Deferred Builds (was Days 12–13 B — do before or interleaved with Days 14–20)
 
-- [ ] **Approvals typed Gateway contract** — `ApprovalAction` models, pending-default sort (Property 8), decision 404/409/502 (was Day 12 B)
+- [ ] **Approvals typed Gateway contract** — `ApprovalAction` models, pending-default sort (Property 8), decision 404/409/502 (was Day 12 B) — *partial Sep 1: factory review webhook + merged queue (`ae4477d`); Athena models / Property 8 still open*
 - [ ] **athena-agents SSE event API** — real `/sessions` + `/events`; retire Day 9 GT→SSE bridge (was Day 13 B)
 
 ## Phase 2: Detection Engineering (Days 21-40) — "Catch the Agent"
@@ -178,6 +178,7 @@ Skills generated: X | Agent sessions: Y
 | 13 | 2026-08-30 | D | Catch-up: full repo audit vs 100 Days; approvals+SSE Builds deferred; architecture overclaim note | |
 | 14 | 2026-08-31 | B | *(prep)* ai-inference triage persistence, Gateway contract, k8s thin-lab overlay — Day 14 Use still open | |
 | 15 | 2026-09-01 | D | Changelog Days 12–14 published to acaldwell.dev; Day 14/15 Use blocked on SOC baseline run | |
+| 16 | 2026-09-02 | B | Factory review webhook + merged Approvals queue (ADR 0009 F2); Day 16 Suricata brief still open | |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs
@@ -191,7 +192,8 @@ Does **not** complete Use-days 14+ or the deferred Approvals/SSE Builds:
 - **Approvals:** route scaffold only (no typed models / Property 8)
 - **Metadata:** D1 artifact index Worker + gateway client (adjacent to artifacts, not a challenge day)
 - **AI inference:** SQLite triage store, Gateway camelCase mapping, k8s overlay + Flux pin (`6077cbd`, `ece62c7`) — prep for Day 14 Use, not the Use run itself
-- **Factory ADR 0009:** `nebucloud/factory-agents` locked for secure coding/review agents (adjacent to Phase 4 supply-chain days)
+- **Factory ADR 0009:** `nebucloud/factory-agents` locked for secure coding/review agents; F2 gateway webhook + merged Approvals (`ae4477d`)
+- **ADR 0010 (proposed):** shared LLM serving plane with kvcached — not deployed
 
 ### Phase 2
 
