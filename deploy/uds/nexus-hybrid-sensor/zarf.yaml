@@ -1,0 +1,85 @@
+# SPDX-License-Identifier: Apache-2.0
+# Compose-your-own SOC sensors + Vector bus (ADR 0011). No Wazuh.
+# Deploy after nexus-platform. Does not re-ship Console / gateway / ai-inference.
+kind: ZarfPackageConfig
+metadata:
+  name: nexus-hybrid-sensor
+  description: >
+    Suricata, Zeek, Falco, Tetragon, and Vector → ai-inference triage sink.
+    Sets gateway NEXUS_GW_ALERTS_SOURCE=triage after deploy.
+  version: 0.2.6
+
+components:
+  - name: network-sensors
+    required: true
+    description: Suricata IDS and Zeek metadata DaemonSets (namespace soc).
+    manifests:
+      - name: suricata-zeek
+        namespace: soc
+        kustomizations:
+          - .
+    images:
+      - docker.io/jasonish/suricata:7.0
+      - docker.io/busybox:1.36
+      - docker.io/zeek/zeek:6.2.1
+
+  - name: runtime-sensors
+    required: true
+    description: Falco and Tetragon via Helm charts (kube-system).
+    charts:
+      - name: falco
+        version: 4.9.0
+        namespace: kube-system
+        url: https://falcosecurity.github.io/charts
+        repoName: falco
+        releaseName: falco
+        valuesFiles:
+          - ../../kubernetes/system/falco/falco-values.yaml
+      - name: tetragon
+        version: 1.1.2
+        namespace: kube-system
+        url: https://helm.cilium.io
+        repoName: tetragon
+        releaseName: tetragon
+        valuesFiles:
+          - tetragon-values.yaml
+    images:
+      - docker.io/falcosecurity/falco-no-driver:0.39.0
+      - docker.io/falcosecurity/falcoctl:0.10.0
+      - quay.io/cilium/tetragon:v1.1.2
+      - quay.io/cilium/hubble-export-stdout:v1.0.4
+
+  - name: vector-bus
+    required: true
+    description: Vector agent collecting sensor logs and POSTing to ai-inference triage.
+    charts:
+      - name: vector
+        version: 0.38.0
+        namespace: kube-system
+        url: https://helm.vector.dev
+        repoName: vector
+        releaseName: vector
+        valuesFiles:
+          - ../../kubernetes/soc/overlays/hybrid-sensor/vector/vector-values-hybrid.yaml
+    images:
+      - docker.io/timberio/vector:0.43.0-distroless-libc
+
+  - name: gateway-triage-source
+    required: true
+    description: Point API gateway alert list at ai-inference triage (hybrid path).
+    actions:
+      onDeploy:
+        after:
+          - description: Set NEXUS_GW_ALERTS_SOURCE=triage on nexus-api-gateway
+            cmd: |
+              if ! command -v kubectl >/dev/null 2>&1; then
+                echo "kubectl not found; set NEXUS_GW_ALERTS_SOURCE=triage manually."
+                exit 0
+              fi
+              if kubectl -n soc get deploy nexus-api-gateway >/dev/null 2>&1; then
+                kubectl -n soc set env deployment/nexus-api-gateway NEXUS_GW_ALERTS_SOURCE=triage
+                echo "gateway alerts source set to triage."
+              else
+                echo "nexus-api-gateway not found — deploy nexus-platform first, then re-run or set env manually."
+              fi
+            maxTotalSeconds: 120

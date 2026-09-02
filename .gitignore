@@ -5,3 +5,4 @@ kustomize
 .env
 deploy/kubernetes/soc/wazuh/.certs/
 .tmp-review/
+dist/

@@ -1,0 +1,33 @@
+# SPDX-License-Identifier: Apache-2.0
+# Nexus platform apps for hybrid-sensor / thin lab delivery (ADR 0011).
+# Vault remains external (nexus-hashistack); sync secrets before or after deploy.
+kind: ZarfPackageConfig
+metadata:
+  name: nexus-platform
+  description: >
+    Underground Nexus Console, API gateway, and ai-inference triage API.
+    Package version tracks phoenixvlabs platform image tags.
+  version: 0.2.6
+
+components:
+  - name: soc-apps
+    required: true
+    description: Deploy Console, gateway, and ai-inference into namespace soc.
+    manifests:
+      - name: soc-platform
+        namespace: soc
+        kustomizations:
+          - .
+    images:
+      - phoenixvlabs/nexus-console:v0.2.6
+      - phoenixvlabs/nexus-api-gateway:v0.2.6
+      - phoenixvlabs/nexus-ai-inference:v0.2.6
+    actions:
+      onDeploy:
+        after:
+          - description: Reminder — sync gateway secrets from Vault
+            cmd: |
+              echo "nexus-platform deployed."
+              echo "If nexus-gateway-secrets is still a placeholder, run:"
+              echo "  ./deploy/scripts/sync-vault-to-k8s.sh"
+              echo "from the core-nexus repo (Vault via nexus-hashistack)."

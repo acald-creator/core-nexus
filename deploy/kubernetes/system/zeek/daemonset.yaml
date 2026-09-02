@@ -19,7 +19,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
         - name: zeek
-          image: zeek/zeek:6.2.1
+          image: docker.io/zeek/zeek:6.2.1
           securityContext:
             capabilities:
               add:

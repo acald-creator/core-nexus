@@ -16,7 +16,7 @@ spec:
       hostNetwork: true
       containers:
         - name: suricata
-          image: jasonish/suricata:latest
+          image: docker.io/jasonish/suricata:7.0
           securityContext:
             capabilities:
               add:
@@ -39,7 +39,7 @@ spec:
             - name: log-volume
               mountPath: /var/log/suricata
         - name: log-tail
-          image: busybox
+          image: docker.io/busybox:1.36
           command: ["/bin/sh", "-c", "touch /var/log/suricata/eve.json && tail -F /var/log/suricata/eve.json"]
           volumeMounts:
             - name: log-volume

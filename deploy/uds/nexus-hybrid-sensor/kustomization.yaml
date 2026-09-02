@@ -1,0 +1,9 @@
+# Sensors only (Suricata + Zeek) for Zarf hybrid-sensor package.
+# Namespace soc — matches overlays/hybrid-sensor/sensors.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: soc
+
+resources:
+  - ../../kubernetes/system/suricata
+  - ../../kubernetes/system/zeek

@@ -1,0 +1,3 @@
+# Tetragon values for Zarf chart deploy (mirrors system/tetragon kustomize valuesInline).
+tetragon:
+  exportFilename: tetragon.log

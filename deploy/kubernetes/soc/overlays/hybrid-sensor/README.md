@@ -63,7 +63,15 @@ kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
 - **R2 object store:** this overlay uses lab gateway secrets (`nexus/dev`). For R2 blobs, apply
   `overlays/r2` patches separately or merge manually.
 
+## Air-gap / Zarf
+
+Packaged delivery of this same stack (platform apps + sensors) lives under
+[`deploy/uds/`](../../../../uds/) — `nexus-platform` then `nexus-hybrid-sensor`.
+See that README for building the local Zarf CLI, `package create`, and deploy order.
+Connected kubectl apply (above) remains the default lab path.
+
 ## Related
 
 - `docs/decisions/0011-compose-soc-vector-zeek-falco-tetragon.md`
 - `deploy/kubernetes/soc/overlays/hybrid-sensor/vector/vector-values-hybrid.yaml`
+- `deploy/uds/README.md`

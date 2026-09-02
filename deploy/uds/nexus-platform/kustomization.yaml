@@ -1,0 +1,19 @@
+# Zarf-facing kustomize for Console + gateway + ai-inference.
+# Pins match overlays/hybrid-sensor (v0.2.6). Does not include sensors.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../kubernetes/soc/console
+  - ../../kubernetes/soc/ai-inference
+
+images:
+  - name: phoenixvlabs/nexus-console
+    newName: phoenixvlabs/nexus-console
+    newTag: v0.2.6
+  - name: phoenixvlabs/nexus-api-gateway
+    newName: phoenixvlabs/nexus-api-gateway
+    newTag: v0.2.6
+  - name: phoenixvlabs/nexus-ai-inference
+    newName: phoenixvlabs/nexus-ai-inference
+    newTag: v0.2.6
