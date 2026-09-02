@@ -37,6 +37,7 @@ def test_athena_scenario_id_header_review():
         {
             "id": "suri-2",
             "dest_port": 8090,
+            "technique": "T1046",
             "alert": {
                 "severity": 1,
                 "signature": "GET /api/v1/novels",
@@ -46,7 +47,23 @@ def test_athena_scenario_id_header_review():
         }
     )
     assert result["athena_scenario"] == "night-quire-recon-run"
+    assert result["scenario_id"] == "night-quire-recon-run"
+    assert result["technique"] == "T1046"
     assert result["label"] == "needs_human_review"
+
+
+def test_list_recent_triage_store():
+    model = TriageModel()
+    with tempfile.TemporaryDirectory() as tmp:
+        store = TriageStore(db_path=Path(tmp) / "t.db")
+        event = {
+            "id": "list-1",
+            "dest_port": 443,
+            "alert": {"severity": 2, "signature": "test", "category": "web-application-attack"},
+        }
+        store.upsert(model.triage_event(event))
+        recent = store.recent(limit=5)
+        assert any(r.get("source_event_id") == "list-1" for r in recent)
 
 
 def test_athena_scenario_label_header_review():

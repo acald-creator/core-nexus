@@ -8,14 +8,22 @@ from typing import Any
 import numpy as np
 
 
-ATHENA_KEYS = (
-    "X-Athena-Scenario",
-    "x-athena-scenario",
+ATHENA_SCENARIO_ID_KEYS = (
     "X-Athena-Scenario-Id",
     "x-athena-scenario-id",
+    "scenario_id",
+    "scenarioId",
+)
+
+ATHENA_LABEL_KEYS = (
+    "X-Athena-Scenario",
+    "x-athena-scenario",
     "athena_scenario",
     "athenaScenario",
 )
+
+ATHENA_KEYS = ATHENA_SCENARIO_ID_KEYS + ATHENA_LABEL_KEYS
+
 
 # Feature layout (weights must match length):
 # 0 severity, 1 port/rule risk, 2 signature/text risk,
@@ -57,6 +65,57 @@ class TriageModel:
                     return str(lowered["x-athena-scenario-id"])
                 if lowered.get("x-athena-label"):
                     return str(lowered["x-athena-label"])
+        return None
+
+    def _extract_scenario_id(self, event: dict[str, Any]) -> str | None:
+        """Prefer explicit scenario UUID/id; fall back to human-readable label."""
+        for key in ATHENA_SCENARIO_ID_KEYS:
+            if event.get(key):
+                return str(event[key])
+        data = event.get("data")
+        if isinstance(data, dict):
+            for key in ATHENA_SCENARIO_ID_KEYS:
+                if data.get(key):
+                    return str(data[key])
+            headers = data.get("headers") or data.get("http_headers")
+            if isinstance(headers, dict):
+                lowered = {str(k).lower(): v for k, v in headers.items()}
+                if lowered.get("x-athena-scenario-id"):
+                    return str(lowered["x-athena-scenario-id"])
+        for key in ATHENA_LABEL_KEYS:
+            if event.get(key):
+                return str(event[key])
+        return self._extract_athena_scenario(event)
+
+    def _collect_mitre_ids(self, raw: Any) -> list[str]:
+        ids: list[str] = []
+        if isinstance(raw, dict):
+            for key in ("id", "technique", "tactic"):
+                val = raw.get(key)
+                if isinstance(val, list):
+                    ids.extend(str(x) for x in val if x)
+                elif val:
+                    ids.append(str(val))
+        elif isinstance(raw, list):
+            for item in raw:
+                ids.extend(self._collect_mitre_ids(item))
+        return ids
+
+    def _extract_technique(self, event: dict[str, Any]) -> str | None:
+        """Best-effort MITRE technique id for purple eval correlation."""
+        if event.get("technique"):
+            return str(event["technique"])
+        alert = event.get("alert") if isinstance(event.get("alert"), dict) else {}
+        mitre_ids = self._collect_mitre_ids(alert.get("mitre"))
+        if mitre_ids:
+            return mitre_ids[0]
+        rule = event.get("rule") if isinstance(event.get("rule"), dict) else {}
+        mitre_ids = self._collect_mitre_ids(rule.get("mitre"))
+        if mitre_ids:
+            return mitre_ids[0]
+        data = event.get("data")
+        if isinstance(data, dict) and data.get("technique"):
+            return str(data["technique"])
         return None
 
     def _athena_feature(self, scenario: str | None) -> tuple[float, list[str]]:
@@ -112,6 +171,8 @@ class TriageModel:
         cat_score = 1.0 if category in high_risk_categories else (0.4 if category else 0.0)
 
         scenario = self._extract_athena_scenario(event)
+        scenario_id = self._extract_scenario_id(event)
+        technique = self._extract_technique(event)
         athena_score, athena_explain = self._athena_feature(scenario)
 
         explanation: list[str] = []
@@ -132,6 +193,8 @@ class TriageModel:
             "dest_port": dest_port or None,
             "app_proto": event.get("app_proto"),
             "athena_scenario": scenario,
+            "scenario_id": scenario_id,
+            "technique": technique,
         }
         features = np.array(
             [severity_score, port_score, sig_score, cat_score, athena_score],
@@ -198,6 +261,8 @@ class TriageModel:
         groups_score = max(1.0 if group_hit else 0.0, mitre_score, 0.3 if groups_l else 0.0)
 
         scenario = self._extract_athena_scenario(event)
+        scenario_id = self._extract_scenario_id(event)
+        technique = self._extract_technique(event) or (mitre_ids[0] if mitre_ids else None)
         athena_score, athena_explain = self._athena_feature(scenario)
 
         explanation: list[str] = []
@@ -218,6 +283,8 @@ class TriageModel:
             "wazuh_groups": groups_l,
             "mitre": mitre_ids,
             "athena_scenario": scenario,
+            "scenario_id": scenario_id,
+            "technique": technique,
         }
         features = np.array(
             [severity_score, rule_score, desc_score, groups_score, athena_score],
@@ -246,7 +313,11 @@ class TriageModel:
         else:
             features = np.array([0.1, 0.1, 0.1, 0.0, 0.0], dtype=float)
             explanation = ["Generic/unknown event format"]
-            meta = {"athena_scenario": self._extract_athena_scenario(event)}
+            meta = {
+                "athena_scenario": self._extract_athena_scenario(event),
+                "scenario_id": self._extract_scenario_id(event),
+                "technique": self._extract_technique(event),
+            }
             event_type = "Generic"
 
         score = float(np.clip(np.dot(features, self.weights), 0.0, 1.0))
@@ -301,5 +372,7 @@ class TriageModel:
             "recommendedAction": recommended_action,
             "event_type": event_type,
             "athena_scenario": athena_scenario,
+            "scenario_id": meta.get("scenario_id"),
+            "technique": meta.get("technique"),
             "feature_meta": meta,
         }

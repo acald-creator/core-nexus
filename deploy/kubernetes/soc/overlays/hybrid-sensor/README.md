@@ -56,8 +56,8 @@ kubectl -n soc port-forward svc/nexus-api-gateway 3100:3100
 
 ## Notes
 
-- **Alert list in Console** still expects Wazuh when calling `GET /api/v1/alerts`; use triage
-  deep-links or `POST /v1/triage` until gateway SOC-events adapter (ADR 0011 H2).
+- **Alert list in Console** uses ai-inference triage via `NEXUS_GW_ALERTS_SOURCE=triage` (set by
+  this overlay). Wazuh-backed stacks keep `auto` or `wazuh` (ADR 0011 H2).
 - **Zeek interface:** default `eth0`; patch `ZEEK_INTERFACE` in `system/zeek/daemonset.yaml` if
   capture fails on your node.
 - **R2 object store:** this overlay uses lab gateway secrets (`nexus/dev`). For R2 blobs, apply

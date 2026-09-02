@@ -41,6 +41,7 @@ def read_root():
         "supported_endpoints": [
             "/health",
             "/v1/triage",
+            "/v1/triage/recent",
             "/v1/triage/{event_id}",
             "/v1/hardware",
             "/v1/models",
@@ -81,6 +82,12 @@ async def triage_event(request: Request):
         results.append(_triage_and_persist(event))
 
     return results if isinstance(payload, list) else results[0]
+
+
+@app.get("/v1/triage/recent")
+def list_recent_triage(limit: int = 100):
+    """List persisted triage results, newest first (for gateway alerts + purple eval)."""
+    return {"total": store.count(), "results": store.recent(limit=limit)}
 
 
 @app.get("/v1/triage/{event_id}")

@@ -29,6 +29,7 @@ async def lifespan(app: FastAPI):
     """Startup and shutdown lifecycle."""
     settings = get_settings()
     configure_logging(settings.log_level)
+    app.state.settings = settings
 
     # Initialize upstream clients on startup
     from src.clients.wazuh import WazuhClient

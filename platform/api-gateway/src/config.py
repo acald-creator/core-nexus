@@ -37,6 +37,10 @@ class GatewaySettings(BaseSettings):
     wazuh_api_url: str = Field(description="Wazuh Manager API URL — required")
     wazuh_api_user: str = "wazuh-wui"
     wazuh_api_password: str = Field(default="", description="Wazuh API password")
+    alerts_source: Literal["wazuh", "triage", "auto"] = Field(
+        default="auto",
+        description="Alert list source: wazuh only, ai-inference triage only, or auto-fallback",
+    )
     ai_inference_url: str = "http://ai-inference:8000"
     athena_agents_url: str = "http://athena-agents:8080"
     factory_webhook_token: str | None = Field(

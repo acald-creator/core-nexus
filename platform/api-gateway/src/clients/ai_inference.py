@@ -44,6 +44,20 @@ class AIInferenceClient:
         except httpx.HTTPStatusError:
             return None
 
+    async def list_triage(self, limit: int = 100) -> list[dict[str, Any]]:
+        """Fetch recent persisted triage records (newest first)."""
+        limit = max(1, min(500, int(limit)))
+        response = await self._client.get("/v1/triage/recent", params={"limit": limit})
+        response.raise_for_status()
+        body = response.json()
+        if isinstance(body, dict):
+            results = body.get("results")
+            if isinstance(results, list):
+                return [item for item in results if isinstance(item, dict)]
+        if isinstance(body, list):
+            return [item for item in body if isinstance(item, dict)]
+        return []
+
     async def create_triage(self, event: dict[str, Any]) -> dict[str, Any]:
         """POST an event for scoring; returns Console-shaped triage dict."""
         response = await self._client.post("/v1/triage", json=event)

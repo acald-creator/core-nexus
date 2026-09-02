@@ -87,7 +87,7 @@ class TriageStore:
         return json.loads(row["payload_json"])
 
     def recent(self, limit: int = 5) -> list[dict[str, Any]]:
-        limit = max(1, min(100, int(limit)))
+        limit = max(1, min(500, int(limit)))
         with _LOCK:
             with self._connect() as conn:
                 rows = conn.execute(

@@ -80,6 +80,61 @@ def _detect_source(raw: dict[str, Any]) -> str:
     return "wazuh"
 
 
+def _score_to_severity(score: float) -> str:
+    if score >= 0.85:
+        return "critical"
+    if score >= 0.7:
+        return "high"
+    if score >= 0.5:
+        return "medium"
+    if score >= 0.3:
+        return "low"
+    return "informational"
+
+
+def map_triage_alert(record: dict[str, Any]) -> SOCAlert:
+    """Map a persisted ai-inference triage record to SOCAlert (ADR 0011 H2)."""
+    meta = record.get("feature_meta") if isinstance(record.get("feature_meta"), dict) else {}
+    score = float(record.get("score") or record.get("confidenceScore") or 0.0)
+    event_type = str(record.get("event_type") or "Generic")
+    source = "suricata" if event_type.lower() == "suricata" else "wazuh"
+
+    rule_name = str(
+        record.get("reason")
+        or record.get("reasoningExcerpt")
+        or meta.get("suricata_signature")
+        or f"AI triage ({record.get('label') or 'unknown'})"
+    )
+    affected_host = str(
+        meta.get("affected_host")
+        or meta.get("host")
+        or (f"port-{meta['dest_port']}" if meta.get("dest_port") else "unknown")
+    )
+    scenario = (
+        record.get("athena_scenario")
+        or record.get("scenario_id")
+        or meta.get("athena_scenario")
+        or meta.get("scenario_id")
+    )
+    if scenario is not None:
+        scenario = str(scenario)
+
+    alert_id = str(record.get("source_event_id") or record.get("id") or "")
+    timestamp = str(record.get("timestamp") or record.get("saved_at") or "")
+
+    return SOCAlert(
+        id=alert_id or "unknown",
+        timestamp=timestamp,
+        severity=_score_to_severity(score),  # type: ignore[arg-type]
+        source=source,  # type: ignore[arg-type]
+        rule_name=rule_name[:512],
+        affected_host=affected_host,
+        acknowledged=False,
+        athena_scenario=scenario,
+        payload=record,
+    )
+
+
 def map_wazuh_alert(raw: dict[str, Any]) -> SOCAlert:
     """Map a Wazuh (or Wazuh-like) alert document to SOCAlert."""
     rule = raw.get("rule") if isinstance(raw.get("rule"), dict) else {}

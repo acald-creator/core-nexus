@@ -200,6 +200,7 @@ async def test_alerts_route_maps_and_filters(client, app, make_token):
 
 @pytest.mark.asyncio
 async def test_alerts_route_502_when_wazuh_down(client, app, make_token):
+    app.state.settings.alerts_source = "wazuh"
     app.state.wazuh_client.get_alerts.side_effect = RuntimeError("down")
     token = make_token()
     response = await client.get(
@@ -207,6 +208,57 @@ async def test_alerts_route_502_when_wazuh_down(client, app, make_token):
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 502
+
+
+@pytest.mark.asyncio
+async def test_alerts_route_auto_fallback_to_triage(client, app, make_token):
+    app.state.settings.alerts_source = "auto"
+    app.state.wazuh_client.get_alerts.side_effect = RuntimeError("down")
+    app.state.ai_inference_client.list_triage.return_value = [
+        {
+            "source_event_id": "triage-1",
+            "timestamp": "2026-08-28T12:00:00+00:00",
+            "score": 0.82,
+            "label": "needs_human_review",
+            "event_type": "Suricata",
+            "athena_scenario": "night-quire-recon",
+            "scenario_id": "uuid-scenario-1",
+            "technique": "T1190",
+            "reason": "[Suricata] GET /api/v1/novels",
+            "feature_meta": {"dest_port": 8090, "suricata_signature": "HTTP probe"},
+        }
+    ]
+    token = make_token()
+    response = await client.get(
+        "/api/v1/alerts?severity=high",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["total"] == 1
+    assert body["alerts"][0]["id"] == "triage-1"
+    assert body["alerts"][0]["source"] == "suricata"
+    assert body["alerts"][0]["athenaScenario"] == "night-quire-recon"
+
+
+def test_map_triage_alert_score_and_scenario():
+    from src.services.alerts import map_triage_alert
+
+    alert = map_triage_alert(
+        {
+            "source_event_id": "ev-99",
+            "timestamp": "2026-08-28T12:00:00Z",
+            "score": 0.72,
+            "event_type": "Suricata",
+            "athena_scenario": "juice-shop-day11",
+            "reason": "[Suricata] test",
+            "feature_meta": {"dest_port": 8090},
+        }
+    )
+    assert alert.id == "ev-99"
+    assert alert.severity == "high"
+    assert alert.source == "suricata"
+    assert alert.athena_scenario == "juice-shop-day11"
 
 
 @pytest.mark.asyncio

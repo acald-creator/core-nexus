@@ -11,6 +11,9 @@ resources:
   - sensors
   - vector
 
+patches:
+  - path: gateway-alerts-patch.yaml
+
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console

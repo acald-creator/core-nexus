@@ -56,7 +56,22 @@ ATHENA_SCENARIO_LABEL=night-quire-recon \
   python -m orchestrator --target night-quire --config-dir ./config
 ```
 
-**SOC note:** Host-native traffic to `127.0.0.1:8090` does not traverse hybrid-sensor Suricata/Vector unless the agent runs on a shared capture path (container network or in-cluster target). Ground-truth JSONL + `eval/harness.py` remain the near-term purple correlation path (ADR 0011 H4).
+**SOC note:** Host-native traffic to `127.0.0.1:8090` does not traverse hybrid-sensor Suricata/Vector unless the agent runs on a shared capture path. From Docker use `host.docker.internal:8090` (allowlisted in `nexus-athena/config/allowlist.json`) with the `detection` compose profile, or run OPAR inside `athena_lab`.
+
+### Purple eval (ground-truth ↔ triage)
+
+```bash
+# Terminal 1 — GT feed for Console Agent Feed (replaces day9 bridge)
+ATHENA_GT_OUTPUT=/tmp/night-quire-gt.jsonl python -m orchestrator.gt_feed_server
+
+# Terminal 2 — after OPAR run + Vector triage ingest
+cd athena-agents
+ATHENA_GT_OUTPUT=/tmp/night-quire-gt.jsonl \
+ATHENA_INFERENCE_URL=http://127.0.0.1:8000 \
+  python -m eval --gt /tmp/night-quire-gt.jsonl
+```
+
+Gateway hybrid overlay sets `NEXUS_GW_ALERTS_SOURCE=triage` so Console alert list works without Wazuh (ADR 0011 H2).
 
 Traffic headers emitted: `X-Athena-Scenario`, `X-Athena-Scenario-Id`, `X-Athena-Run-ID` — consumed by `platform/ai-inference` triage and gateway alert mapping.
 
