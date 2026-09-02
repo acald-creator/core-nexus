@@ -60,6 +60,8 @@ function getIcon(iconId: string): string {
     lock: '🔐',
     brain: '🧠',
     docs: '📖',
+    approvals: '✅',
+    feed: '📡',
   };
   return icons[iconId] || '🔧';
 }

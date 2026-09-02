@@ -1,9 +1,9 @@
 {
   "services": [
     {
-      "id": "wazuh-alerts",
-      "name": "Wazuh Alerts",
-      "description": "SOC alerts via gateway (Wazuh Manager in cluster — no separate dashboard deployed)",
+      "id": "soc-alerts",
+      "name": "Security Alerts",
+      "description": "SOC alerts via gateway — hybrid sensors or Wazuh full-SIEM",
       "category": "security",
       "url": "http://nexus-console.soc.svc.cluster.local",
       "iconId": "shield"
@@ -20,7 +20,7 @@
     {
       "id": "artifacts",
       "name": "Artifacts",
-      "description": "Run and artifact index (R2 + D1 via gateway)",
+      "description": "Object store via gateway (MinIO lab / R2 + D1 prod)",
       "category": "storage",
       "url": "http://nexus-console.soc.svc.cluster.local",
       "iconId": "bucket"

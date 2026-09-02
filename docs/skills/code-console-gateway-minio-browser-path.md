@@ -23,7 +23,8 @@ inclusion: manual
 - Gateway default and Console fallback are both `:3100`. Port `8080` is athena-agents, not the Gateway
 - `MinIOClient.get_presigned_url()` replaces `self._endpoint` with `self._public_endpoint` once
 - `NexusCORSMiddleware.preflight_response` copies Starlette headers onto an empty 204 body
-- Compose `dev.yml` already maps Console `3000:80`, Gateway `3100:3100`, MinIO `9000:9000`
+- Compose `dev.yml` maps Console `3000:8080` (unprivileged nginx), Gateway `3100:3100`, MinIO `9000:9000`
+- Object store: MinIO lab / R2+D1 prod — Console Artifacts errors should not assume MinIO Console only
 
 ## Pitfalls
 - Starlette `CORSMiddleware` preflight is 200 unless subclassed. Spec Req 15.3 wants 204

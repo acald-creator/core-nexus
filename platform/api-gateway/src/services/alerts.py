@@ -67,17 +67,52 @@ def _level_to_severity(level: int) -> str:
     return "informational"
 
 
+ALERT_SOURCES = frozenset(
+    {"wazuh", "suricata", "zeek", "falco", "tetragon", "ai-inference", "vector"}
+)
+
+
 def _detect_source(raw: dict[str, Any]) -> str:
+    explicit = str(raw.get("source") or raw.get("nexus.source") or "").lower()
+    if explicit in ALERT_SOURCES:
+        return explicit
+
     rule = raw.get("rule") if isinstance(raw.get("rule"), dict) else {}
     groups = rule.get("groups") or []
-    if isinstance(groups, list) and any("suricata" in str(g).lower() for g in groups):
+    groups_l = [str(g).lower() for g in groups] if isinstance(groups, list) else []
+    if any("suricata" in g for g in groups_l):
         return "suricata"
+    if any("zeek" in g for g in groups_l):
+        return "zeek"
+    if any("falco" in g for g in groups_l):
+        return "falco"
+    if any("tetragon" in g for g in groups_l):
+        return "tetragon"
+
     decoder = raw.get("decoder")
-    if isinstance(decoder, dict) and "suricata" in str(decoder.get("name", "")).lower():
-        return "suricata"
-    if str(raw.get("source", "")).lower() == "suricata":
-        return "suricata"
+    if isinstance(decoder, dict):
+        name = str(decoder.get("name", "")).lower()
+        if "suricata" in name:
+            return "suricata"
+        if "zeek" in name:
+            return "zeek"
     return "wazuh"
+
+
+def _triage_source(record: dict[str, Any], meta: dict[str, Any], event_type: str) -> str:
+    for key in ("nexus.source", "source", "sensor"):
+        val = record.get(key) or meta.get(key)
+        if val and str(val).lower() in ALERT_SOURCES:
+            return str(val).lower()
+    et = event_type.lower()
+    if et in ALERT_SOURCES:
+        return et
+    if et == "suricata":
+        return "suricata"
+    if et in {"wazuh", "generic"}:
+        # Generic triage without sensor tag → AI inference store
+        return "ai-inference" if et == "generic" else "wazuh"
+    return "ai-inference"
 
 
 def _score_to_severity(score: float) -> str:
@@ -97,7 +132,7 @@ def map_triage_alert(record: dict[str, Any]) -> SOCAlert:
     meta = record.get("feature_meta") if isinstance(record.get("feature_meta"), dict) else {}
     score = float(record.get("score") or record.get("confidenceScore") or 0.0)
     event_type = str(record.get("event_type") or "Generic")
-    source = "suricata" if event_type.lower() == "suricata" else "wazuh"
+    source = _triage_source(record, meta, event_type)
 
     rule_name = str(
         record.get("reason")
@@ -144,7 +179,7 @@ def map_wazuh_alert(raw: dict[str, Any]) -> SOCAlert:
     timestamp = str(raw.get("timestamp") or raw.get("@timestamp") or "")
     level = int(rule.get("level") or raw.get("level") or 0)
     severity = raw.get("severity") if raw.get("severity") in SEVERITY_ORDER else _level_to_severity(level)
-    source = raw.get("source") if raw.get("source") in ("wazuh", "suricata") else _detect_source(raw)
+    source = raw.get("source") if raw.get("source") in ALERT_SOURCES else _detect_source(raw)
     rule_name = str(
         rule.get("description")
         or raw.get("ruleName")

@@ -47,7 +47,12 @@
 
 .noTriage { color: var(--color-text-muted); font-style: italic; font-size: var(--font-size-sm); }
 
-.wazuhLink { display: block; margin-top: var(--space-3); font-size: var(--font-size-sm); }
+.subtitle { margin: 0; color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+
+.scenarioLine { margin: 0 0 var(--space-3); font-size: var(--font-size-sm); }
+.scenarioId { font-family: var(--font-mono); font-size: var(--font-size-xs); }
+
+.externalLink { display: block; margin-top: var(--space-3); font-size: var(--font-size-sm); }
 
 .payloadToggle { margin-top: var(--space-3); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
 .payload { font-size: var(--font-size-xs); max-height: 200px; overflow: auto; margin-top: var(--space-2); }

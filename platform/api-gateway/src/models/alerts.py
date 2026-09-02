@@ -12,13 +12,22 @@ class SOCAlert(BaseModel):
     id: str
     timestamp: str
     severity: Literal["critical", "high", "medium", "low", "informational"]
-    source: Literal["wazuh", "suricata"]
+    source: Literal[
+        "wazuh",
+        "suricata",
+        "zeek",
+        "falco",
+        "tetragon",
+        "ai-inference",
+        "vector",
+    ]
     rule_name: str = Field(alias="ruleName")
     affected_host: str = Field(alias="affectedHost")
     acknowledged: bool = False
     athena_scenario: str | None = Field(None, alias="athenaScenario")
     payload: dict[str, Any] = Field(default_factory=dict)
     wazuh_dashboard_url: str | None = Field(None, alias="wazuhDashboardUrl")
+    external_dashboard_url: str | None = Field(None, alias="externalDashboardUrl")
 
 
 class AlertsResponse(BaseModel):

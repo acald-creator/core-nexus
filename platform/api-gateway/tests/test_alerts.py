@@ -15,7 +15,7 @@ from src.services.alerts import (
 )
 
 SEVERITIES = ["critical", "high", "medium", "low", "informational"]
-SOURCES = ["wazuh", "suricata"]
+SOURCES = ["wazuh", "suricata", "zeek", "falco", "tetragon", "ai-inference"]
 
 
 def _soc_alert(
@@ -62,7 +62,7 @@ def test_property_5_filter_correctness(severities, source, use_from, use_to):
         _soc_alert(
             alert_id=f"a{i}",
             severity=SEVERITIES[i % len(SEVERITIES)],
-            source=SOURCES[i % 2],
+            source=SOURCES[i % len(SOURCES)],
             timestamp=(base + timedelta(hours=i)).isoformat(),
         )
         for i in range(12)
@@ -259,6 +259,39 @@ def test_map_triage_alert_score_and_scenario():
     assert alert.severity == "high"
     assert alert.source == "suricata"
     assert alert.athena_scenario == "juice-shop-day11"
+
+
+def test_map_triage_alert_generic_is_ai_inference():
+    from src.services.alerts import map_triage_alert
+
+    alert = map_triage_alert(
+        {
+            "source_event_id": "ev-gen",
+            "timestamp": "2026-08-28T12:00:00Z",
+            "score": 0.4,
+            "event_type": "Generic",
+            "reason": "[Generic] test",
+            "feature_meta": {},
+        }
+    )
+    assert alert.source == "ai-inference"
+
+
+def test_map_triage_alert_zeek_nexus_source():
+    from src.services.alerts import map_triage_alert
+
+    alert = map_triage_alert(
+        {
+            "source_event_id": "ev-zeek",
+            "timestamp": "2026-08-28T12:00:00Z",
+            "score": 0.55,
+            "event_type": "Generic",
+            "nexus.source": "zeek",
+            "reason": "conn log spike",
+            "feature_meta": {},
+        }
+    )
+    assert alert.source == "zeek"
 
 
 @pytest.mark.asyncio

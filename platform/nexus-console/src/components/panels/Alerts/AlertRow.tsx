@@ -28,7 +28,14 @@ export function AlertRow({ alert, selected, onSelect }: AlertRowProps) {
       <td className={styles.ruleName}>
         {alert.ruleName}
         {shouldShowSimulatedTag(alert) && (
-          <span className={styles.simulatedTag}>Simulated</span>
+          <span
+            className={styles.simulatedTag}
+            title={alert.athenaScenario ? `Athena scenario: ${alert.athenaScenario}` : 'Athena-labeled'}
+          >
+            {alert.athenaScenario
+              ? `Athena · ${alert.athenaScenario.length > 24 ? `${alert.athenaScenario.slice(0, 24)}…` : alert.athenaScenario}`
+              : 'Simulated'}
+          </span>
         )}
       </td>
       <td className={styles.host}>{alert.affectedHost}</td>

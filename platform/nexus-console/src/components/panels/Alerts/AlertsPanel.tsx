@@ -5,6 +5,7 @@ import { AlertDetail } from './AlertDetail';
 import { Spinner } from '../../common/Spinner';
 import { ErrorBanner } from '../../common/ErrorBanner';
 import type { AlertFilters, AlertSeverity, AlertSource } from '../../../api/types/alerts';
+import { ALERT_SOURCE_OPTIONS } from '../../../api/types/alerts';
 import styles from './Alerts.module.css';
 
 export function AlertsPanel() {
@@ -17,6 +18,9 @@ export function AlertsPanel() {
   return (
     <div className={styles.panel}>
       <h2>Security Alerts</h2>
+      <p className={styles.subtitle}>
+        Hybrid sensors or Wazuh via gateway — Athena-labeled traffic shows as simulated.
+      </p>
 
       {error && <ErrorBanner message="Failed to load alerts" />}
 
@@ -43,8 +47,11 @@ export function AlertsPanel() {
           aria-label="Filter by source"
         >
           <option value="">All sources</option>
-          <option value="wazuh">Wazuh</option>
-          <option value="suricata">Suricata</option>
+          {ALERT_SOURCE_OPTIONS.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
         </select>
       </div>
 
@@ -64,17 +71,13 @@ export function AlertsPanel() {
             </thead>
             <tbody>
               {alerts.map((alert) => (
-                <>
-                  <AlertRow
-                    key={alert.id}
-                    alert={alert}
-                    selected={selectedId === alert.id}
-                    onSelect={() => setSelectedId(selectedId === alert.id ? null : alert.id)}
-                  />
-                  {selectedId === alert.id && selectedAlert && (
-                    <AlertDetail key={`${alert.id}-detail`} alert={selectedAlert} />
-                  )}
-                </>
+                <AlertRowGroup
+                  key={alert.id}
+                  alert={alert}
+                  selected={selectedId === alert.id}
+                  selectedAlert={selectedAlert}
+                  onSelect={() => setSelectedId(selectedId === alert.id ? null : alert.id)}
+                />
               ))}
             </tbody>
           </table>
@@ -82,5 +85,25 @@ export function AlertsPanel() {
         </div>
       )}
     </div>
+  );
+}
+
+/** Fragment wrapper so React keys stay valid (avoids bare <> in map). */
+function AlertRowGroup({
+  alert,
+  selected,
+  selectedAlert,
+  onSelect,
+}: {
+  alert: import('../../../api/types/alerts').SOCAlert;
+  selected: boolean;
+  selectedAlert: import('../../../api/types/alerts').SOCAlert | undefined;
+  onSelect: () => void;
+}) {
+  return (
+    <>
+      <AlertRow alert={alert} selected={selected} onSelect={onSelect} />
+      {selected && selectedAlert && <AlertDetail alert={selectedAlert} />}
+    </>
   );
 }

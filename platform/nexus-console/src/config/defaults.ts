@@ -18,10 +18,10 @@ export const defaultConfig: NexusConfig = {
     import.meta.env.VITE_AUTH_ENDPOINT || `${apiGatewayUrl}/api/v1/auth/login`,
   services: [
     {
-      id: 'wazuh-alerts',
-      name: 'Wazuh Alerts',
+      id: 'soc-alerts',
+      name: 'Security Alerts',
       description:
-        'SOC alerts via gateway (Wazuh Manager in cluster — no separate dashboard deployed)',
+        'SOC alerts via gateway — hybrid sensors (Suricata/Zeek/Falco/Tetragon) or Wazuh full-SIEM',
       category: 'security',
       url: '/alerts',
       iconId: 'shield',
@@ -39,10 +39,26 @@ export const defaultConfig: NexusConfig = {
     {
       id: 'artifacts',
       name: 'Artifacts',
-      description: 'Run and artifact index (R2 + D1 via gateway)',
+      description: 'Object store via gateway (MinIO lab / R2 + D1 prod)',
       category: 'storage',
       url: '/artifacts',
       iconId: 'bucket',
+    },
+    {
+      id: 'approvals',
+      name: 'Approvals',
+      description: 'Human gate for Athena OPAR actions and factory reviews',
+      category: 'security',
+      url: '/approvals',
+      iconId: 'approvals',
+    },
+    {
+      id: 'agent-feed',
+      name: 'Agent Feed',
+      description: 'Live Athena OPAR events (stimulation / emulation)',
+      category: 'agents',
+      url: '/agent-feed',
+      iconId: 'feed',
     },
     {
       id: 'gateway-docs',

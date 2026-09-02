@@ -22,14 +22,14 @@ export function ArtifactsView() {
       const url = await getDownloadUrl(key);
       window.open(url, '_blank');
     } catch {
-      // Fallback: direct MinIO console
-      alert('Download failed — try the MinIO Console directly');
+      alert('Download failed — retry via the gateway Artifacts API or check object-store credentials');
     }
   };
 
   return (
     <div className={styles.panel}>
       <h2>Artifacts</h2>
+      <p className={styles.hint}>MinIO in lab overlays; Cloudflare R2 + D1 on production-like paths (ADR 0005).</p>
 
       <div className={styles.categoryTabs}>
         {CATEGORIES.map((cat) => (
@@ -44,7 +44,7 @@ export function ArtifactsView() {
       </div>
 
       {error && (
-        <ErrorBanner message="MinIO unavailable — try the MinIO Console directly" />
+        <ErrorBanner message="Object store unavailable via gateway — check MinIO/R2 credentials and NEXUS_GW_* settings" />
       )}
 
       {isLoading ? (
