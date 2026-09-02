@@ -148,5 +148,5 @@ In a UDS-based deployment:
 - Does Pulumi provision only infrastructure, or does it also install platform services?
 - Does Argo CD remain part of the UDS deployment, or does Zarf handle initial delivery with GitOps added afterward?
 - Where does Suricata capture traffic in Docker, Kubernetes, and Istio mTLS environments?
-- Is Wazuh the primary security event store, with Loki used for platform logs, or should Vector fan out events to both?
+- ~~Is Wazuh the primary security event store, with Loki used for platform logs, or should Vector fan out events to both?~~ **Resolved (ADR 0011):** Wazuh indexer is the full-SIEM store (`overlays/test`); compose-your-own labs use Vector → ai-inference without Wazuh; Loki remains for platform logs.
 - Which secrets move from development defaults into Vault HA or another selected secrets manager?

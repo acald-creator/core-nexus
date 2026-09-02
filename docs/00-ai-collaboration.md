@@ -59,7 +59,9 @@ These roles are defaults, not hard rules. Any model may review any document, but
 - **Agent skill:** A persistent, reusable encoding of a proven approach (technique sequence, patterns, pitfalls) that eliminates redundant LLM reasoning on repeat encounters.
 - **Ground-truth record:** A labeled telemetry record emitted during agent execution with scenario ID, technique, timestamp, and expected result — used to evaluate SOC detection accuracy.
 - **athena-agents:** AI offensive agent framework implementing the OPAR loop with configurable LLM backends, safety controls, and ground-truth emission.
-- **ADR:** Architecture Decision Record under `docs/decisions/` — durable locked defaults for agents and humans.
+- **Compose-your-own SOC:** Vector + Suricata/Zeek/Falco/Tetragon → ai-inference without Wazuh (ADR 0011, `overlays/hybrid-sensor`).
+- **Vector integration bus:** DaemonSet collector that tags `nexus.source`, normalizes sensor JSON, and routes to triage sinks.
+- **Lab profile:** One SOC k8s overlay — thin (`r2`), hybrid sensors (`hybrid-sensor`), or full SIEM (`test`).
 
 ## 4. Non-Negotiable Architecture Decisions
 

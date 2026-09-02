@@ -11,6 +11,7 @@ The sensor should evolve in phases rather than jumping directly from the current
 | Phase | Sensor model | Purpose |
 | --- | --- | --- |
 | Phase 1: Bootstrap | Headless Suricata plus Wazuh telemetry | Establish a practical SOC baseline on Linux, Docker, Kubernetes, or UDS. |
+| Phase 1b: Compose-your-own | Suricata + Zeek + Falco + Tetragon via Vector → ai-inference | Lab SOC without Wazuh indexer (ADR 0011, `overlays/hybrid-sensor`). |
 | Phase 2: Hermetic migration | Hybrid Suricata plus early SecureOS runtime telemetry | Validate the hybrid stream against known-good SOC signals. |
 | Phase 3: High-assurance target | Hybrid Suricata network telemetry plus kernel telemetry inside a gVisor sandbox | Feed AI-native inference from hardened, low-tamper telemetry streams. |
 
@@ -26,7 +27,7 @@ The long-term sensor design should use two telemetry streams.
 
 **Why it remains part of the hybrid sensor:** Suricata is already strong at known malicious packet signatures, protocol anomalies, DNS metadata, TLS metadata, and network intrusion detection. Runtime telemetry complements it; it does not automatically replace protocol-level IDS.
 
-**Near-term implementation:** Run Suricata as a dedicated headless sensor that emits `eve.json` into Wazuh, Vector, or both.
+**Near-term implementation:** Run Suricata as a dedicated headless sensor that emits `eve.json` into Wazuh, Vector, or both. In compose-your-own labs (ADR 0011), Vector collects Suricata, Zeek, Falco, and Tetragon logs and POSTs normalized events to ai-inference.
 
 **Future implementation:** Keep Suricata as the network/protocol stream and replace disk-based handoff with a socket, stream, or structured event bus when the runtime is ready.
 
@@ -38,7 +39,7 @@ The long-term sensor design should use two telemetry streams.
 
 **Why add it:** Suricata cannot see everything happening inside a container or workload. For example, an application spawning a shell, reading sensitive files, or performing unusual process activity may be invisible to network monitoring.
 
-**Near-term implementation:** Use proven Linux runtime sensors such as Tetragon, Wazuh agents, audit telemetry, or eBPF-based tooling where appropriate.
+**Near-term implementation:** Use proven Linux runtime sensors such as **Falco** (alerting rules), **Tetragon** (eBPF export), Wazuh agents, audit telemetry, or eBPF-based tooling where appropriate. ADR 0011 deploys Falco + Tetragon together via Vector; on Rancher Desktop lima VMs Falco may fail eBPF init — Tetragon remains the runtime fallback.
 
 **Future implementation:** Use SecureOS-native tracing or eBPF-like hooks once the kernel and execution model are mature enough.
 
@@ -56,8 +57,8 @@ graph TD
 
     subgraph "Component A: Hybrid Sensor"
         D[Headless Suricata]
-        E[Runtime Sensor]
-        F[Telemetry Multiplexer]
+        E[Runtime Sensors]
+        F[Vector Multiplexer]
     end
 
     subgraph "Component B: AI Inference Engine"
@@ -85,6 +86,7 @@ The sensor should support different handoff models depending on phase.
 
 | Handoff | Best phase | Notes |
 | --- | --- | --- |
+| Vector HTTP sink → ai-inference | Phase 1b (ADR 0011) | Compose-your-own labs; tags `nexus.source`, no Wazuh required. |
 | `eve.json` file | Phase 1 | Simple, compatible with Suricata and Wazuh, easy to debug. |
 | Memory-backed `emptyDir` | Phase 1 and Phase 2 | Good for sidecar experiments where raw logs should be transient. |
 | Unix domain socket | Phase 2 | Lower overhead than file polling and avoids open TCP ports. |

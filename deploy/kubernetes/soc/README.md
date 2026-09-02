@@ -60,3 +60,21 @@ kubectl -n soc port-forward svc/nexus-workbench 8888:8888   # Jupyter tile
 
 **Retired:** `nexus-webtop-soc` / `nexus-webtop-workbench` desktops — do not re-add the
 webtop-soc Git remote to `base/`. Suricata: `deploy/kubernetes/system/suricata`.
+
+## Lab profiles (ADR 0011)
+
+Pick one overlay — do not mix event stores without understanding the tradeoffs:
+
+| Profile | Overlay | Event store | Sensors |
+| --- | --- | --- | --- |
+| Thin blue | `overlays/r2` | ai-inference SQLite only | None |
+| Compose-your-own | `overlays/hybrid-sensor` | Vector → ai-inference | Suricata, Zeek, Falco, Tetragon |
+| Full SIEM | `overlays/test` | Wazuh indexer | Suricata, Tetragon, Vector, Kyverno |
+
+```bash
+# Hybrid sensor (no Wazuh)
+kubectl kustomize deploy/kubernetes/soc/overlays/hybrid-sensor --enable-helm | kubectl apply -f -
+```
+
+See `overlays/hybrid-sensor/README.md` for prerequisites, verify steps, and Falco/Rancher Desktop notes.
+Architecture narrative: `docs/architecture/01-component-architecture.md` §4, ADR 0011.

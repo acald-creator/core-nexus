@@ -23,7 +23,8 @@ The user interface (`platform/workbench`) is not just a terminal and a browser; 
 
 - **Workbench as an MCP Client**: The analyst's desktop environment natively connects to a local LLM and orchestrates tools.
 - **Infrastructure as Tools**: Every major component in the lab is exposed via MCP Servers:
-  - **Wazuh MCP Server**: Allows the agent to query logs and pull alerts.
+  - **Wazuh MCP Server**: Allows the agent to query logs and pull alerts (full SIEM profile).
+  - **SOC events / triage MCP Server**: Query ai-inference persistence and scored events in hybrid labs without Wazuh.
   - **MinIO MCP Server**: Allows the agent to read and write PCAPs, artifacts, and reports.
   - **k3d / Kubernetes MCP Server**: Allows the agent to spin up adversary emulation pods in the `Athena` environment automatically.
 - **"Assisted, Not Delegated" UX**: The analyst drives the investigation. The AI provides inline ghost-text for complex Suricata rules, highlights anomalies directly in logs, and auto-completes incident reports in the editor, rather than forcing the user to switch context to a separate chat window.
@@ -34,7 +35,7 @@ In a traditional SOC, human analysts review raw event streams. In an AI-native S
 
 ### Key Concepts
 
-- **Continuous Inference Loop**: High-fidelity alerts from Suricata and Wazuh are streamed directly into the local inference engine.
+- **Continuous Inference Loop**: High-fidelity alerts from Suricata, Zeek, Falco, Tetragon, and Wazuh (when deployed) are streamed into the local inference engine — directly via Wazuh API or through Vector (`overlays/hybrid-sensor`, ADR 0011).
 - **Automated Enrichment**:
   - **Auto-Tagging**: The AI assigns urgency and categorizes the threat.
   - **Auto-Summarization**: Raw JSON event logs are translated into human-readable attack narratives.

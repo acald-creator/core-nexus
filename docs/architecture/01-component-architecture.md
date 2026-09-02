@@ -10,7 +10,7 @@ Underground Nexus is a **programmable fabric** plus a **secure software factory*
 | --- | --- | --- |
 | Fabric | Deployable components, namespaces, identity, secrets, observability | Kubernetes manifests/overlays, Vault, MinIO (lab) / R2+D1 (prod) |
 | Secure software factory | Build → SBOM → sign → attest → promote | CI + **Flux** (image automation / sync) + **Argo CD** (app delivery & governance) |
-| Blue | SOC detection and ops UX | Headless Wazuh + sensors + AI triage + **Nexus Console** (+ optional `nexus-tui`) |
+| Blue | SOC detection and ops UX | Headless Wazuh **or** Vector + hybrid sensors → ai-inference + **Nexus Console** (ADR 0011) |
 | Purple | Evaluate detections / models against ground truth | **Jupyter** agentic workspace + MCP |
 | Red | Controlled stimulation / emulation | **Isolated Athena** + `athena-agents` |
 
@@ -103,18 +103,26 @@ graph LR
 
 The SOC should become a set of purpose-built services instead of a single webtop image.
 
+**Lab profiles** (pick one overlay; do not assume Wazuh is always present):
+
+| Profile | Overlay | Event path | Sensors |
+| --- | --- | --- | --- |
+| Thin blue | `overlays/r2` | Direct `POST /v1/triage` or gateway lookup | None |
+| Compose-your-own | `overlays/hybrid-sensor` (ADR 0011) | Vector → `ai-inference` | Suricata, Zeek, Falco, Tetragon |
+| Full SIEM | `overlays/test`, `wazuh-secure` | Wazuh indexer + API | Suricata, Tetragon, Vector (optional) |
+
 Target SOC components:
 
-- **Wazuh manager:** Event analysis, rules, API, and agent management.
-- **Wazuh indexer:** Security event indexing and search.
-- **Wazuh dashboard:** Analyst interface.
-- **Wazuh agents:** Host and workload telemetry.
-- **Suricata sensor:** Network intrusion detection and `eve.json` event generation.
-- **Optional Zeek sensor:** Protocol metadata and richer network context (ADR 0011 hybrid overlay).
-- **Falco:** Runtime threat detection (ADR 0011).
-- **Tetragon:** eBPF runtime export (ADR 0011).
+- **Wazuh manager / indexer / dashboard / agents** (full SIEM profile only): Event analysis, search, analyst UI.
+- **Suricata sensor:** Network IDS and `eve.json` alert generation (ADR 0007 — required in cybersecurity plan).
+- **Zeek sensor:** Network metadata (conn/DNS/HTTP JSON) for correlation and purple eval (ADR 0011).
+- **Falco:** Runtime threat rules (containers / K8s audit) — primary runtime **alerting** in compose profile.
+- **Tetragon:** eBPF runtime export for kernel-level ground truth (compose + test overlays).
+- **Vector:** Collect, tag (`nexus.source`), normalize, route sensor logs to triage and optional sinks.
 
-Prefer Chainguard images for Wazuh components where available. Suricata should run as a dedicated sensor image, not as software compiled into a desktop container.
+Prefer Chainguard images for Wazuh components where available. Suricata, Zeek, Falco, and Tetragon run as dedicated DaemonSets or Helm releases — not compiled into desktop containers.
+
+**Rancher Desktop note:** Falco may fail eBPF init on lima VMs; Tetragon remains the runtime fallback until Falco runs on Linux nodes with proper driver support.
 
 ### AI Triage
 
@@ -122,12 +130,12 @@ The AI layer should enrich SOC events rather than replace the SOC platform.
 
 Target AI responsibilities:
 
-- Read normalized Wazuh, Suricata, or Vector events.
+- Read normalized events from Wazuh, Suricata, Zeek, Falco, Tetragon, or Vector-tagged payloads.
 - Calculate a threat score or false-positive probability.
-- Emit structured JSON back into the event pipeline.
+- Emit structured JSON back into the event pipeline (SQLite persistence today; SIEM write-back later).
 - Keep the input and output schema small, documented, and testable.
 
-For tightly coupled Suricata experiments, the AI container can run as a sidecar and read `eve.json` from a memory-backed `emptyDir`. For production-style SOC workflows, it should consume normalized events from the SIEM or log pipeline.
+For tightly coupled Suricata experiments, the AI container can run as a sidecar and read `eve.json` from a memory-backed `emptyDir`. For compose-your-own labs, **Vector** POSTs normalized events to `POST /v1/triage`. For full SIEM workflows, consume from Wazuh or the log pipeline.
 
 ### Athena
 
@@ -224,6 +232,44 @@ Recommended default: **Wazuh** for full SIEM labs (`overlays/test`); **Vector + 
 compose-your-own labs without Wazuh (`overlays/hybrid-sensor`, ADR 0011). Loki remains for platform
 and workload logs.
 
+### Compose-your-own pipeline (ADR 0011)
+
+Deployed reference: `deploy/kubernetes/soc/overlays/hybrid-sensor`. Vector config:
+`overlays/hybrid-sensor/vector/vector-values-hybrid.yaml`.
+
+```mermaid
+graph LR
+    subgraph sensors
+        S[Suricata]
+        Z[Zeek]
+        F[Falco]
+        T[Tetragon]
+    end
+    V[Vector]
+    AI[ai-inference]
+    GW[API gateway]
+    C[Console]
+
+    S --> V
+    Z --> V
+    F --> V
+    T --> V
+    V -->|POST /v1/triage| AI
+    GW -->|GET /alerts/id/triage| AI
+    C --> GW
+```
+
+| Stage | Responsibility |
+| --- | --- |
+| Sensors | Emit JSON logs (Suricata `eve.json`, Zeek conn/DNS/HTTP, Falco rules, Tetragon export) |
+| Vector | Tag `nexus.source`, remap to triage-shaped JSON, filter high-signal events |
+| ai-inference | Score v1.1 baseline, persist SQLite, expose lookup API |
+| Gateway | JWT auth, triage deep-links; Wazuh alert list when Wazuh is deployed |
+| Console | Approvals (Athena + factory review), alert/triage UX |
+
+Follow-on (ADR 0011 H2–H4): gateway `SOCEvent` adapter for alert list without Wazuh; triage feature
+pack for Zeek/Falco fields; purple eval correlation against ground truth.
+
 ## 5. Network and Traffic Capture
 
 Suricata traffic capture is a core design decision.
@@ -308,9 +354,9 @@ Good production-like (R2 + D1) use cases:
 - Pipeline artifacts, SBOM archives, and release bundles.
 - Queryable run/artifact indexes on D1 via the gateway.
 
-Neither MinIO nor R2 is the primary SOC event database. Wazuh indexer handles
-security investigation data; Loki handles platform logs. Object storage archives
-selected exports when long-term blob retention is useful.
+Neither MinIO nor R2 is the primary SOC event database. **Wazuh indexer** holds investigation data
+in full SIEM labs; **ai-inference SQLite** holds scored events in thin and hybrid labs. Loki handles
+platform logs. Object storage archives selected exports when long-term blob retention is useful.
 
 ## 7. UDS Core Baseline
 
@@ -336,8 +382,8 @@ shared Vault (ADR 0008), not UDS as the secrets backend.
 | --- | --- | --- |
 | Product spine | Programmable fabric + secure software factory; R/B/P range attached | This document §0 |
 | GitOps | Flux (sync / image automation) + Argo CD (apps / governance) | `deploy/gitops/`, `02` §5 |
-| SOC platform | Headless Wazuh + hybrid Suricata/runtime sensors | `deploy/kubernetes/soc`, ADR 0007 |
-| Security event store | Wazuh indexer | SOC k8s / compose |
+| SOC platform | Headless Wazuh + hybrid Suricata/runtime sensors **or** Vector compose stack (ADR 0011) | `deploy/kubernetes/soc`, ADR 0007, ADR 0011 |
+| Security event store | Wazuh indexer (SIEM) **or** ai-inference persistence (hybrid/thin) | SOC k8s overlays |
 | Platform log store | Loki, with Vector aggregation | Core Nexus |
 | Purple workspace | JupyterLab agentic workspace | `platform/workbench` |
 | Blue UI | Nexus Console (+ optional `nexus-tui`) | `platform/nexus-console` |

@@ -51,4 +51,5 @@ deployment manifests, numbered architecture documents, and cross-repo integratio
 - Prefer Flux + Argo CD for programmatic fabric delivery (ADR 0003); use `nebucloud/ssf` + kiln for factory signing (ADR 0004) — do not invent a parallel Cosign stack in this repo.
 - Factory AI coding/review agents live in `nebucloud/factory-agents` (ADR 0009); kiln remains hermetic build; reuse OPAR safety patterns from `athena-agents` without red skill packs.
 - Suricata remains in the cybersecurity / hybrid-sensor plan (ADR 0007) even when omitted from a thin lab overlay.
+- Compose-your-own SOC (`overlays/hybrid-sensor`, ADR 0011) uses Vector + sensors → ai-inference without Wazuh; do not assume Wazuh is always present.
 
