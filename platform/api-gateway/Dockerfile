@@ -19,4 +19,9 @@ EXPOSE 3100
 ENV NEXUS_GW_PORT=3100
 ENV NEXUS_GW_SERVICE_REGISTRY_PATH=/app/config/services.json
 
+RUN useradd --create-home --uid 10001 --shell /usr/sbin/nologin appuser \
+    && chown -R appuser:appuser /app
+
+USER 10001
+
 CMD ["uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "3100"]

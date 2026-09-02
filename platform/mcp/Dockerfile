@@ -8,6 +8,7 @@ COPY src/ src/
 RUN npm run build
 
 FROM cgr.dev/chainguard/node:latest
+USER nonroot
 WORKDIR /app
 COPY --from=builder /app/package.json ./
 COPY --from=builder /app/node_modules ./node_modules

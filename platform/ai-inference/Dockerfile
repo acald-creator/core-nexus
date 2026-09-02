@@ -14,6 +14,11 @@ RUN mkdir -p /data
 
 ENV NEXUS_AI_DB_PATH=/data/triage.db
 
+RUN useradd --create-home --uid 10001 --shell /usr/sbin/nologin appuser \
+    && chown -R appuser:appuser /app /data
+
+USER 10001
+
 VOLUME ["/data"]
 
 EXPOSE 8000
