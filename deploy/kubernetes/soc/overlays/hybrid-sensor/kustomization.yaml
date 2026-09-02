@@ -17,10 +17,10 @@ patches:
 images:
   - name: phoenixvlabs/nexus-console
     newName: phoenixvlabs/nexus-console
-    newTag: v0.2.4
+    newTag: v0.2.5
   - name: phoenixvlabs/nexus-api-gateway
     newName: phoenixvlabs/nexus-api-gateway
-    newTag: v0.2.4
+    newTag: v0.2.5
   - name: phoenixvlabs/nexus-ai-inference
     newName: phoenixvlabs/nexus-ai-inference
-    newTag: v0.2.4
+    newTag: v0.2.5
