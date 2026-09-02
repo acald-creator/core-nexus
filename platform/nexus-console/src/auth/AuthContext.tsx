@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [DEV_BYPASS, isAuthenticated, login]);
+  }, [isAuthenticated, login]);
 
   const state: AuthState = {
     token,
@@ -91,6 +91,8 @@ export function useAuth(): AuthState {
 export function useToken(): () => string | null {
   const { token } = useContext(AuthContext);
   const tokenRef = useRef(token);
-  tokenRef.current = token;
-  return () => tokenRef.current;
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+  return useCallback(() => tokenRef.current, []);
 }

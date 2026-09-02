@@ -34,6 +34,8 @@ def app(test_settings, monkeypatch):
     get_settings.cache_clear()
 
     app = create_app()
+    # Lifespan is not exercised by ASGITransport in these tests — seed state here.
+    app.state.settings = test_settings
     # Mock clients to avoid real connections
     app.state.wazuh_client = AsyncMock()
     app.state.minio_client = MagicMock()

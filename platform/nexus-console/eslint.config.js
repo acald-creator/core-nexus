@@ -18,5 +18,12 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    rules: {
+      // Context modules export providers + hooks from the same file (Vite HMR).
+      'react-refresh/only-export-components': [
+        'error',
+        { allowConstantExport: true, allowExportNames: ['useAuth', 'useToken', 'useConfig'] },
+      ],
+    },
   },
 ])

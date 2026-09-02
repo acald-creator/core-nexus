@@ -53,7 +53,7 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
       }
     });
 
-    es.addEventListener('error', (_event) => {
+    es.addEventListener('error', () => {
       if (es.readyState === EventSource.CLOSED) {
         setIsConnected(false);
         setConnectionError('Connection lost — retrying...');
@@ -68,8 +68,13 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
   }, [config.apiGatewayUrl, token]);
 
   useEffect(() => {
-    connect();
+    // Defer so we do not setState synchronously inside the effect body (eslint react-hooks).
+    let cancelled = false;
+    queueMicrotask(() => {
+      if (!cancelled) connect();
+    });
     return () => {
+      cancelled = true;
       eventSourceRef.current?.close();
     };
   }, [connect]);
