@@ -15,6 +15,7 @@ agents or humans need the locked defaults.
 | [0008](0008-vault-ownership-nexus-hashistack.md) | Vault ownership: nexus-hashistack | Accepted |
 | [0009](0009-factory-ai-secure-coding-review-agents.md) | Factory AI: secure coding / review agents | Accepted |
 | [0010](0010-shared-llm-serving-plane-kvcached.md) | Shared LLM serving plane (kvcached on GPU) | Proposed |
+| [0011](0011-compose-soc-vector-zeek-falco-tetragon.md) | Compose-your-own SOC: Vector + Zeek/Falco/Tetragon | Accepted |
 
 ## Format
 

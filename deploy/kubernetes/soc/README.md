@@ -52,6 +52,7 @@ kubectl -n soc port-forward svc/nexus-workbench 8888:8888   # Jupyter tile
 | `overlays/dev` | Same base (disposable lab) |
 | `overlays/gitops-lab` | Thin Console + gateway; Flux image pins (MinIO-era) |
 | `overlays/r2` | Console + gateway on Cloudflare R2 (Argo `nexus-gitops-lab`) |
+| **`overlays/hybrid-sensor`** | Console + gateway + ai-inference + Vector/Suricata/Zeek/Falco/Tetragon — **no Wazuh** (ADR 0011) |
 | `overlays/gitops-range` | Jupyter workbench + Athena standard (Argo `nexus-gitops-range`) |
 | `overlays/wazuh-secure` | Wazuh only with TLS/security indexer |
 | `overlays/test` | System charts + Wazuh secure component (needs Helm) |

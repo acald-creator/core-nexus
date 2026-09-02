@@ -1,0 +1,95 @@
+# Hybrid sensor pipeline (ADR 0011) — canonical copy for kustomize helm security boundary.
+# Reference: docs/decisions/0011-compose-soc-vector-zeek-falco-tetragon.md
+role: "Agent"
+
+customConfig:
+  data_dir: /vector-data-dir
+  api:
+    enabled: true
+    address: 127.0.0.1:8686
+
+  sources:
+    sensor_logs:
+      type: kubernetes_logs
+      extra_label_selector: "app.kubernetes.io/name in (suricata,falco,zeek)"
+    tetragon_logs:
+      type: kubernetes_logs
+      extra_label_selector: "app.kubernetes.io/instance=tetragon"
+
+  transforms:
+    tag_source:
+      type: remap
+      inputs:
+        - sensor_logs
+        - tetragon_logs
+      source: |
+        pod = to_string(.kubernetes.pod_name) ?? ""
+        labels = .kubernetes.pod_labels ?? {}
+        name = to_string(labels."app.kubernetes.io/name") ?? ""
+        .nexus.source = if name != "" { name } else if contains(pod, "suricata") { "suricata" } else if contains(pod, "zeek") { "zeek" } else if contains(pod, "falco") { "falco" } else if contains(pod, "tetragon") { "tetragon" } else { "unknown" }
+        if is_string(.message) && starts_with(strip_whitespace(.message), "{") {
+          parsed, err = parse_json(.message)
+          if err == null {
+            .nexus.raw = parsed
+          }
+        }
+
+    to_triage_event:
+      type: remap
+      inputs:
+        - tag_source
+      source: |
+        src = to_string(.nexus.source) ?? "unknown"
+        raw = .nexus.raw ?? {}
+        id = uuid_v4()
+        . = {
+          "id": id,
+          "nexus_source": src,
+          "timestamp": .timestamp,
+          "message": .message,
+        }
+        if src == "suricata" {
+          . = merge!(., raw)
+          if exists(raw.alert) {
+            .rule = { "level": raw.alert.severity, "description": raw.alert.signature }
+          }
+        } else if src == "falco" {
+          .rule = { "level": 10, "description": raw.rule ?? raw.output ?? "Falco alert" }
+          .falco = raw
+        } else if src == "zeek" {
+          .rule = { "level": 5, "description": "Zeek " + to_string(raw._path ?? "log") }
+          .zeek = raw
+        } else if src == "tetragon" {
+          .rule = { "level": 8, "description": "Tetragon event" }
+          .tetragon = raw
+        }
+
+    triage_candidates:
+      type: filter
+      inputs:
+        - to_triage_event
+      condition: |
+        src = to_string(.nexus_source) ?? ""
+        src == "suricata" || src == "falco" || (src == "tetragon" && exists(.tetragon.process_kprobe))
+
+  sinks:
+    ai_inference:
+      type: http
+      inputs:
+        - triage_candidates
+      uri: "http://ai-inference.soc.svc.cluster.local:8000/v1/triage"
+      method: post
+      encoding:
+        codec: json
+      batch:
+        max_events: 5
+      request:
+        headers:
+          Content-Type: application/json
+
+    debug_stdout:
+      type: console
+      inputs:
+        - tag_source
+      encoding:
+        codec: json

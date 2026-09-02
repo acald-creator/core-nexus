@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: zeek
+  labels:
+    app.kubernetes.io/name: zeek
+    nexus.nebucloud.io/sensor: network
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: zeek
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: zeek
+        nexus.nebucloud.io/sensor: network
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: zeek
+          image: zeek/zeek:6.2.1
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+                - NET_RAW
+          command:
+            - /bin/sh
+            - -c
+            - |
+              cp /etc/zeek/local.zeek /usr/local/zeek/share/zeek/site/local.zeek
+              IFACE="${ZEEK_INTERFACE:-eth0}"
+              echo "Zeek listening on ${IFACE}"
+              exec zeek -i "${IFACE}"
+          env:
+            - name: ZEEK_INTERFACE
+              value: eth0
+          volumeMounts:
+            - name: zeek-config
+              mountPath: /etc/zeek
+      volumes:
+        - name: zeek-config
+          configMap:
+            name: zeek-config

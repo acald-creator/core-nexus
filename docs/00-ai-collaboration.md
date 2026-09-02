@@ -64,7 +64,7 @@ These roles are defaults, not hard rules. Any model may review any document, but
 ## 4. Non-Negotiable Architecture Decisions
 
 - Suricata is the network/protocol side of the hybrid sensor (ADR 0007); runtime telemetry complements it.
-- Wazuh is the near-term SOC event store.
+- **SOC event store:** Wazuh is the default full-SIEM path (`overlays/test`). **Compose-your-own** labs use Vector + Suricata/Zeek/Falco/Tetragon → ai-inference without Wazuh (ADR 0011, `overlays/hybrid-sensor`).
 - Loki is for platform and workload logs.
 - Object storage: **MinIO in lab**; **Cloudflare R2 + D1 in production-like** paths (ADR 0005).
 - Vault is the preferred production-like secrets manager, **owned by nexus-hashistack / shared Vault** — not deployed from core-nexus (ADR 0008).

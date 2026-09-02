@@ -110,7 +110,9 @@ Target SOC components:
 - **Wazuh dashboard:** Analyst interface.
 - **Wazuh agents:** Host and workload telemetry.
 - **Suricata sensor:** Network intrusion detection and `eve.json` event generation.
-- **Optional Zeek sensor:** Protocol metadata and richer network context.
+- **Optional Zeek sensor:** Protocol metadata and richer network context (ADR 0011 hybrid overlay).
+- **Falco:** Runtime threat detection (ADR 0011).
+- **Tetragon:** eBPF runtime export (ADR 0011).
 
 Prefer Chainguard images for Wazuh components where available. Suricata should run as a dedicated sensor image, not as software compiled into a desktop container.
 
@@ -214,11 +216,13 @@ The architecture should separate platform logs from security events.
 | Event type | Primary destination | Notes |
 | --- | --- | --- |
 | Platform and workload logs | Vector, Loki, Grafana | Useful for operations, troubleshooting, and cluster observability |
-| Security alerts and telemetry | Wazuh manager, indexer, dashboard | Primary SOC investigation path |
-| Network sensor events | Suricata to Wazuh, Vector, or both | Needs an explicit routing decision |
+| Security alerts and telemetry | Wazuh manager, indexer, dashboard **or** Vector → ai-inference (ADR 0011 hybrid) | Primary SOC investigation path |
+| Network sensor events | Suricata and Zeek → Vector (and optionally Wazuh) | Suricata = IDS (ADR 0007); Zeek = metadata |
 | AI triage output | Wazuh or log pipeline | Should include source event ID, model version, score, and reason fields |
 
-Recommended default: Wazuh should be the primary security event store, while Loki should be reserved for platform and workload logs. Vector can still collect and route logs, but security investigation should start in Wazuh.
+Recommended default: **Wazuh** for full SIEM labs (`overlays/test`); **Vector + hybrid sensors** for
+compose-your-own labs without Wazuh (`overlays/hybrid-sensor`, ADR 0011). Loki remains for platform
+and workload logs.
 
 ## 5. Network and Traffic Capture
 

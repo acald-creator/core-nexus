@@ -1,0 +1,25 @@
+# Compose-your-own SOC: Suricata + Zeek + Falco + Tetragon → Vector → ai-inference.
+# No Wazuh. ADR 0011.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: soc
+
+resources:
+  - ../../console
+  - ../../ai-inference
+  - ../../../system/tetragon
+  - ../../../system/suricata
+  - ../../../system/falco
+  - ../../../system/zeek
+  - vector
+
+images:
+  - name: phoenixvlabs/nexus-console
+    newName: phoenixvlabs/nexus-console
+    newTag: v0.2.3
+  - name: phoenixvlabs/nexus-api-gateway
+    newName: phoenixvlabs/nexus-api-gateway
+    newTag: v0.2.3
+  - name: phoenixvlabs/nexus-ai-inference
+    newName: phoenixvlabs/nexus-ai-inference
+    newTag: v0.2.3

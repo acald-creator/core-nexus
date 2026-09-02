@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: zeek-config
+  labels:
+    app.kubernetes.io/name: zeek
+data:
+  local.zeek: |
+    @load base/protocols/conn
+    @load base/protocols/dns
+    @load base/protocols/http
+    @load policy/tuning/json-logs
+
+    redef LogAscii::use_json = T;
+    redef LogAscii::json_timestamps = JSON::TS_ISO8601;

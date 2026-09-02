@@ -15,7 +15,7 @@ inclusion: manual
 ## Approach
 
 1. Read `docs/decisions/README.md` for the index of Accepted ADRs.
-2. Open the relevant ADR (`0002`–`0010`) before changing related docs or manifests.
+2. Open the relevant ADR (`0002`–`0011`) before changing related docs or manifests.
 3. Cross-check `docs/architecture/01-component-architecture.md` §0 (product narrative).
 4. Update the ADR if the decision changes; do not silently override in a random doc.
 5. Prefer one-line consequences in PRs: “per ADR 0003, Argo path remains overlays/r2.”
@@ -33,6 +33,7 @@ inclusion: manual
 | Vault via nexus-hashistack | 0008 |
 | Factory AI coding/review (sibling repo; kiln = callee) | 0009 |
 | Shared LLM serving plane; kvcached on GPU (deferred) | 0010 (Proposed) |
+| Compose SOC: Vector + Zeek/Falco/Tetragon (no Wazuh required) | 0011 |
 | Lab-only Portainer / no Vault-in-core-nexus | 0001 + 0008 |
 
 ADR shape: Status → Context → Decision → Consequences.
@@ -41,6 +42,7 @@ ADR shape: Status → Context → Decision → Consequences.
 
 - Do not treat `overlays/gitops-lab` as the live Argo lab app (that is `overlays/r2`).
 - Do not drop Suricata from the cybersecurity plan because the thin spine omits it.
+- Thin `overlays/r2` omits sensors by design; use `overlays/hybrid-sensor` (ADR 0011) for Zeek/Falco/Tetragon without Wazuh.
 - Do not map athena-agents OPAR to architecture Phase 2/3 SecureOS — OPAR is Phase 1 capable.
 - Do not invent a second factory stack inside core-nexus.
 - Do not treat kiln as a coding-agent workspace — kiln is hermetic build/task execution (ADR 0004 + 0009).

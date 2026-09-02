@@ -1,0 +1,16 @@
+# Falco — runtime detection for hybrid-sensor overlay (ADR 0011).
+# JSON to stdout; Vector collects via kubernetes_logs label selector.
+falcosidekick:
+  enabled: false
+
+driver:
+  kind: ebpf
+
+falco:
+  json_output: true
+  json_include_output_property: true
+  log_stderr: true
+  log_syslog: false
+
+podLabels:
+  nexus.nebucloud.io/sensor: runtime
