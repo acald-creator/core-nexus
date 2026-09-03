@@ -12,7 +12,7 @@ A hybrid build + use challenge: implement the platform AND use it for real secur
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Skills generated | 30+ | 16 |
+| Skills generated | 30+ | 17 |
 | Detection coverage (% agent actions caught) | 80%+ | — |
 | Token efficiency (tokens/scenario trend) | Decreasing | — |
 | MITRE ATT&CK techniques exercised | 20+ | — |
@@ -55,7 +55,7 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 16** (D) — Write a Suricata rule for something Athena generated — *Sep 3: SIDs 20261601–20261603 (X-Athena header, UA, Juice Shop OR 1=1)*
 - [x] **Day 17** (B) — Wire nexus-tui to live agent log (fsnotify file watching)
 - [x] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional) — *Sep 3: Gateway `/api/v1/agents/events/ws`; Console `VITE_AGENT_FEED_TRANSPORT`*
-- [ ] **Day 19** (U) — Run agent + monitor from terminal only (air-gapped simulation)
+- [x] **Day 19** (U) — Run agent + monitor from terminal only (air-gapped simulation) — *Sep 3: `scripts/day19-airgap-terminal.sh`; TUI `--dump`; Zarf `nexus-airgap-ops`*
 - [ ] **Day 20** (D) — Phase 1 retrospective — update ROADMAP, share progress
 
 ### Deferred Builds (was Days 12–13 B — do before or interleaved with Days 14–20)
@@ -184,6 +184,7 @@ Skills generated: X | Agent sessions: Y
 | 16 | 2026-09-03 | D | Custom Suricata athena.rules SIDs 20261601–20261603; HTTP_PORTS includes lab 8090/3001 | |
 | 17 | 2026-09-03 | B | nexus-tui Agent Feed now live tails OPAR JSONL via fsnotify; auto-updates on log append (manual `r` reload still works) | |
 | 18 | 2026-09-03 | B | Gateway WebSocket `/api/v1/agents/events/ws`; Console optional `VITE_AGENT_FEED_TRANSPORT=websocket` (SSE default) | code-gateway-agent-event-websocket.md |
+| 19 | 2026-09-03 | U | Terminal-only Night Quire probes + nexus-tui --dump (no Console); Zarf nexus-airgap-ops package created | ops-airgap-terminal-tui.md |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs

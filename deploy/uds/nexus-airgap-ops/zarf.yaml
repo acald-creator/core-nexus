@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Air-gapped operator extras: nexus-tui binary + Day 19 terminal runbook.
+# Does not replace Console; this is the SSH / no-browser path (Day 19).
+kind: ZarfPackageConfig
+metadata:
+  name: nexus-airgap-ops
+  description: >
+    Terminal SOC operator bits for air-gapped labs: nexus-tui and Day 19 runbooks.
+    Deploy after nexus-platform (optional). No container images.
+  version: 0.2.6
+
+components:
+  - name: operator-tui
+    required: true
+    description: Host-side TUI binary built on the connected packager.
+    files:
+      - source: ../../../dist/uds/nexus-tui
+        target: /opt/nexus/bin/nexus-tui
+        executable: true
+  - name: day19-runbooks
+    required: true
+    description: Terminal-only agent + monitor scripts (no Console).
+    files:
+      - source: ../../../scripts/day19-airgap-terminal.sh
+        target: /opt/nexus/scripts/day19-airgap-terminal.sh
+        executable: true
+      - source: ../../../scripts/labeled-probe-session.py
+        target: /opt/nexus/scripts/labeled-probe-session.py
+        executable: true
+      - source: ../../../scripts/day15-correlate-session.sh
+        target: /opt/nexus/scripts/day15-correlate-session.sh
+        executable: true

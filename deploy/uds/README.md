@@ -13,8 +13,16 @@ Kubernetes workloads for first delivery or offline media.
 | --- | --- | --- |
 | `nexus-platform` | [`nexus-platform/`](nexus-platform/) | Console, API gateway, ai-inference (`phoenixvlabs/*:v0.2.6`) |
 | `nexus-hybrid-sensor` | [`nexus-hybrid-sensor/`](nexus-hybrid-sensor/) | Suricata, Zeek, Falco, Tetragon, Vector → triage; sets `NEXUS_GW_ALERTS_SOURCE=triage` |
+| `nexus-airgap-ops` | [`nexus-airgap-ops/`](nexus-airgap-ops/) | Files-only: `nexus-tui` + Day 19 terminal runbooks (no images) |
 
-Deploy order: **platform → hybrid-sensor**.
+Deploy order: **platform → hybrid-sensor** (cluster). **airgap-ops** is optional operator media.
+
+## Wrapper
+
+```bash
+./deploy/uds/create-packages.sh                 # TUI binary + airgap-ops tarball
+ZARF_CREATE_IMAGES=1 ./deploy/uds/create-packages.sh   # also pull platform/sensor images
+```
 
 ## Prerequisites
 
@@ -120,7 +128,7 @@ See [`../kubernetes/soc/overlays/hybrid-sensor/README.md`](../kubernetes/soc/ove
 - UDS Core (SSO, Istio, Velero, …)
 - CI workflow publishing `.tar.zst` artifacts
 - Wazuh / `overlays/test` Zarf package
-- Athena / Workbench packages
+- Athena / Workbench container packages (operator TUI is `nexus-airgap-ops`)
 
 ## Related
 

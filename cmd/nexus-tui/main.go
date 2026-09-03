@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"log"
 	"os"
 
@@ -8,22 +9,27 @@ import (
 )
 
 func main() {
-	// Allow config directory override via env
+	dump := flag.Bool("dump", false, "print JSON panel counts and exit (air-gapped / SSH, no TTY)")
+	flag.Parse()
+
 	skillsDir := os.Getenv("NEXUS_SKILLS_DIR")
 	if skillsDir == "" {
 		home, _ := os.UserHomeDir()
 		skillsDir = home + "/.kiro/skills"
 	}
 
-	alertsFile := os.Getenv("NEXUS_ALERTS_FILE")
-	agentLogFile := os.Getenv("NEXUS_AGENT_LOG")
-	approvalFile := os.Getenv("NEXUS_APPROVAL_QUEUE")
-
 	cfg := Config{
 		SkillsDir:    skillsDir,
-		AlertsFile:   alertsFile,
-		AgentLogFile: agentLogFile,
-		ApprovalFile: approvalFile,
+		AlertsFile:   os.Getenv("NEXUS_ALERTS_FILE"),
+		AgentLogFile: os.Getenv("NEXUS_AGENT_LOG"),
+		ApprovalFile: os.Getenv("NEXUS_APPROVAL_QUEUE"),
+	}
+
+	if *dump {
+		if err := writeDump(cfg); err != nil {
+			log.Fatal(err)
+		}
+		return
 	}
 
 	p := tea.NewProgram(NewApp(cfg), tea.WithAltScreen())
