@@ -85,7 +85,21 @@ graph TD
 - [x] LLM agent workflow operational (athena-agents OPAR with safety controls).
 - [x] Vault ownership decided: consume `nexus-hashistack` / shared Vault (ADR 0008).
 - [ ] SBOM, signing, vulnerability scanning, and attestation workflows fully documented and routine in CI.
-- [ ] Suricata on by default in a documented full-SOC overlay (not only `overlays/test`).
+- [x] Suricata on by default in a documented full-SOC / compose-your-own overlay — `overlays/hybrid-sensor` (ADR 0011) and `overlays/test`; thin `overlays/r2` may still omit for RAM.
+
+### 100 Days calendar Phase 1 (Days 1–20) — closed 2026-09-03
+
+Challenge “Phase 1” is a **calendar bucket**, not this architecture phase. By Day 20 the
+lab spine runs end-to-end: Console + Gateway, hybrid sensors → Vector → ai-inference,
+athena labeled probes, nexus-tui (fsnotify + `--dump`), Suricata custom Athena SIDs,
+and Zarf packages (`nexus-platform`, `nexus-hybrid-sensor`, `nexus-airgap-ops`).
+
+Still open into challenge Phase 2 (detection engineering): shared capture path for
+host-native Athena traffic → Suricata eve.json; real athena-agents `/sessions`+`/events`
+(retire Day 9 bridge); typed Approvals / Property 8; factory CI SBOM/attest routine.
+
+See `docs/100-days-challenge.md` Day 20 retrospective and
+https://acaldwell-dev.antonette-caldwell.workers.dev/nexus/changelog.
 
 ## Phase 2: Hermetic Migration
 
