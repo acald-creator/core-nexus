@@ -1,3 +1,4 @@
+import { resolveAgentFeedTransport } from '../api/agentFeedUrl';
 import type { NexusConfig } from './types';
 
 const host = import.meta.env.VITE_NEXUS_HOST || 'localhost';
@@ -16,6 +17,7 @@ export const defaultConfig: NexusConfig = {
   authProvider: 'local',
   authEndpoint:
     import.meta.env.VITE_AUTH_ENDPOINT || `${apiGatewayUrl}/api/v1/auth/login`,
+  agentFeedTransport: resolveAgentFeedTransport('sse'),
   services: [
     {
       id: 'soc-alerts',

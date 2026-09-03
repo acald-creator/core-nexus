@@ -12,7 +12,7 @@ A hybrid build + use challenge: implement the platform AND use it for real secur
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Skills generated | 30+ | 15 |
+| Skills generated | 30+ | 16 |
 | Detection coverage (% agent actions caught) | 80%+ | — |
 | Token efficiency (tokens/scenario trend) | Decreasing | — |
 | MITRE ATT&CK techniques exercised | 20+ | — |
@@ -54,7 +54,7 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 15** (U) — Correlate Console alerts with nexus-tui feed for the same session — *Sep 3: `scripts/day15-correlate-session.sh`; 4 act / 1 triage match (0.25)*
 - [x] **Day 16** (D) — Write a Suricata rule for something Athena generated — *Sep 3: SIDs 20261601–20261603 (X-Athena header, UA, Juice Shop OR 1=1)*
 - [x] **Day 17** (B) — Wire nexus-tui to live agent log (fsnotify file watching)
-- [ ] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional)
+- [x] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional) — *Sep 3: Gateway `/api/v1/agents/events/ws`; Console `VITE_AGENT_FEED_TRANSPORT`*
 - [ ] **Day 19** (U) — Run agent + monitor from terminal only (air-gapped simulation)
 - [ ] **Day 20** (D) — Phase 1 retrospective — update ROADMAP, share progress
 
@@ -183,6 +183,7 @@ Skills generated: X | Agent sessions: Y
 | 16 | 2026-09-02 | B | Factory review webhook + merged Approvals queue (ADR 0009 F2) | |
 | 16 | 2026-09-03 | D | Custom Suricata athena.rules SIDs 20261601–20261603; HTTP_PORTS includes lab 8090/3001 | |
 | 17 | 2026-09-03 | B | nexus-tui Agent Feed now live tails OPAR JSONL via fsnotify; auto-updates on log append (manual `r` reload still works) | |
+| 18 | 2026-09-03 | B | Gateway WebSocket `/api/v1/agents/events/ws`; Console optional `VITE_AGENT_FEED_TRANSPORT=websocket` (SSE default) | code-gateway-agent-event-websocket.md |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs

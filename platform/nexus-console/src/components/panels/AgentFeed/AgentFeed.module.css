@@ -17,6 +17,13 @@
 .connected { color: var(--color-healthy); }
 .disconnected { color: var(--color-offline); }
 
+.transport {
+  margin-left: var(--space-2);
+  font-family: var(--font-family-mono, monospace);
+  font-size: var(--font-size-xs, 0.75rem);
+  color: var(--color-text-secondary, var(--color-text-muted));
+}
+
 .filters {
   display: flex;
   gap: var(--space-3);

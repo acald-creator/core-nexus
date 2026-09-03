@@ -1,3 +1,7 @@
+import type { AgentFeedTransport } from '../api/agentFeedUrl';
+
+export type { AgentFeedTransport };
+
 export type ServiceCategory = 'security' | 'workbenches' | 'storage' | 'infrastructure' | 'agents';
 
 export interface ServiceEntry {
@@ -18,4 +22,6 @@ export interface NexusConfig {
   authProvider: 'local' | 'oidc';
   /** Login URL — gateway `/api/v1/auth/login` for local provider. */
   authEndpoint: string;
+  /** Agent Feed transport. SSE is default; websocket uses `/api/v1/agents/events/ws`. */
+  agentFeedTransport: AgentFeedTransport;
 }

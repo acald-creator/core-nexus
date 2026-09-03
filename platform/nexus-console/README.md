@@ -22,6 +22,7 @@ Companion surfaces: Jupyter purple workbench, isolated Athena (`athena-agents` /
 cd platform/nexus-console
 npm install
 npm run dev   # Vite :5173 — set VITE_API_GATEWAY_URL if gateway is not :3100
+# Optional: VITE_AGENT_FEED_TRANSPORT=websocket (default sse)
 ```
 
 ## Build & Deploy

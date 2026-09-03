@@ -36,6 +36,8 @@ export default function SettingsPage() {
           <dd>{config.authEndpoint}</dd>
           <dt>Health poll</dt>
           <dd>{config.healthPollIntervalMs} ms</dd>
+          <dt>Agent feed transport</dt>
+          <dd>{config.agentFeedTransport}</dd>
           <dt>Dev auth bypass</dt>
           <dd>{DEV_BYPASS ? 'enabled' : 'off'}</dd>
           <dt>Services in config</dt>

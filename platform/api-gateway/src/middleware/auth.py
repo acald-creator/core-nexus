@@ -51,5 +51,5 @@ class JWTAuthMiddleware(BaseHTTPMiddleware):
         auth_header = request.headers.get("Authorization", "")
         if auth_header.startswith("Bearer "):
             return auth_header[7:]
-        # SSE fallback: token in query param
+        # SSE / WebSocket fallback: token in query param (browsers cannot set Authorization)
         return request.query_params.get("token")

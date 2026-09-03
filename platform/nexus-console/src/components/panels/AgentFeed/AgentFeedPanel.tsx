@@ -9,7 +9,7 @@ import styles from './AgentFeed.module.css';
 export function AgentFeedPanel() {
   const [filters, setFilters] = useState<AgentFeedFilters>({});
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const { events, isConnected, connectionError, retry } = useAgentFeed(filters);
+  const { events, isConnected, connectionError, retry, transport } = useAgentFeed(filters);
 
   const selectedEvent = events.find((e) => e.id === selectedId);
 
@@ -19,6 +19,7 @@ export function AgentFeedPanel() {
         <h2>Agent Feed</h2>
         <span className={`${styles.connectionStatus} ${isConnected ? styles.connected : styles.disconnected}`}>
           {isConnected ? '● Connected' : '○ Disconnected'}
+          <span className={styles.transport}> {transport === 'websocket' ? 'WS' : 'SSE'}</span>
         </span>
       </div>
 

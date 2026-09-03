@@ -20,7 +20,9 @@ inclusion: manual
 6. Prove the pipe: login → `GET /api/v1/agents/sessions` shows the shim session → subscribe `GET /api/v1/agents/events` → run OPAR → count `data:` lines (hello + GT rows).
 
 ## Key Patterns
-- Console `useAgentFeed` → Gateway `/api/v1/agents/events` → upstream athena `:8080/events`
+- Console `useAgentFeed` → Gateway `/api/v1/agents/events` (SSE, default) or `/api/v1/agents/events/ws` (WebSocket)
+- WebSocket is optional (Day 18). Same OPAR JSON envelopes. Auth is still `?token=` because browsers cannot set WS headers.
+- Set `VITE_AGENT_FEED_TRANSPORT=websocket` (or `agentFeedTransport` in `config.json`) to switch the Console. SSE stays default.
 - Bridge script: `scripts/day9-console-bridge.py` (stdlib mock Ollama `:11435` + athena shim `:8080`)
 - GT labels map to feed outcomes; `needs_review` → pending, else success for Day 9 visibility
 - Day 13 should replace the shim with a real athena-agents event API, not keep the Use-day bridge
@@ -29,7 +31,7 @@ inclusion: manual
 - A healthy host OPAR log is not evidence the Console can see the session
 - Recreating the GT file (`rm` + `touch`) orphans an open tail fd — events never broadcast
 - Real Ollama model pulls can fail in restricted networks; do not block the Use-day on gemma if a canned planner proves the feed
-- Gateway auth: SSE often needs `?token=` because EventSource cannot set Authorization headers
+- Gateway auth: SSE and WebSocket often need `?token=` because EventSource/WebSocket cannot set Authorization headers
 - Do not commit bridge processes or `/tmp` GT files as production architecture
 
 ## References

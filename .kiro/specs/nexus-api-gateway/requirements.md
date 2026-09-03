@@ -84,6 +84,18 @@ The gateway implements the API contract defined in the nexus-console-upgrade des
 5. WHEN no athena-agents sessions are active, THE Gateway SHALL keep the SSE connection open and send periodic heartbeat comments to prevent timeout
 6. THE Gateway SHALL support multiple concurrent SSE client connections without blocking
 
+### Requirement 5b: Agent Event Stream (WebSocket, optional)
+
+**User Story:** As an analyst, I want a WebSocket alternative to SSE so clients that cannot use EventSource can still receive live OPAR events.
+
+#### Acceptance Criteria
+
+1. WHEN an authenticated WebSocket connects to `/api/v1/agents/events/ws`, THE Gateway SHALL stream the same OPAR envelopes as SSE (`event`, `id`, `data`)
+2. THE Gateway SHALL authenticate via `Authorization: Bearer` or `?token=` (browser WebSocket cannot set headers)
+3. WHEN the upstream connection is lost, THE Gateway SHALL send an `error` frame with `UPSTREAM_DISCONNECTED` and retry with exponential backoff
+4. THE Gateway SHALL send JSON `heartbeat` frames when no OPAR event arrives within 15 seconds
+5. SSE remains the default Console transport; WebSocket is selected with `VITE_AGENT_FEED_TRANSPORT=websocket`
+
 ### Requirement 6: Agent Sessions
 
 **User Story:** As an analyst, I want to list current and recent agent sessions, so that I can understand which autonomous operations are active.

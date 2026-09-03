@@ -7,6 +7,7 @@ export const ENDPOINTS = {
   health: (serviceId: string) => `/api/v1/health/${serviceId}`,
   agents: {
     events: '/api/v1/agents/events',
+    eventsWs: '/api/v1/agents/events/ws',
     sessions: '/api/v1/agents/sessions',
   },
   alerts: '/api/v1/alerts',
