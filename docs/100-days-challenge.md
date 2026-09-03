@@ -50,8 +50,8 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 11** (B) — Implement alerts route in Gateway (pull from Wazuh API)
 - [x] **Day 12** (D) — Catch-up: document current core-nexus platform state (R2, Vault/hashistack, SOC k8s, Gateway/Console)
 - [x] **Day 13** (D) — Catch-up: audit 100 Days vs repo — stubs, supersessions, deferred Builds
-- [ ] **Day 14** (U) — Start SOC baseline stack, generate Athena traffic, triage first real alerts
-- [ ] **Day 15** (U) — Correlate Console alerts with nexus-tui feed for the same session
+- [x] **Day 14** (U) — Start SOC baseline stack, generate Athena traffic, triage first real alerts — *Sep 3: hybrid-sensor + labeled Night Quire probe; `scripts/day14-hybrid-soc-use.sh`*
+- [x] **Day 15** (U) — Correlate Console alerts with nexus-tui feed for the same session — *Sep 3: `scripts/day15-correlate-session.sh`; 4 act / 1 triage match (0.25)*
 - [ ] **Day 16** (D) — Write a Suricata rule for something Athena generated
 - [x] **Day 17** (B) — Wire nexus-tui to live agent log (fsnotify file watching)
 - [ ] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional)
@@ -176,8 +176,10 @@ Skills generated: X | Agent sessions: Y
 | 11 | 2026-08-28 | B | Gateway alerts: SOCAlert map, filters, triage 404/504; Properties 5–7 | |
 | 12 | 2026-08-29 | D | Catch-up: platform state — R2 overlay, hashistack Vault, SOC k8s Gateway/Console/Wazuh, Day 9 bridge gated | |
 | 13 | 2026-08-30 | D | Catch-up: full repo audit vs 100 Days; approvals+SSE Builds deferred; architecture overclaim note | |
-| 14 | 2026-08-31 | B | *(prep)* ai-inference triage persistence, Gateway contract, k8s thin-lab overlay — Day 14 Use still open | |
-| 15 | 2026-09-01 | D | Changelog Days 12–14 published to acaldwell.dev; Day 14/15 Use blocked on SOC baseline run | |
+| 14 | 2026-08-31 | B | *(prep)* ai-inference triage persistence, Gateway contract, k8s thin-lab overlay | |
+| 14 | 2026-09-03 | U | Hybrid-sensor Use: labeled Night Quire probes → triage; gateway alerts_source=triage | |
+| 15 | 2026-09-01 | D | Changelog Days 12–14 published to acaldwell.dev | |
+| 15 | 2026-09-03 | U | GT ↔ triage correlation export for nexus-tui (4 act / 1 alert, ratio 0.25) | |
 | 16 | 2026-09-02 | B | Factory review webhook + merged Approvals queue (ADR 0009 F2); Day 16 Suricata brief still open | |
 | 17 | 2026-09-03 | B | nexus-tui Agent Feed now live tails OPAR JSONL via fsnotify; auto-updates on log append (manual `r` reload still works) | |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
@@ -192,7 +194,8 @@ Does **not** complete Use-days 14+ or the deferred Approvals/SSE Builds:
 - **Day 9 bridge:** still present, gated in compose — real athena-agents SSE still deferred
 - **Approvals:** route scaffold only (no typed models / Property 8)
 - **Metadata:** D1 artifact index Worker + gateway client (adjacent to artifacts, not a challenge day)
-- **AI inference:** SQLite triage store, Gateway camelCase mapping, k8s overlay + Flux pin (`6077cbd`, `ece62c7`) — prep for Day 14 Use, not the Use run itself
+- **AI inference:** SQLite triage store, Gateway camelCase mapping, k8s overlay + Flux pin (`6077cbd`, `ece62c7`)
+- **Hybrid sensor Use (Sep 3):** `scripts/day14-hybrid-soc-use.sh`, `scripts/day15-correlate-session.sh`, `scripts/labeled-probe-session.py`
 - **Factory ADR 0009:** `nebucloud/factory-agents` locked for secure coding/review agents; F2 gateway webhook + merged Approvals (`ae4477d`)
 - **ADR 0010 (proposed):** shared LLM serving plane with kvcached — not deployed
 
