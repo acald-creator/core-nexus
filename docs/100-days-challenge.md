@@ -52,7 +52,7 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 13** (D) — Catch-up: audit 100 Days vs repo — stubs, supersessions, deferred Builds
 - [x] **Day 14** (U) — Start SOC baseline stack, generate Athena traffic, triage first real alerts — *Sep 3: hybrid-sensor + labeled Night Quire probe; `scripts/day14-hybrid-soc-use.sh`*
 - [x] **Day 15** (U) — Correlate Console alerts with nexus-tui feed for the same session — *Sep 3: `scripts/day15-correlate-session.sh`; 4 act / 1 triage match (0.25)*
-- [ ] **Day 16** (D) — Write a Suricata rule for something Athena generated
+- [x] **Day 16** (D) — Write a Suricata rule for something Athena generated — *Sep 3: SIDs 20261601–20261603 (X-Athena header, UA, Juice Shop OR 1=1)*
 - [x] **Day 17** (B) — Wire nexus-tui to live agent log (fsnotify file watching)
 - [ ] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional)
 - [ ] **Day 19** (U) — Run agent + monitor from terminal only (air-gapped simulation)
@@ -180,7 +180,8 @@ Skills generated: X | Agent sessions: Y
 | 14 | 2026-09-03 | U | Hybrid-sensor Use: labeled Night Quire probes → triage; gateway alerts_source=triage | |
 | 15 | 2026-09-01 | D | Changelog Days 12–14 published to acaldwell.dev | |
 | 15 | 2026-09-03 | U | GT ↔ triage correlation export for nexus-tui (4 act / 1 alert, ratio 0.25) | |
-| 16 | 2026-09-02 | B | Factory review webhook + merged Approvals queue (ADR 0009 F2); Day 16 Suricata brief still open | |
+| 16 | 2026-09-02 | B | Factory review webhook + merged Approvals queue (ADR 0009 F2) | |
+| 16 | 2026-09-03 | D | Custom Suricata athena.rules SIDs 20261601–20261603; HTTP_PORTS includes lab 8090/3001 | |
 | 17 | 2026-09-03 | B | nexus-tui Agent Feed now live tails OPAR JSONL via fsnotify; auto-updates on log append (manual `r` reload still works) | |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
