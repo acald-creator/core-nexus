@@ -53,7 +53,7 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 14** (U) — Start SOC baseline stack, generate Athena traffic, triage first real alerts
 - [ ] **Day 15** (U) — Correlate Console alerts with nexus-tui feed for the same session
 - [ ] **Day 16** (D) — Write a Suricata rule for something Athena generated
-- [ ] **Day 17** (B) — Wire nexus-tui to live agent log (fsnotify file watching)
+- [x] **Day 17** (B) — Wire nexus-tui to live agent log (fsnotify file watching)
 - [ ] **Day 18** (B) — Add WebSocket alternative to SSE for agent events (optional)
 - [ ] **Day 19** (U) — Run agent + monitor from terminal only (air-gapped simulation)
 - [ ] **Day 20** (D) — Phase 1 retrospective — update ROADMAP, share progress
@@ -179,6 +179,7 @@ Skills generated: X | Agent sessions: Y
 | 14 | 2026-08-31 | B | *(prep)* ai-inference triage persistence, Gateway contract, k8s thin-lab overlay — Day 14 Use still open | |
 | 15 | 2026-09-01 | D | Changelog Days 12–14 published to acaldwell.dev; Day 14/15 Use blocked on SOC baseline run | |
 | 16 | 2026-09-02 | B | Factory review webhook + merged Approvals queue (ADR 0009 F2); Day 16 Suricata brief still open | |
+| 17 | 2026-09-03 | B | nexus-tui Agent Feed now live tails OPAR JSONL via fsnotify; auto-updates on log append (manual `r` reload still works) | |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs
