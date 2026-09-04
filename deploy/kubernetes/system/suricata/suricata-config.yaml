@@ -12,7 +12,7 @@ data:
         EXTERNAL_NET: "!$HOME_NET"
       port-groups:
         # Lab HTTP: Night Quire :8090/:5173, Juice Shop :3001, Console/gateway, default 80/443
-        HTTP_PORTS: "[80,443,3000,3001,3100,5173,8080,8090]"
+        HTTP_PORTS: "[80,443,3000,3001,3003,3100,5173,8080,8090]"
         SHELLCODE_PORTS: "!80"
         ORACLE_PORTS: 1521
         SSH_PORTS: 22
@@ -36,9 +36,24 @@ data:
             - dns
             - tls
 
+    # Rancher Desktop / lima: eth0 is the VM fabric; vznat carries pod ↔ host
+    # (host.docker.internal / published lab ports). Capture both or Athena
+    # host-published Juice Shop traffic never hits eve.json.
     af-packet:
       - interface: eth0
         cluster-id: 99
+        cluster-type: cluster_flow
+        defrag: yes
+        use-mmap: yes
+        tpacket-v3: yes
+      - interface: vznat
+        cluster-id: 98
+        cluster-type: cluster_flow
+        defrag: yes
+        use-mmap: yes
+        tpacket-v3: yes
+      - interface: cni0
+        cluster-id: 97
         cluster-type: cluster_flow
         defrag: yes
         use-mmap: yes

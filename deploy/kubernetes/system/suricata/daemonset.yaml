@@ -28,7 +28,21 @@ spec:
             - -c
             - |
               sh /etc/suricata/scripts/update-rules.sh
-              suricata -c /etc/suricata/suricata.yaml -i eth0
+              # Capture every lab-relevant iface that exists on this node.
+              # Rancher Desktop: eth0 (VM) + vznat (pod↔host) + cni0 (pod CNI).
+              IFACES=""
+              for i in eth0 vznat cni0; do
+                if ip link show "$i" >/dev/null 2>&1; then
+                  IFACES="$IFACES -i $i"
+                  echo "suricata: capturing $i"
+                fi
+              done
+              if [ -z "$IFACES" ]; then
+                echo "suricata: no interfaces found; falling back to eth0"
+                IFACES="-i eth0"
+              fi
+              # shellcheck disable=SC2086
+              suricata -c /etc/suricata/suricata.yaml $IFACES
           volumeMounts:
             - name: config-volume
               mountPath: /etc/suricata/suricata.yaml

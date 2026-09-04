@@ -94,9 +94,10 @@ lab spine runs end-to-end: Console + Gateway, hybrid sensors → Vector → ai-i
 athena labeled probes, nexus-tui (fsnotify + `--dump`), Suricata custom Athena SIDs,
 and Zarf packages (`nexus-platform`, `nexus-hybrid-sensor`, `nexus-airgap-ops`).
 
-Still open into challenge Phase 2 (detection engineering): shared capture path for
-host-native Athena traffic → Suricata eve.json; real athena-agents `/sessions`+`/events`
+Still open into challenge Phase 2 (detection engineering): real athena-agents `/sessions`+`/events`
 (retire Day 9 bridge); typed Approvals / Property 8; factory CI SBOM/attest routine.
+**Capture path (Day 21):** Suricata multi-iface (`eth0`+`vznat`+`cni0`) now sees
+pod→`host.docker.internal` Juice Shop traffic; custom Athena SIDs fire in `eve.json`.
 
 See `docs/100-days-challenge.md` Day 20 retrospective and
 https://acaldwell-dev.antonette-caldwell.workers.dev/nexus/changelog.

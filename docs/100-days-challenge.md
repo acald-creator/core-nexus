@@ -12,8 +12,8 @@ A hybrid build + use challenge: implement the platform AND use it for real secur
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Skills generated | 30+ | 17 |
-| Detection coverage (% agent actions caught) | 80%+ | ~25% lab (4 act / 1 triage; Suricata eve not yet) |
+| Skills generated | 30+ | 18 |
+| Detection coverage (% agent actions caught) | 80%+ | Suricata SIDs hit on labeled SQLi (Day 21); formal % TBD Day 37 |
 | Token efficiency (tokens/scenario trend) | Decreasing | — |
 | MITRE ATT&CK techniques exercised | 20+ | 2+ (T1595, T1190) |
 | Ground-truth records emitted | 1000+ | ~28 (Juice Shop OPAR + Night Quire labeled probes) |
@@ -65,7 +65,7 @@ Skills generated: X | Agent sessions: Y
 
 ## Phase 2: Detection Engineering (Days 21-40) — "Catch the Agent"
 
-- [ ] **Day 21** (U) — Run SQLi scenarios against Juice Shop, observe Suricata alerts
+- [x] **Day 21** (U) — Run SQLi scenarios against Juice Shop, observe Suricata alerts — *Sep 4: multi-iface capture; :3003 Juice Shop; SIDs 20261601–203 in eve.json*
 - [ ] **Day 22** (U) — Write 3 custom Suricata rules to detect Athena SQLi patterns
 - [ ] **Day 23** (B) — Add new Athena tool: directory brute-force (gobuster/ffuf wrapper)
 - [ ] **Day 24** (U) — Run the new tool, verify Suricata catches the brute-force traffic
@@ -186,6 +186,7 @@ Skills generated: X | Agent sessions: Y
 | 18 | 2026-09-03 | B | Gateway WebSocket `/api/v1/agents/events/ws`; Console optional `VITE_AGENT_FEED_TRANSPORT=websocket` (SSE default) | code-gateway-agent-event-websocket.md |
 | 19 | 2026-09-03 | U | Terminal-only Night Quire probes + nexus-tui --dump (no Console); Zarf nexus-airgap-ops package created | ops-airgap-terminal-tui.md |
 | 20 | 2026-09-03 | D | Phase 1 retrospective: calendar Days 1–20 closed; roadmap exit note; Phase 2 detection focus | |
+| 21 | 2026-09-04 | U | Juice Shop SQLi via vznat path; Suricata multi-iface; SIDs 20261601–203 in eve.json | blue-team-suricata-multi-iface-capture.md |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs

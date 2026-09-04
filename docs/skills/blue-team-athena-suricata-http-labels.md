@@ -16,7 +16,7 @@ inclusion: manual
 3. Keep custom SIDs in a reserved band (`20261601+` for 100 Days Day 16).
 4. Mount rules via ConfigMap at `/etc/suricata/athena.rules`; include that path in `rule-files` **after** `suricata-update` emerging rules.
 5. Expand `HTTP_PORTS` for lab services or the rule never fires on Night Quire / Juice Shop.
-6. Host-native probes may **not** traverse the Suricata DaemonSet capture path (`platform/athena/README`). Rule existence ≠ eve.json hit.
+6. Host-native probes may **not** traverse the Suricata DaemonSet capture path. On Rancher Desktop, use in-cluster probes to `host.docker.internal` and capture **vznat** (see `blue-team-suricata-multi-iface-capture`).
 
 ## Key Patterns
 - ConfigMap keys: `suricata.yaml`, `athena.rules`, `update-rules.sh`
