@@ -98,6 +98,16 @@ data:
 
     alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena Juice Shop SQLi pattern OR 1=1"; flow:established,to_server; http.uri; content:"OR"; nocase; content:"1=1"; distance:0; classtype:web-application-attack; sid:20261603; rev:1;)
 
+    # Day 22 — tighter Athena SQLi from Day 21 Juice Shop Use (login body + quote injection).
+    # SIDs 20262201–20262203. URI-only 20261603 misses POST /rest/user/login JSON bodies.
+
+    alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena SQLi tautology in HTTP request body"; flow:established,to_server; http.request_body; content:"OR 1=1"; nocase; classtype:web-application-attack; sid:20262201; rev:1;)
+
+    alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena SQLi quote-OR comment in HTTP request body"; flow:established,to_server; http.request_body; content:"' OR"; nocase; content:"--"; distance:0; within:40; classtype:web-application-attack; sid:20262202; rev:1;)
+
+    # http.uri normalizes %27 → '; match raw wire encoding from labeled probes.
+    alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena Juice Shop search URI quote injection"; flow:established,to_server; http.uri.raw; content:"/rest/products/search"; content:"%27"; classtype:web-application-attack; sid:20262203; rev:2;)
+
   update-rules.sh: |
     #!/bin/sh
     suricata-update --no-test

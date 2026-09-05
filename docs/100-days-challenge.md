@@ -66,7 +66,7 @@ Skills generated: X | Agent sessions: Y
 ## Phase 2: Detection Engineering (Days 21-40) — "Catch the Agent"
 
 - [x] **Day 21** (U) — Run SQLi scenarios against Juice Shop, observe Suricata alerts — *Sep 4: multi-iface capture; :3003 Juice Shop; SIDs 20261601–203 in eve.json*
-- [ ] **Day 22** (U) — Write 3 custom Suricata rules to detect Athena SQLi patterns
+- [x] **Day 22** (U) — Write 3 custom Suricata rules to detect Athena SQLi patterns — *Sep 4: SIDs 20262201–203 (body tautology, quote-OR--, uri.raw %27); `scripts/day22-athena-sqli-rules.sh`*
 - [ ] **Day 23** (B) — Add new Athena tool: directory brute-force (gobuster/ffuf wrapper)
 - [ ] **Day 24** (U) — Run the new tool, verify Suricata catches the brute-force traffic
 - [ ] **Day 25** (U) — Tune Suricata rules to reduce false positives from labeled traffic
@@ -187,6 +187,7 @@ Skills generated: X | Agent sessions: Y
 | 19 | 2026-09-03 | U | Terminal-only Night Quire probes + nexus-tui --dump (no Console); Zarf nexus-airgap-ops package created | ops-airgap-terminal-tui.md |
 | 20 | 2026-09-03 | D | Phase 1 retrospective: calendar Days 1–20 closed; roadmap exit note; Phase 2 detection focus | |
 | 21 | 2026-09-04 | U | Juice Shop SQLi via vznat path; Suricata multi-iface; SIDs 20261601–203 in eve.json | blue-team-suricata-multi-iface-capture.md |
+| 22 | 2026-09-04 | U | Athena SQLi SIDs 20262201–203 (body OR 1=1, quote-OR--, uri.raw %27); verified on Juice Shop | blue-team-athena-sqli-body-rules.md |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs
