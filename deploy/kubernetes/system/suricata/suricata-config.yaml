@@ -108,6 +108,15 @@ data:
     # http.uri normalizes %27 → '; match raw wire encoding from labeled probes.
     alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena Juice Shop search URI quote injection"; flow:established,to_server; http.uri.raw; content:"/rest/products/search"; content:"%27"; classtype:web-application-attack; sid:20262203; rev:2;)
 
+    # Day 24 — Athena dir-bruteforce (gobuster-style labeled GET storm).
+    # SIDs 20262401–20262403. UA is set by dir_bruteforce.py; paths from lab wordlist.
+
+    alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena dir-bruteforce User-Agent"; flow:established,to_server; http.user_agent; content:"athena-agents/dir-bruteforce"; nocase; classtype:web-application-attack; sid:20262401; rev:1;)
+
+    alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena dir-bruteforce sensitive path .git"; flow:established,to_server; http.uri; content:"/.git"; classtype:web-application-attack; sid:20262402; rev:1;)
+
+    alert http any any -> $HOME_NET $HTTP_PORTS (msg:"NEXUS Athena dir-bruteforce sensitive path wp-admin"; flow:established,to_server; http.uri; content:"/wp-admin"; classtype:web-application-attack; sid:20262403; rev:1;)
+
   update-rules.sh: |
     #!/bin/sh
     suricata-update --no-test
