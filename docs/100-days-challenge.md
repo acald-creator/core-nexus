@@ -12,7 +12,7 @@ A hybrid build + use challenge: implement the platform AND use it for real secur
 
 | Metric | Target | Current |
 |--------|--------|---------|
-| Skills generated | 30+ | 18 |
+| Skills generated | 30+ | 23 |
 | Detection coverage (% agent actions caught) | 80%+ | Suricata SIDs hit on labeled SQLi (Day 21); formal % TBD Day 37 |
 | Token efficiency (tokens/scenario trend) | Decreasing | — |
 | MITRE ATT&CK techniques exercised | 20+ | 2+ (T1595, T1190) |
@@ -69,8 +69,8 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 22** (U) — Write 3 custom Suricata rules to detect Athena SQLi patterns — *Sep 4: SIDs 20262201–203 (body tautology, quote-OR--, uri.raw %27); `scripts/day22-athena-sqli-rules.sh`*
 - [x] **Day 23** (B) — Add new Athena tool: directory brute-force (gobuster/ffuf wrapper) — *Sep 8: `dir-bruteforce` in-process in athena-agents (+ nexus-athena registry sync)*
 - [x] **Day 24** (U) — Run the new tool, verify Suricata catches the brute-force traffic — *Sep 8: SIDs 20262401–203; local tool + in-cluster probe; `scripts/day24-dir-bruteforce-suricata.sh`*
-- [ ] **Day 25** (U) — Tune Suricata rules to reduce false positives from labeled traffic
-- [ ] **Day 26** (D) — Write detection skill: "How to detect Athena SQLi and brute-force"
+- [x] **Day 25** (U) — Tune Suricata rules to reduce false positives from labeled traffic — *Sep 8: threshold/limit + UA/header gates; `scripts/day25-suricata-fp-tune.sh`; 20262401 ~46→2*
+- [x] **Day 26** (D) — Write detection skill: "How to detect Athena SQLi and brute-force" — *Sep 8: `blue-team-detect-athena-sqli-dirbrute.md`*
 - [ ] **Day 27** (B) — Add OpenPLC container to dev compose as a live Modbus target
 - [ ] **Day 28** (B) — Wire OpenPLC to Suricata monitoring (mirror traffic)
 - [ ] **Day 29** (U) — Run Modbus agent against OpenPLC, watch safe-range enforcement
@@ -190,6 +190,8 @@ Skills generated: X | Agent sessions: Y
 | 22 | 2026-09-04 | U | Athena SQLi SIDs 20262201–203 (body OR 1=1, quote-OR--, uri.raw %27); verified on Juice Shop | blue-team-athena-sqli-body-rules.md |
 | 23 | 2026-09-08 | B | Athena `dir-bruteforce` tool (gobuster-style in-process, labeled GETs, wordlist clamp) | red-team-athena-dir-bruteforce.md |
 | 24 | 2026-09-08 | U | dir-bruteforce vs Juice Shop; Suricata SIDs 20262401–203 (UA + .git + wp-admin) | blue-team-athena-dirbrute-suricata.md |
+| 25 | 2026-09-08 | U | Suricata FP tune: label limit, dirbrute storm threshold, UA/header gates; 20262401 ~46→2 | blue-team-athena-suricata-fp-tune.md |
+| 26 | 2026-09-08 | D | Detection skill: Athena SQLi + dir-bruteforce (SID map, capture, GT, triage) | blue-team-detect-athena-sqli-dirbrute.md |
 | 32 | 2026-08-28 | B | *(early)* SOCAlert transform — same ship as Day 11; left numbered here for Phase 2 continuity | |
 
 ### Parallel platform work (Aug 28–31) — folded into Days 12–14 docs
