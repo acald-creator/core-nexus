@@ -1,0 +1,18 @@
+[package]
+name = "nexus-triage-store"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+description = "SQLite persistence for triage results, ported from platform/ai-inference/store.py"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+rusqlite = { workspace = true }
+
+[dev-dependencies]
+# The store tests build real triage results to persist, so they pull in the
+# scorer crate and a temp-dir helper (mirrors test_triage.py's tempfile usage).
+nexus-triage = { workspace = true }
+tempfile = { workspace = true }

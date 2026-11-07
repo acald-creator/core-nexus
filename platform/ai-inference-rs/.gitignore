@@ -1,0 +1,8 @@
+# Rust build artifacts
+/target
+
+# Local SQLite data written by the service at runtime (NEXUS_AI_DATA_DIR default)
+/data
+
+# Cargo.lock IS committed: this workspace produces a binary (ai-inference), and a
+# pinned lockfile gives reproducible builds. Do not add it here.

@@ -4,6 +4,8 @@ FastAPI triage enrichment for Wazuh, Suricata, Zeek, Falco, Tetragon, Vector-rou
 
 This is a **NumPy baseline** (v1.1.0), not a production LLM runtime. Hardware scan endpoints recommend engines; they do not load vLLM/llama.cpp yet. Containment wording always requires **human approval**.
 
+> **Rust port.** A faithful Rust re-implementation lives in [`../ai-inference-rs/`](../ai-inference-rs/). This Python service is the behavioural **oracle**; the two must stay in lockstep per [`../ai-inference-rs/PARITY.md`](../ai-inference-rs/PARITY.md).
+
 ## Ingest paths
 
 | Profile | How events arrive |
