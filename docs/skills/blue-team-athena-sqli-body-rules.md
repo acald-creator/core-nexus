@@ -16,6 +16,7 @@ inclusion: manual
 3. Body quote-OR comment: `http.request_body; content:"' OR"; content:"--"; within:40;` (SID 20262202).
 4. Search quote injection: use **`http.uri.raw`** with `content:"%27"` — `http.uri` normalizes `%27` → `'` so a `%27` match never fires (SID 20262203).
 5. After DaemonSet restart, wait ~25s before probing (engine start ≠ inspect-ready).
+6. Day 25+: gate these SIDs on `X-Athena-Scenario` (see FP-tune skill) so non-Athena traffic is not attributed.
 
 ## Key Patterns
 - ConfigMap: `deploy/kubernetes/system/suricata/suricata-config.yaml` → `athena.rules`
@@ -28,6 +29,7 @@ inclusion: manual
 - Expecting body rules to fire on GET query strings (those stay in URI)
 
 ## References
+- `docs/skills/blue-team-detect-athena-sqli-dirbrute.md` — consolidated SQLi + dirbrute detection playbook
 - `docs/skills/blue-team-athena-suricata-http-labels.md`
 - `docs/skills/blue-team-suricata-multi-iface-capture.md`
 - Day 21 / Day 22 challenge tracker entries

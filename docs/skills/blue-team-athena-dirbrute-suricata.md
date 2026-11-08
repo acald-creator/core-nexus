@@ -25,8 +25,10 @@ inclusion: manual
 ## Pitfalls
 - Host-only curls never cross vznat — zero alerts despite tool success
 - Juice Shop SPA returns **200** for many missing paths (FP fuel for Day 25)
-- SID 20262401 fires once per GET — expect high volume on wordlist storms
+- Pre-Day-25: SID 20262401 fired once per GET — after Day 25 use storm threshold (see FP-tune skill)
 
 ## References
+- `docs/skills/blue-team-detect-athena-sqli-dirbrute.md` — consolidated SQLi + dirbrute detection playbook
 - `docs/skills/red-team-athena-dir-bruteforce.md`
 - `docs/skills/blue-team-suricata-multi-iface-capture.md`
+- `docs/skills/blue-team-athena-suricata-fp-tune.md`

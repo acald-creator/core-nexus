@@ -1,0 +1,41 @@
+# Underground Nexus — AI Inference (Rust port)
+#
+# This workspace is a FAITHFUL re-implementation of the Python service in
+# `platform/ai-inference/`. The Python service remains the behavioural ORACLE:
+# its `test_triage.py` cases are ported verbatim into Rust tests here so the two
+# implementations cannot drift silently. See `README.md` and `PARITY.md`.
+#
+# Scope note (avoid over-claiming): this is a Rust re-implementation of the
+# **Phase 1 NumPy baseline** triage scorer (docs/architecture/06 §1). It is NOT
+# the Phase 3 "Rust + ONNX inside gVisor" runtime. No ML runtime is loaded.
+#
+# Layout mirrors the sibling `athena-agents` Cargo workspace so the idioms match
+# code you already own (serde derives, `//!`/`///` docs, crate-per-concern).
+
+[workspace]
+members = ["crates/triage", "crates/store", "crates/server"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["PhoenixVLabs"]
+
+[workspace.dependencies]
+# `preserve_order` keeps JSON object key order identical to the Python dicts,
+# so stored payloads and API responses diff cleanly against the oracle.
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+sha2 = "0.11"
+hex = "0.4"
+rusqlite = { version = "0.41", features = ["bundled"] }
+tokio = { version = "1", features = ["full"] }
+axum = "0.8"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+tempfile = "3"
+
+# Internal crates (mirror the three Python modules).
+nexus-triage = { path = "crates/triage" }
+nexus-triage-store = { path = "crates/store" }
