@@ -45,6 +45,9 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
   const webSocketRef = useRef<WebSocket | null>(null);
   const retryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryDelayRef = useRef(1000);
+  // Holds the latest `connect` so the retry timer can call it without
+  // referencing `connect` before its declaration (temporal dead zone).
+  const connectRef = useRef<() => void>(() => {});
 
   const pushEvent = useCallback((payload: unknown) => {
     const data = parseOparPayload(payload);
@@ -112,7 +115,7 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
         setConnectionError('Connection lost — retrying...');
         const delay = retryDelayRef.current;
         retryDelayRef.current = Math.min(delay * 2, WS_RETRY_MAX_MS);
-        retryTimerRef.current = setTimeout(() => connect(), delay);
+        retryTimerRef.current = setTimeout(() => connectRef.current(), delay);
       };
       return;
     }
@@ -142,6 +145,11 @@ export function useAgentFeed(filters?: AgentFeedFilters) {
       setConnectionError('Connection lost — retrying...');
     };
   }, [config.apiGatewayUrl, disconnect, pushEvent, token, transport]);
+
+  // Keep the retry timer pointed at the latest `connect`.
+  useEffect(() => {
+    connectRef.current = connect;
+  }, [connect]);
 
   useEffect(() => {
     let cancelled = false;
