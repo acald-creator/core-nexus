@@ -25,7 +25,7 @@ on:
 
 jobs:
   security:
-    uses: acald-creator/security-compliance-hub/.github/workflows/security-scan.yml@v0.2.12
+    uses: acald-creator/security-compliance-hub/.github/workflows/security-scan.yml@33eeaa39e208e667051b37b721cac2c5b37de49a # v0.2.13
     with:
       severity-threshold: HIGH
       compliance-frameworks: openssf,owasp,slsa
@@ -36,6 +36,6 @@ jobs:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   devsecops:
-    uses: acald-creator/security-compliance-hub/.github/workflows/devsecops-infinity.yml@v0.2.12
+    uses: acald-creator/security-compliance-hub/.github/workflows/devsecops-infinity.yml@33eeaa39e208e667051b37b721cac2c5b37de49a # v0.2.13
     with:
       phase: all
