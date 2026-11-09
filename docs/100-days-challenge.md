@@ -4,6 +4,8 @@ A hybrid build + use challenge: implement the platform AND use it for real secur
 
 > **Note:** Challenge “Phase 1/2/3” below are **calendar buckets** (day ranges). They are
 > **not** the architecture roadmap phases in `docs/architecture/03-phased-implementation-roadmap.md`.
+>
+> 🔎 [#26](https://github.com/acald-creator/core-nexus/issues/26) consider renaming these calendar buckets to Milestone/Sprint so Phase means only architecture maturity repo-wide.
 
 **Start date:** 2026-08-18
 **End date:** 2026-11-25
@@ -13,7 +15,7 @@ A hybrid build + use challenge: implement the platform AND use it for real secur
 | Metric | Target | Current |
 |--------|--------|---------|
 | Skills generated | 30+ | 18 |
-| Detection coverage (% agent actions caught) | 80%+ | Suricata SIDs hit on labeled SQLi (Day 21); formal % TBD Day 37 |
+| Detection coverage (% agent actions caught) | 80%+ | Suricata SIDs hit on labeled SQLi (Day 21); formal % TBD Day 37 — see [#16](https://github.com/acald-creator/core-nexus/issues/16)/[#15](https://github.com/acald-creator/core-nexus/issues/15) measure blind to the label |
 | Token efficiency (tokens/scenario trend) | Decreasing | — |
 | MITRE ATT&CK techniques exercised | 20+ | 2+ (T1595, T1190) |
 | Ground-truth records emitted | 1000+ | ~28 (Juice Shop OPAR + Night Quire labeled probes) |
@@ -71,20 +73,28 @@ Skills generated: X | Agent sessions: Y
 - [x] **Day 24** (U) — Run the new tool, verify Suricata catches the brute-force traffic — *Sep 8: SIDs 20262401–203; local tool + in-cluster probe; `scripts/day24-dir-bruteforce-suricata.sh`*
 - [ ] **Day 25** (U) — Tune Suricata rules to reduce false positives from labeled traffic
 - [ ] **Day 26** (D) — Write detection skill: "How to detect Athena SQLi and brute-force"
-- [ ] **Day 27** (B) — Add OpenPLC container to dev compose as a live Modbus target
+- [ ] **Day 27** (B) — Add OpenPLC container to dev compose as a live Modbus target  
+  - 🔎 [#23](https://github.com/acald-creator/core-nexus/issues/23) wire real safe-range enforcement into the act path here — it is a stub (never called) today
 - [ ] **Day 28** (B) — Wire OpenPLC to Suricata monitoring (mirror traffic)
-- [ ] **Day 29** (U) — Run Modbus agent against OpenPLC, watch safe-range enforcement
-- [ ] **Day 30** (U) — Attempt boundary violation, verify agent halts and emits needs_review
+- [ ] **Day 29** (U) — Run Modbus agent against OpenPLC, watch safe-range enforcement  
+  - 🔎 [#23](https://github.com/acald-creator/core-nexus/issues/23) safe-range is not enforced yet — build it in Day 27 or there is nothing to watch
+- [ ] **Day 30** (U) — Attempt boundary violation, verify agent halts and emits needs_review  
+  - 🔎 [#21](https://github.com/acald-creator/core-nexus/issues/21) the loop must actually halt on needs_review (approval write-back is a no-op today); [#23](https://github.com/acald-creator/core-nexus/issues/23)
 - [ ] **Day 31** (D) — Share: "Day 31 — AI agent tried to write outside safe range, got blocked"
 - [x] **Day 32** (B) — Implement Wazuh alert transformation in Gateway (map to SOCAlert schema) — *done early as Day 11; Indexer-vs-Manager hardening can still land later*
 - [ ] **Day 33** (B) — Add alert acknowledgment endpoint to Gateway
 - [ ] **Day 34** (B) — Wire Console alerts badge to live unacknowledged count — *partial via Day 6; needs Day 33 ack API to be meaningful*
-- [ ] **Day 35** (U) — Run a full session: agent generates traffic → alerts appear in Console
-- [ ] **Day 36** (U) — Correlate agent ground-truth with Wazuh alerts (true positive rate)
-- [ ] **Day 37** (D) — Calculate detection coverage metric, add to tracking table
+- [ ] **Day 35** (U) — Run a full session: agent generates traffic → alerts appear in Console  
+  - 🔎 [#15](https://github.com/acald-creator/core-nexus/issues/15) [#17](https://github.com/acald-creator/core-nexus/issues/17) emit traffic WITHOUT the X-Athena header into the detection path — fixes the circular metric and the triage header-trust bug
+- [ ] **Day 36** (U) — Correlate agent ground-truth with Wazuh alerts (true positive rate)  
+  - 🔎 [#16](https://github.com/acald-creator/core-nexus/issues/16) detection must be blind to the label or the true-positive rate is circular
+- [ ] **Day 37** (D) — Calculate detection coverage metric, add to tracking table  
+  - 🔎 [#16](https://github.com/acald-creator/core-nexus/issues/16) [#15](https://github.com/acald-creator/core-nexus/issues/15) the make-or-break number — measure against an UNGATED ruleset; consider retiring the count-based vanity targets for this headline
 - [ ] **Day 38** (B) — Add coverage metrics panel to Console or nexus-tui
-- [ ] **Day 39** (B) — Add detection coverage to eval/ics_metrics.py in athena-agents
-- [ ] **Day 40** (D) — Phase 2 retrospective — detection engineering learnings
+- [ ] **Day 39** (B) — Add detection coverage to eval/ics_metrics.py in athena-agents  
+  - 🔎 [#16](https://github.com/acald-creator/core-nexus/issues/16)
+- [ ] **Day 40** (D) — Phase 2 retrospective — detection engineering learnings  
+  - 🔎 fold in [#24](https://github.com/acald-creator/core-nexus/issues/24) (threat-model agent rows), [#25](https://github.com/acald-creator/core-nexus/issues/25) (honesty pass), [#26](https://github.com/acald-creator/core-nexus/issues/26) (what-runs-today table)
 
 ## Phase 3: Agent Intelligence (Days 41-60) — "Make It Smarter"
 
@@ -94,10 +104,13 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 44** (U) — Run a 5-step attack chain (recon → exploit → escalate → exfil → cover)
 - [ ] **Day 45** (U) — Review ground-truth records for the multi-step chain
 - [ ] **Day 46** (D) — Write skill: "Multi-step attack chain planning patterns"
-- [ ] **Day 47** (B) — Implement skill loading in OPAR Plan phase (read from MinIO at startup)
+- [ ] **Day 47** (B) — Implement skill loading in OPAR Plan phase (read from MinIO at startup)  
+  - 🔎 [#22](https://github.com/acald-creator/core-nexus/issues/22) add signature/integrity verification at the load step — skills are injected into the planner prompt unsigned
 - [ ] **Day 48** (B) — Add skill relevance matching (filename/tag based)
-- [ ] **Day 49** (B) — Add skill injection into LLM prompt context
-- [ ] **Day 50** (U) — Run same scenario twice — with and without loaded skill, compare tokens
+- [ ] **Day 49** (B) — Add skill injection into LLM prompt context  
+  - 🔎 [#22](https://github.com/acald-creator/core-nexus/issues/22) verify signature before prompt injection
+- [ ] **Day 50** (U) — Run same scenario twice — with and without loaded skill, compare tokens  
+  - 🔎 [#15](https://github.com/acald-creator/core-nexus/issues/15) the skill-reuse proof — the token-savings headline
 - [ ] **Day 51** (D) — Share: "Day 51 — Agent used a learned skill, saved X% tokens"
 - [ ] **Day 52** (B) — Add second LLM backend option (vLLM or llama.cpp for comparison)
 - [ ] **Day 53** (B) — Add model switching via config (swap without container rebuild)
@@ -105,22 +118,31 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 55** (U) — Run same scenario with 8B vs 70B model, compare effectiveness
 - [ ] **Day 56** (U) — Measure: actions to objective, token cost, planning quality
 - [ ] **Day 57** (D) — Write comparison: "LLM model size vs agent effectiveness"
-- [ ] **Day 58** (B) — Implement approval write-back in nexus-tui (approve → file/API)
-- [ ] **Day 59** (B) — Implement approval write-back in Console (approve → Gateway → agents)
+- [ ] **Day 58** (B) — Implement approval write-back in nexus-tui (approve → file/API)  
+  - 🔎 [#21](https://github.com/acald-creator/core-nexus/issues/21) closes the human-approval loop that doc 13 §2 already claims is active
+- [ ] **Day 59** (B) — Implement approval write-back in Console (approve → Gateway → agents)  
+  - 🔎 [#21](https://github.com/acald-creator/core-nexus/issues/21)
 - [ ] **Day 60** (D) — Phase 3 retrospective — agent intelligence findings
 
 ## Phase 4: Hardening & Integration (Days 61-80) — "Make It Solid"
 
-- [ ] **Day 61** (B) — Deploy agent to real k3d cluster with agent overlay
-- [ ] **Day 62** (B) — Verify NetworkPolicy blocks unauthorized egress (test escape attempts)
+- [ ] **Day 61** (B) — Deploy agent to real k3d cluster with agent overlay  
+  - 🔎 [#19](https://github.com/acald-creator/core-nexus/issues/19) add default-deny NetworkPolicies + split range/SOC namespaces (none exist today); [#18](https://github.com/acald-creator/core-nexus/issues/18) authenticate ai-inference while hardening
+- [ ] **Day 62** (B) — Verify NetworkPolicy blocks unauthorized egress (test escape attempts)  
+  - 🔎 [#19](https://github.com/acald-creator/core-nexus/issues/19) the policies must be written first (Day 61)
 - [ ] **Day 63** (B) — Add resource limits and OOM handling for long-running scenarios
-- [ ] **Day 64** (U) — Run agent in k8s, verify isolation and capability enforcement
+- [ ] **Day 64** (U) — Run agent in k8s, verify isolation and capability enforcement  
+  - 🔎 [#19](https://github.com/acald-creator/core-nexus/issues/19)
 - [ ] **Day 65** (D) — Document k8s agent deployment runbook
-- [ ] **Day 66** (B) — Add SBOM generation to local build (syft integration)
-- [ ] **Day 67** (B) — Add cosign signing to local build workflow
-- [ ] **Day 68** (B) — Add image verification step to run-athena-profile.sh
+- [ ] **Day 66** (B) — Add SBOM generation to local build (syft integration)  
+  - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20) [#25](https://github.com/acald-creator/core-nexus/issues/25) wire SBOM into the release workflow too (it sets provenance:false today)
+- [ ] **Day 67** (B) — Add cosign signing to local build workflow  
+  - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20)
+- [ ] **Day 68** (B) — Add image verification step to run-athena-profile.sh  
+  - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20) also add .spec.verify to Flux ImageRepositories + kyverno to the r2/gitops-range overlays, not just test
 - [ ] **Day 69** (U) — Build, sign, verify, run — full supply chain loop locally
-- [ ] **Day 70** (U) — Attempt to run an unsigned/tampered image — verify rejection
+- [ ] **Day 70** (U) — Attempt to run an unsigned/tampered image — verify rejection  
+  - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20)
 - [ ] **Day 71** (D) — Share: "Supply chain security for an AI offensive agent"
 - [ ] **Day 72** (B) — Add ChromaDB container to dev compose for vector memory
 - [ ] **Day 73** (B) — Implement embedding pipeline (skill files → vectors)
@@ -152,7 +174,8 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 96** (U) — Run scored challenge: "Compromise Juice Shop in fewest actions"
 - [ ] **Day 97** (U) — Run scored challenge: "Map all Modbus registers without triggering alert"
 - [ ] **Day 98** (D) — Final retrospective — what worked, what didn't, what's next
-- [ ] **Day 99** (B) — Polish all docs, READMEs, architecture for public consumption
+- [ ] **Day 99** (B) — Polish all docs, READMEs, architecture for public consumption  
+  - 🔎 [#25](https://github.com/acald-creator/core-nexus/issues/25) [#26](https://github.com/acald-creator/core-nexus/issues/26) honesty pass + what-runs-today table + fence future-OS docs
 - [ ] **Day 100** (D) — Final share: "100 Days of Underground Nexus — Complete"
 
 ---
