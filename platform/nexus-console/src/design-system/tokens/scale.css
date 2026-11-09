@@ -1,0 +1,115 @@
+/*
+ * Non-colour tokens: space, radius, type, motion, sizing, layering.
+ * Density and layout options are attributes on <html>:
+ *   data-density="comfortable" | "compact"
+ *   data-layout="sidebar" | "rail" | "topbar"
+ *   data-width="fluid" | "contained"
+ */
+@layer ds.tokens {
+  :root {
+    /* ---- Space: a 4px unit the density setting scales. ---- */
+    --space-unit: 0.25rem;
+    --space-0-5: calc(var(--space-unit) * 0.5);
+    --space-1:  calc(var(--space-unit) * 1);
+    --space-2:  calc(var(--space-unit) * 2);
+    --space-3:  calc(var(--space-unit) * 3);
+    --space-4:  calc(var(--space-unit) * 4);
+    --space-5:  calc(var(--space-unit) * 5);
+    --space-6:  calc(var(--space-unit) * 6);
+    --space-8:  calc(var(--space-unit) * 8);
+    --space-10: calc(var(--space-unit) * 10);
+    --space-12: calc(var(--space-unit) * 12);
+    --space-16: calc(var(--space-unit) * 16);
+    --gutter: clamp(var(--space-4), 2vw, var(--space-8));
+
+    /* ---- Radius ---- */
+    --radius-xs: 3px;
+    --radius-sm: 4px;
+    --radius-md: 6px;
+    --radius-lg: 10px;
+    --radius-xl: 14px;
+    --radius-pill: 999px;
+
+    /* ---- Type ---- */
+    --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", sans-serif;
+    --font-mono: ui-monospace, "JetBrains Mono", "Cascadia Code", "Fira Code", Menlo, monospace;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-md: 1rem;
+    --text-lg: 1.125rem;
+    --text-xl: clamp(1.25rem, 1.15rem + 0.5vw, 1.5rem);
+    --text-2xl: clamp(1.5rem, 1.25rem + 1.2vw, 2rem);
+    --leading-tight: 1.25;
+    --leading-base: 1.55;
+    --tracking-caps: 0.06em;
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
+
+    /* ---- Motion. Reduced-motion zeroes the durations below. ---- */
+    --motion-fast: 120ms;
+    --motion-base: 200ms;
+    --motion-slow: 320ms;
+    --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease-in-out: cubic-bezier(0.45, 0, 0.2, 1);
+
+    /* ---- Sizing ---- */
+    --control-h: 2.25rem;
+    --control-h-sm: 1.75rem;
+    --nav-size: 15rem;
+    --rail-size: 3.5rem;
+    --topbar-h: 3rem;
+    --content-max: 80rem;
+    --measure: 68ch;
+
+    /* Resolved per layout option (see below). */
+    --nav-current: var(--nav-size);
+    --content-current: 100%;
+
+    /* ---- Layering ---- */
+    --z-nav: 100;
+    --z-sticky: 200;
+    --z-overlay: 300;
+    --z-toast: 400;
+
+    /* ---- Legacy aliases ---- */
+    --sidebar-width: var(--nav-size);
+    --sidebar-collapsed-width: var(--rail-size);
+    --header-height: var(--topbar-h);
+    --border-radius: var(--radius-md);
+    --border-radius-sm: var(--radius-sm);
+    --font-size-xs: var(--text-xs);
+    --font-size-sm: var(--text-sm);
+    --font-size-base: var(--text-md);
+    --font-size-lg: var(--text-lg);
+    --font-size-xl: var(--text-xl);
+    --transition-fast: var(--motion-fast) var(--ease-out);
+    --transition-normal: var(--motion-base) var(--ease-out);
+  }
+
+  :root[data-density="compact"] {
+    --space-unit: 0.2rem;
+    --control-h: 2rem;
+    --control-h-sm: 1.5rem;
+    --leading-base: 1.45;
+    --text-md: 0.9375rem;
+  }
+
+  :root[data-layout="rail"] { --nav-current: var(--rail-size); }
+  :root[data-layout="topbar"] { --nav-current: 0px; }
+  :root[data-width="contained"] { --content-current: var(--content-max); }
+
+  /* Narrow viewports fall back to the rail unless the top bar is in use. */
+  @media (width < 48rem) {
+    :root:not([data-layout="topbar"]) { --nav-current: var(--rail-size); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root {
+      --motion-fast: 0ms;
+      --motion-base: 0ms;
+      --motion-slow: 0ms;
+    }
+  }
+}

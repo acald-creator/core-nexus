@@ -1,0 +1,249 @@
+{
+  "$comment": "Accessibility contract for tokens/semantic.css. Values here mirror the role tokens; change both. Run: node <color-accessibility>/scripts/audit-pairs.mjs src/design-system/pairs.json",
+  "themes": {
+    "dark": {
+      "ground": "oklch(0.17 0.016 250)",
+      "surface": "oklch(0.21 0.018 250)",
+      "raised": "oklch(0.26 0.02 250)",
+      "overlay": "oklch(0.30 0.02 250)",
+      "inset": "oklch(0.14 0.014 250)",
+      "ink": "oklch(0.95 0.01 250)",
+      "ink-2": "oklch(0.78 0.014 250)",
+      "ink-muted": "oklch(0.68 0.016 250)",
+      "ink-faint": "oklch(0.54 0.016 250)",
+      "border": "oklch(0.34 0.02 250)",
+      "border-strong": "oklch(0.535 0.022 250)",
+      "accent": "oklch(0.78 0.155 159)",
+      "accent-hover": "oklch(0.84 0.14 159)",
+      "on-accent": "oklch(0.14 0.014 250)",
+      "critical": "oklch(0.68 0.19 25)",
+      "high": "oklch(0.78 0.14 48)",
+      "medium": "oklch(0.88 0.135 86)",
+      "low": "oklch(0.66 0.16 260)",
+      "plan": "oklch(0.82 0.11 309)",
+      "accent-wash": "oklch(0.78 0.155 159 / 0.16)",
+      "critical-wash": "oklch(0.68 0.19 25 / 0.14)"
+    },
+    "light": {
+      "ground": "oklch(0.965 0.008 250)",
+      "surface": "oklch(0.99 0.004 250)",
+      "raised": "oklch(0.995 0.002 250)",
+      "overlay": "oklch(0.995 0.002 250)",
+      "inset": "oklch(0.935 0.01 250)",
+      "ink": "oklch(0.21 0.02 250)",
+      "ink-2": "oklch(0.40 0.02 250)",
+      "ink-muted": "oklch(0.52 0.02 250)",
+      "ink-faint": "oklch(0.64 0.018 250)",
+      "border": "oklch(0.87 0.012 250)",
+      "border-strong": "oklch(0.64 0.016 250)",
+      "accent": "oklch(0.50 0.115 159)",
+      "accent-hover": "oklch(0.44 0.10 159)",
+      "on-accent": "oklch(0.99 0.004 250)",
+      "critical": "oklch(0.44 0.178 25)",
+      "high": "oklch(0.555 0.152 48)",
+      "medium": "oklch(0.54 0.112 86)",
+      "low": "oklch(0.47 0.17 260)",
+      "plan": "oklch(0.52 0.17 309)",
+      "accent-wash": "oklch(0.50 0.115 159 / 0.14)",
+      "critical-wash": "oklch(0.44 0.178 25 / 0.12)"
+    }
+  },
+  "pairs": [
+    {
+      "fg": "ink",
+      "bg": [
+        "ground",
+        "surface",
+        "raised",
+        "overlay",
+        "inset"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "ink-2",
+      "bg": [
+        "ground",
+        "surface",
+        "raised",
+        "inset"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "ink-muted",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "ink-faint",
+      "bg": [
+        "ground",
+        "surface"
+      ],
+      "role": "non-text",
+      "note": "placeholder / disabled hint"
+    },
+    {
+      "fg": "accent",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "accent",
+      "bg": "accent-wash",
+      "under": "surface",
+      "role": "text",
+      "note": "active nav item"
+    },
+    {
+      "fg": "accent-hover",
+      "bg": [
+        "ground",
+        "surface"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "on-accent",
+      "bg": "accent",
+      "role": "text"
+    },
+    {
+      "fg": "on-accent",
+      "bg": "accent-hover",
+      "role": "text"
+    },
+    {
+      "fg": "critical",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "critical",
+      "bg": "critical-wash",
+      "under": "surface",
+      "role": "text"
+    },
+    {
+      "fg": "high",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "medium",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "low",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "plan",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "text"
+    },
+    {
+      "fg": "border-strong",
+      "bg": [
+        "ground",
+        "surface",
+        "raised"
+      ],
+      "role": "non-text",
+      "note": "input borders"
+    },
+    {
+      "fg": "border",
+      "bg": [
+        "ground",
+        "surface"
+      ],
+      "role": "decorative"
+    },
+    {
+      "fg": "accent",
+      "bg": [
+        "ground",
+        "surface",
+        "raised",
+        "inset"
+      ],
+      "role": "non-text",
+      "note": "focus ring"
+    }
+  ],
+  "distinct": [
+    [
+      "accent",
+      "critical"
+    ],
+    [
+      "critical",
+      "high"
+    ]
+  ],
+  "knownConfusable": {
+    "$comment": "Pairs cvd.mjs flags as confusable under some colour-vision deficiency. Each has a non-colour cue in the UI, so they are not in `distinct`.",
+    "pairs": [
+      {
+        "tokens": [
+          "accent",
+          "high"
+        ],
+        "cue": "StatusDot: healthy is a filled circle, degraded a triangle"
+      },
+      {
+        "tokens": [
+          "accent",
+          "low"
+        ],
+        "cue": "OPAR phases are printed as words (REFLECT / OBSERVE)"
+      },
+      {
+        "tokens": [
+          "low",
+          "plan"
+        ],
+        "cue": "OPAR phases are printed as words (OBSERVE / PLAN); light theme only"
+      },
+      {
+        "tokens": [
+          "high",
+          "medium"
+        ],
+        "cue": "Severity is always printed as a word beside the colour"
+      }
+    ]
+  }
+}

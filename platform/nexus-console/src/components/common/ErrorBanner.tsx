@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import styles from './ErrorBanner.module.css';
 
 interface ErrorBannerProps {
   message: string;
@@ -13,14 +12,25 @@ export function ErrorBanner({ message, onRetry, dismissable = true }: ErrorBanne
   if (dismissed) return null;
 
   return (
-    <div className={styles.banner} role="alert">
-      <span className={styles.message}>{message}</span>
-      <div className={styles.actions}>
+    <div className="ds-banner" data-tone="critical" role="alert">
+      <span className="ds-banner-body">{message}</span>
+      <div className="ds-cluster" style={{ '--gap': 'var(--space-2)' } as React.CSSProperties}>
         {onRetry && (
-          <button className={styles.retryBtn} onClick={onRetry}>Retry</button>
+          <button type="button" className="ds-btn" data-tone="danger" data-size="sm" onClick={onRetry}>
+            Retry
+          </button>
         )}
         {dismissable && (
-          <button className={styles.dismissBtn} onClick={() => setDismissed(true)} aria-label="Dismiss">×</button>
+          <button
+            type="button"
+            className="ds-btn"
+            data-tone="ghost"
+            data-size="sm"
+            onClick={() => setDismissed(true)}
+            aria-label="Dismiss"
+          >
+            ×
+          </button>
         )}
       </div>
     </div>

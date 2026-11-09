@@ -1,28 +1,14 @@
 .layout {
-  display: flex;
-  min-height: 100vh;
+  /* Shell grid comes from .ds-shell; this module only tunes the main area. */
 }
 
 .main {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  padding: var(--space-6);
   overflow-y: auto;
-  transition: margin-left var(--transition-normal);
+  transition: padding var(--motion-base) var(--ease-out);
 }
 
-@media (max-width: 768px) {
-  .main {
-    margin-left: var(--sidebar-collapsed-width);
-    padding: var(--space-4);
-  }
+.content {
+  --gap: var(--space-6);
 }
 
-@media (min-width: 1200px) {
-  .main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-6);
-    align-content: start;
-  }
-}
+/* Panels that opt out of the two-column area keep their own `grid-column`. */

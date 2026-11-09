@@ -15,8 +15,9 @@ export function SidebarNavItem({ item }: NavItemProps) {
         `${styles.navItem} ${isActive ? styles.active : ''}`
       }
       aria-label={item.label}
+      title={item.label}
     >
-      <span className={styles.icon}>{item.icon}</span>
+      <span className={styles.icon} aria-hidden="true">{item.icon}</span>
       <span className={styles.label}>{item.label}</span>
       {item.badge !== undefined && item.badge > 0 && (
         <Badge

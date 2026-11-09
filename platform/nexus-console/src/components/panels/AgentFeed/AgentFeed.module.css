@@ -18,8 +18,8 @@
 .disconnected { color: var(--color-offline); }
 
 .transport {
-  margin-left: var(--space-2);
-  font-family: var(--font-family-mono, monospace);
+  margin-inline-start: var(--space-2);
+  font-family: var(--font-mono);
   font-size: var(--font-size-xs, 0.75rem);
   color: var(--color-text-secondary, var(--color-text-muted));
 }
@@ -42,7 +42,7 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  max-height: 60vh;
+  max-block-size: 60dvh;
   overflow-y: auto;
 }
 
@@ -73,10 +73,10 @@
   text-transform: uppercase;
 }
 
-.observe { color: #3b82f6; }
-.plan { color: #a855f7; }
-.act { color: #f97316; }
-.reflect { color: #04b575; }
+.observe { color: var(--phase-observe); }
+.plan { color: var(--phase-plan); }
+.act { color: var(--phase-act); }
+.reflect { color: var(--phase-reflect); }
 
 .target {
   color: var(--color-text-primary);
@@ -100,8 +100,8 @@
 .detail {
   padding: var(--space-3) var(--space-4);
   background: var(--color-bg-primary);
-  border-left: 2px solid var(--color-accent);
-  margin-left: var(--space-6);
+  border-inline-start: 2px solid var(--color-accent);
+  margin-inline-start: var(--space-6);
 }
 
 .payload {
@@ -118,5 +118,5 @@
 
 .emptyHint {
   font-size: var(--font-size-sm);
-  margin-top: var(--space-2);
+  margin-block-start: var(--space-2);
 }

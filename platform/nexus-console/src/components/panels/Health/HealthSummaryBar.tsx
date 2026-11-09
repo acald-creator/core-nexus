@@ -1,4 +1,5 @@
 import type { HealthSummary } from '../../../api/types/health';
+import { StatusDot } from '../../common/StatusDot';
 import styles from './Health.module.css';
 
 interface HealthSummaryBarProps {
@@ -9,16 +10,16 @@ export function HealthSummaryBar({ summary }: HealthSummaryBarProps) {
   return (
     <div className={styles.summaryBar}>
       <span className={styles.summaryItem}>
-        <span className={styles.dotHealthy} /> {summary.healthy} healthy
+        <StatusDot status="healthy" /> {summary.healthy} healthy
       </span>
       <span className={styles.summaryItem}>
-        <span className={styles.dotDegraded} /> {summary.degraded} degraded
+        <StatusDot status="degraded" /> {summary.degraded} degraded
       </span>
       <span className={styles.summaryItem}>
-        <span className={styles.dotOffline} /> {summary.offline} offline
+        <StatusDot status="offline" /> {summary.offline} offline
       </span>
       <span className={styles.summaryItem}>
-        <span className={styles.dotUnknown} /> {summary.unknown} unknown
+        <StatusDot status="unknown" /> {summary.unknown} unknown
       </span>
     </div>
   );

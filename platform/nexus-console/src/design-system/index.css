@@ -1,0 +1,20 @@
+/*
+ * Nexus Console design system — entry point.
+ *
+ * Cascade order is fixed here. Later layers win; a CSS module's unlayered
+ * rules win over all of them, so component modules can always override.
+ *
+ *   ds.tokens      custom properties only (primitives → roles → scale)
+ *   ds.base        reset + element defaults
+ *   ds.layout      .ds-stack, .ds-grid, .ds-shell …
+ *   ds.components  .ds-card, .ds-btn, .ds-dot …
+ *   ds.utilities   single-purpose helpers
+ */
+@layer ds.tokens, ds.base, ds.layout, ds.components, ds.utilities;
+
+@import './tokens/primitives.css';
+@import './tokens/semantic.css';
+@import './tokens/scale.css';
+@import './base.css';
+@import './layout.css';
+@import './components.css';

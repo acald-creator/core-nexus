@@ -1,0 +1,63 @@
+/* Styles for the style-guide page only. Not part of the system. */
+.sg-nav {
+  position: sticky;
+  inset-block-start: 0;
+  block-size: 100dvh;
+  inline-size: var(--nav-current);
+  overflow: hidden;
+  background: var(--bg-surface);
+  border-inline-end: 1px solid var(--edge);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.sg-nav a {
+  display: block;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+.sg-nav a:hover { background: var(--bg-raised); color: var(--ink); text-decoration: none; }
+.sg-nav-head { display: flex; align-items: center; gap: var(--space-2); padding-inline: var(--space-2); min-block-size: var(--control-h); }
+.sg-brand { font-weight: var(--weight-bold); color: var(--accent); white-space: nowrap; }
+:root[data-layout="rail"] .sg-nav :is(nav, .ds-tag) { display: none; }
+:root[data-layout="rail"] .sg-nav-head { justify-content: center; padding-inline: 0; }
+:root[data-layout="topbar"] .sg-nav {
+  block-size: auto; inline-size: 100%; flex-direction: row; align-items: center;
+  border-inline-end: 0; border-block-end: 1px solid var(--edge);
+}
+:root[data-layout="topbar"] .sg-nav nav { flex-direction: row; }
+@media (width < 48rem) {
+  :root:not([data-layout="topbar"]) .sg-nav :is(nav, .ds-tag) { display: none; }
+}
+
+.sg-swatch { display: grid; gap: var(--space-1); font-size: var(--text-xs); }
+.sg-chip {
+  block-size: 3rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--edge);
+}
+.sg-swatch-name { color: var(--ink); font-family: var(--font-mono); }
+.sg-swatch-value { color: var(--ink-muted); }
+
+.sg-scale { display: grid; grid-template-columns: 5rem repeat(11, 1fr); gap: 2px; align-items: center; }
+.sg-scale-name { color: var(--ink-muted); }
+.sg-scale i { display: block; block-size: 1.5rem; border-radius: var(--radius-xs); }
+
+.sg-space { display: grid; grid-template-columns: 6rem 1fr; align-items: center; gap: var(--space-3); font-size: var(--text-xs); color: var(--ink-muted); }
+.sg-space i { display: block; block-size: 0.75rem; background: var(--accent); border-radius: var(--radius-xs); }
+
+.sg-demo i {
+  display: block;
+  min-block-size: 1.5rem;
+  background: var(--accent-wash);
+  border: 1px dashed var(--accent-edge);
+  border-radius: var(--radius-sm);
+}
+
+.sg-shell { inline-size: 100%; block-size: auto; }
+.sg-shell .nav { fill: var(--accent-wash); stroke: var(--accent-edge); }
+.sg-shell .pane { fill: var(--bg-raised); stroke: var(--edge); }

@@ -1,0 +1,116 @@
+/*
+ * Primitive colour scales — the raw material. Components never read these
+ * directly; they read the role tokens in semantic.css. Charts and one-off
+ * tints may reach for a step here.
+ *
+ * Every scale sits on the same lightness ladder (0.975 … 0.21), so step N of
+ * one hue has the same contrast behaviour as step N of any other. Chroma is a
+ * bell: highest in the mid-tones, tapering toward both ends where the sRGB
+ * gamut closes. All values are inside sRGB.
+ *
+ * Generated with color-theory/scripts/scale.mjs and hand-checked.
+ */
+@layer ds.tokens {
+  :root {
+    /* Hue anchors (OKLCH degrees). Neutrals are tinted toward the cool slate of
+       the brand's dark ground; the accent is the existing Nexus green. */
+    --hue-neutral: 250;
+    --hue-brand: 159;
+    --hue-red: 25;
+    --hue-orange: 48;
+    --hue-amber: 86;
+    --hue-blue: 260;
+    --hue-violet: 309;
+
+    /* neutral · flat chroma 0.018 */
+    --neutral-50:  oklch(0.975 0.012 var(--hue-neutral));
+    --neutral-100: oklch(0.94  0.018 var(--hue-neutral));
+    --neutral-200: oklch(0.885 0.018 var(--hue-neutral));
+    --neutral-300: oklch(0.815 0.018 var(--hue-neutral));
+    --neutral-400: oklch(0.72  0.018 var(--hue-neutral));
+    --neutral-500: oklch(0.625 0.018 var(--hue-neutral));
+    --neutral-600: oklch(0.535 0.018 var(--hue-neutral));
+    --neutral-700: oklch(0.45  0.018 var(--hue-neutral));
+    --neutral-800: oklch(0.37  0.018 var(--hue-neutral));
+    --neutral-900: oklch(0.29  0.018 var(--hue-neutral));
+    --neutral-950: oklch(0.21  0.018 var(--hue-neutral));
+
+    /* green (brand) · peak chroma 0.16 */
+    --green-50:  oklch(0.975 0.024 var(--hue-brand));
+    --green-100: oklch(0.94  0.046 var(--hue-brand));
+    --green-200: oklch(0.885 0.073 var(--hue-brand));
+    --green-300: oklch(0.815 0.102 var(--hue-brand));
+    --green-400: oklch(0.72  0.132 var(--hue-brand));
+    --green-500: oklch(0.625 0.144 var(--hue-brand));
+    --green-600: oklch(0.535 0.123 var(--hue-brand));
+    --green-700: oklch(0.45  0.104 var(--hue-brand));
+    --green-800: oklch(0.37  0.085 var(--hue-brand));
+    --green-900: oklch(0.29  0.067 var(--hue-brand));
+    --green-950: oklch(0.21  0.049 var(--hue-brand));
+
+    /* red · peak chroma 0.20 */
+    --red-50:  oklch(0.975 0.012 var(--hue-red));
+    --red-100: oklch(0.94  0.03  var(--hue-red));
+    --red-200: oklch(0.885 0.061 var(--hue-red));
+    --red-300: oklch(0.815 0.104 var(--hue-red));
+    --red-400: oklch(0.72  0.164 var(--hue-red));
+    --red-500: oklch(0.625 0.188 var(--hue-red));
+    --red-600: oklch(0.535 0.199 var(--hue-red));
+    --red-700: oklch(0.45  0.183 var(--hue-red));
+    --red-800: oklch(0.37  0.15  var(--hue-red));
+    --red-900: oklch(0.29  0.118 var(--hue-red));
+    --red-950: oklch(0.21  0.086 var(--hue-red));
+
+    /* orange · peak chroma 0.18 */
+    --orange-50:  oklch(0.975 0.013 var(--hue-orange));
+    --orange-100: oklch(0.94  0.033 var(--hue-orange));
+    --orange-200: oklch(0.885 0.067 var(--hue-orange));
+    --orange-300: oklch(0.815 0.114 var(--hue-orange));
+    --orange-400: oklch(0.72  0.148 var(--hue-orange));
+    --orange-500: oklch(0.625 0.17  var(--hue-orange));
+    --orange-600: oklch(0.535 0.146 var(--hue-orange));
+    --orange-700: oklch(0.45  0.123 var(--hue-orange));
+    --orange-800: oklch(0.37  0.101 var(--hue-orange));
+    --orange-900: oklch(0.29  0.079 var(--hue-orange));
+    --orange-950: oklch(0.21  0.058 var(--hue-orange));
+
+    /* amber · peak chroma 0.16 */
+    --amber-50:  oklch(0.975 0.024 var(--hue-amber));
+    --amber-100: oklch(0.94  0.046 var(--hue-amber));
+    --amber-200: oklch(0.885 0.073 var(--hue-amber));
+    --amber-300: oklch(0.815 0.102 var(--hue-amber));
+    --amber-400: oklch(0.72  0.132 var(--hue-amber));
+    --amber-500: oklch(0.625 0.128 var(--hue-amber));
+    --amber-600: oklch(0.535 0.11  var(--hue-amber));
+    --amber-700: oklch(0.45  0.092 var(--hue-amber));
+    --amber-800: oklch(0.37  0.076 var(--hue-amber));
+    --amber-900: oklch(0.29  0.06  var(--hue-amber));
+    --amber-950: oklch(0.21  0.044 var(--hue-amber));
+
+    /* blue · peak chroma 0.18 */
+    --blue-50:  oklch(0.975 0.012 var(--hue-blue));
+    --blue-100: oklch(0.94  0.029 var(--hue-blue));
+    --blue-200: oklch(0.885 0.056 var(--hue-blue));
+    --blue-300: oklch(0.815 0.093 var(--hue-blue));
+    --blue-400: oklch(0.72  0.146 var(--hue-blue));
+    --blue-500: oklch(0.625 0.17  var(--hue-blue));
+    --blue-600: oklch(0.535 0.179 var(--hue-blue));
+    --blue-700: oklch(0.45  0.178 var(--hue-blue));
+    --blue-800: oklch(0.37  0.151 var(--hue-blue));
+    --blue-900: oklch(0.29  0.119 var(--hue-blue));
+    --blue-950: oklch(0.21  0.087 var(--hue-blue));
+
+    /* violet · split-complement of the brand green (159 + 150) · peak 0.16 */
+    --violet-50:  oklch(0.975 0.012 var(--hue-violet));
+    --violet-100: oklch(0.94  0.03  var(--hue-violet));
+    --violet-200: oklch(0.885 0.06  var(--hue-violet));
+    --violet-300: oklch(0.815 0.1   var(--hue-violet));
+    --violet-400: oklch(0.72  0.14  var(--hue-violet));
+    --violet-500: oklch(0.625 0.16  var(--hue-violet));
+    --violet-600: oklch(0.535 0.17  var(--hue-violet));
+    --violet-700: oklch(0.45  0.16  var(--hue-violet));
+    --violet-800: oklch(0.37  0.135 var(--hue-violet));
+    --violet-900: oklch(0.29  0.105 var(--hue-violet));
+    --violet-950: oklch(0.21  0.077 var(--hue-violet));
+  }
+}

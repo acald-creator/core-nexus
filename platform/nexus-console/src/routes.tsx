@@ -14,7 +14,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 function PageLoader() {
   return (
-    <div style={{ display: 'flex', justifyContent: 'center', padding: '4rem' }}>
+    <div className="ds-cover ds-span" style={{ '--min-h': '40dvh' } as React.CSSProperties}>
       <Spinner size="lg" />
     </div>
   );
