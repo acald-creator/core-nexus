@@ -3,11 +3,20 @@
 }
 
 .main {
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
   transition: padding var(--motion-base) var(--ease-out);
 }
 
 .content {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--gutter);
   --gap: var(--space-6);
 }
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { ApprovalDock } from './ApprovalDock';
 import styles from './DashboardLayout.module.css';
 
 interface DashboardLayoutProps {
@@ -17,6 +18,7 @@ export function DashboardLayout({ sidebar, children }: DashboardLayoutProps) {
       {sidebar}
       <main className={`ds-main ${styles.main}`}>
         <div className={`ds-panels ${styles.content}`}>{children}</div>
+        <ApprovalDock />
       </main>
     </div>
   );
