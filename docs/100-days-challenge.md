@@ -85,7 +85,7 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 33** (B) — Add alert acknowledgment endpoint to Gateway
 - [ ] **Day 34** (B) — Wire Console alerts badge to live unacknowledged count — *partial via Day 6; needs Day 33 ack API to be meaningful*
 - [ ] **Day 35** (U) — Run a full session: agent generates traffic → alerts appear in Console  
-  - 🔎 [#15](https://github.com/acald-creator/core-nexus/issues/15) [#17](https://github.com/acald-creator/core-nexus/issues/17) emit traffic WITHOUT the X-Athena header into the detection path — fixes the circular metric and the triage header-trust bug
+  - 🔎 [#15](https://github.com/acald-creator/core-nexus/issues/15) [#17](https://github.com/acald-creator/core-nexus/issues/17) emit traffic without the X-Athena header **and** without the self-identifying `athena-agents/` User-Agent (still matched by Suricata SID 20261602), and measure against a label-blind, ungated ruleset — this is what fixes the circular metric. It does **not** fix triage header-trust: triage trusts an unauthenticated Athena label from *any* request, so dropping the agent's own header can't close it — triage must authenticate or ignore untrusted labels ([#18](https://github.com/acald-creator/core-nexus/issues/18))
 - [ ] **Day 36** (U) — Correlate agent ground-truth with Wazuh alerts (true positive rate)  
   - 🔎 [#16](https://github.com/acald-creator/core-nexus/issues/16) detection must be blind to the label or the true-positive rate is circular
 - [ ] **Day 37** (D) — Calculate detection coverage metric, add to tracking table  
@@ -139,7 +139,7 @@ Skills generated: X | Agent sessions: Y
 - [ ] **Day 67** (B) — Add cosign signing to local build workflow  
   - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20)
 - [ ] **Day 68** (B) — Add image verification step to run-athena-profile.sh  
-  - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20) also add .spec.verify to Flux ImageRepositories + kyverno to the r2/gitops-range overlays, not just test
+  - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20) also add the Kyverno image-verification policy to the r2/gitops-range overlays, not just test — note Flux `ImageRepository` has no `.spec.verify` (that field is on `OCIRepository` for OCI artifacts), so Kyverno (sigstore) is the enforcement point for running-image signatures
 - [ ] **Day 69** (U) — Build, sign, verify, run — full supply chain loop locally
 - [ ] **Day 70** (U) — Attempt to run an unsigned/tampered image — verify rejection  
   - 🔎 [#20](https://github.com/acald-creator/core-nexus/issues/20)
