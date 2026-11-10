@@ -27,7 +27,7 @@
 
 .simulatedTag {
   display: inline-block;
-  margin-left: var(--space-2);
+  margin-inline-start: var(--space-2);
   padding: 1px 6px;
   background: var(--color-accent-muted);
   color: var(--color-accent);
@@ -41,7 +41,7 @@
 .detail {
   padding: var(--space-4);
   background: var(--color-bg-primary);
-  border-left: 3px solid var(--color-accent);
+  border-inline-start: 3px solid var(--color-accent);
   margin: 0 var(--space-4);
 }
 

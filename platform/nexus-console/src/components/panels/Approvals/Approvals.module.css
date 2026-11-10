@@ -53,7 +53,7 @@
   font-weight: 600;
   transition: background var(--transition-fast);
 }
-.rejectBtn:hover { background: rgba(239, 68, 68, 0.1); }
+.rejectBtn:hover { background: var(--status-critical-wash); }
 .rejectBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 .empty { text-align: center; padding: var(--space-8); color: var(--color-text-muted); }

@@ -25,6 +25,14 @@ npm run dev   # Vite :5173 — set VITE_API_GATEWAY_URL if gateway is not :3100
 # Optional: VITE_AGENT_FEED_TRANSPORT=websocket (default sse)
 ```
 
+## Design system
+
+Tokens (OKLCH, `light-dark()` themes), layout primitives and component classes
+live in `src/design-system/`; see its [README](src/design-system/README.md).
+Theme, navigation layout (sidebar / rail / top bar), density and content width
+are chosen in **Settings → Appearance**. A live style guide builds alongside
+the app at `/design-system.html`.
+
 ## Build & Deploy
 
 ```bash

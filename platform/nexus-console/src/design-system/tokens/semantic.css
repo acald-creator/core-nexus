@@ -1,0 +1,126 @@
+/*
+ * Role tokens — what components read. Each role has one light and one dark
+ * value, resolved by light-dark() from the element's color-scheme.
+ *
+ * Themes: the console defaults to dark (the SOC default). <html data-theme>
+ * switches it: "light", "dark", or "system" (follows prefers-color-scheme).
+ *
+ * Every text/ground pair here is checked against WCAG 2.2 AA by
+ * design-system/pairs.json (color-accessibility/scripts/audit-pairs.mjs).
+ * Change a value, re-run the audit.
+ */
+@layer ds.tokens {
+  :root {
+    color-scheme: dark;
+  }
+  :root[data-theme="light"]  { color-scheme: light; }
+  :root[data-theme="system"] { color-scheme: light dark; }
+
+  :root {
+    /* ---- Grounds: the lightness ladder. Dark: 0.14 → 0.30. Light: 0.935 → 0.995. ---- */
+    --bg-inset:   light-dark(oklch(0.935 0.01  var(--hue-neutral)), oklch(0.14 0.014 var(--hue-neutral)));
+    --bg-ground:  light-dark(oklch(0.965 0.008 var(--hue-neutral)), oklch(0.17 0.016 var(--hue-neutral)));
+    --bg-surface: light-dark(oklch(0.99  0.004 var(--hue-neutral)), oklch(0.21 0.018 var(--hue-neutral)));
+    --bg-raised:  light-dark(oklch(0.995 0.002 var(--hue-neutral)), oklch(0.26 0.02  var(--hue-neutral)));
+    --bg-overlay: light-dark(oklch(0.995 0.002 var(--hue-neutral)), oklch(0.30 0.02  var(--hue-neutral)));
+    --bg-scrim:   light-dark(oklch(0.21 0.02 var(--hue-neutral) / 0.4), oklch(0.08 0.01 var(--hue-neutral) / 0.6));
+
+    /* ---- Inks ---- */
+    --ink:        light-dark(oklch(0.21 0.02  var(--hue-neutral)), oklch(0.95 0.01  var(--hue-neutral)));
+    --ink-2:      light-dark(oklch(0.40 0.02  var(--hue-neutral)), oklch(0.78 0.014 var(--hue-neutral)));
+    --ink-muted:  light-dark(oklch(0.52 0.02  var(--hue-neutral)), oklch(0.68 0.016 var(--hue-neutral)));
+    --ink-faint:  light-dark(oklch(0.64 0.018 var(--hue-neutral)), oklch(0.54 0.016 var(--hue-neutral)));
+    --ink-on-accent: light-dark(oklch(0.99 0.004 var(--hue-neutral)), oklch(0.14 0.014 var(--hue-neutral)));
+
+    /* ---- Edges ---- */
+    --edge:        light-dark(oklch(0.87 0.012 var(--hue-neutral)), oklch(0.34  0.02  var(--hue-neutral)));
+    --edge-strong: light-dark(oklch(0.64 0.016 var(--hue-neutral)), oklch(0.535 0.022 var(--hue-neutral)));
+    --edge-focus:  var(--accent);
+
+    /* ---- Accent (brand violet). Light accents carry dark text; dark theme accent is L 0.78.
+       Chromas are clamped to sRGB at hue 312 — violet gets gamut-tight when light. ---- */
+    --accent:       light-dark(oklch(0.50 0.115 var(--hue-brand)), oklch(0.78 0.15  var(--hue-brand)));
+    --accent-hover: light-dark(oklch(0.44 0.10  var(--hue-brand)), oklch(0.84 0.10  var(--hue-brand)));
+    --accent-wash:  color-mix(in oklch, var(--accent) 14%, transparent);
+    --accent-edge:  color-mix(in oklch, var(--accent) 45%, transparent);
+
+    /* ---- Severity. Dark: staggered L (0.68 / 0.78 / 0.88 / 0.66). Light: all ≤ 0.555 so
+       they pass as text, which compresses the ladder — severity is therefore ALWAYS
+       also printed as a word; colour is the third cue, never the only one. ---- */
+    --status-critical: light-dark(oklch(0.44  0.178 var(--hue-red)),    oklch(0.68 0.19 var(--hue-red)));
+    --status-high:     light-dark(oklch(0.555 0.152 var(--hue-orange)), oklch(0.78 0.14 var(--hue-orange)));
+    --status-medium:   light-dark(oklch(0.54  0.112 var(--hue-amber)),  oklch(0.88 0.135 var(--hue-amber)));
+    --status-low:      light-dark(oklch(0.47  0.17  var(--hue-blue)),   oklch(0.66 0.16 var(--hue-blue)));
+    --status-info:     var(--ink-muted);
+
+    --status-critical-wash: color-mix(in oklch, var(--status-critical) 13%, transparent);
+    --status-high-wash:     color-mix(in oklch, var(--status-high) 13%, transparent);
+    --status-medium-wash:   color-mix(in oklch, var(--status-medium) 13%, transparent);
+    --status-low-wash:      color-mix(in oklch, var(--status-low) 13%, transparent);
+
+    /* ---- Service health. Shapes differ too (see .ds-dot), since green/orange
+       are confusable under deutan/protan vision. ---- */
+    --health-ok:       var(--accent);
+    --health-degraded: var(--status-high);
+    --health-offline:  var(--status-critical);
+    --health-unknown:  var(--ink-muted);
+
+    /* ---- OPAR phases (observe → plan → act → reflect). Four distinct hues:
+       observe = blue, plan = green, act = orange, reflect = the violet accent. ---- */
+    --phase-observe: var(--status-low);
+    --phase-plan:    light-dark(oklch(0.52 0.17 var(--hue-green)), oklch(0.82 0.11 var(--hue-green)));
+    --phase-act:     var(--status-high);
+    --phase-reflect: var(--accent);
+
+    /* ---- Elevation. Dark themes elevate by lightness (the ladder above);
+       shadows mostly matter in light. ---- */
+    --shadow-color: light-dark(oklch(0.3 0.02 var(--hue-neutral)), oklch(0 0 0));
+    --shadow-1: 0 1px 2px color-mix(in oklch, var(--shadow-color) 12%, transparent);
+    --shadow-2: 0 2px 6px color-mix(in oklch, var(--shadow-color) 14%, transparent),
+                0 1px 2px color-mix(in oklch, var(--shadow-color) 10%, transparent);
+    --shadow-3: 0 10px 28px color-mix(in oklch, var(--shadow-color) 22%, transparent),
+                0 2px 6px color-mix(in oklch, var(--shadow-color) 12%, transparent);
+    --ring: 0 0 0 2px var(--bg-ground), 0 0 0 4px var(--edge-focus);
+
+    /* ---- Wide gamut: a touch more chroma on the accent where the screen allows. ---- */
+    @media (color-gamut: p3) {
+      --accent: light-dark(oklch(0.50 0.14 var(--hue-brand)), oklch(0.78 0.17 var(--hue-brand)));
+    }
+
+    /* ================================================================
+       Legacy aliases. The pre-system names used by existing CSS modules.
+       Keep until every module reads the role tokens above, then delete.
+       ================================================================ */
+    --color-bg-primary:    var(--bg-ground);
+    --color-bg-secondary:  var(--bg-surface);
+    --color-bg-tertiary:   var(--bg-raised);
+    --color-bg-elevated:   var(--bg-overlay);
+    --color-text-primary:  var(--ink);
+    --color-text-secondary: var(--ink-2);
+    --color-text-muted:    var(--ink-muted);
+    --color-text-inverse:  var(--ink-on-accent);
+    --color-accent:        var(--accent);
+    --color-accent-hover:  var(--accent-hover);
+    --color-accent-muted:  var(--accent-wash);
+    --color-critical:      var(--status-critical);
+    --color-high:          var(--status-high);
+    --color-medium:        var(--status-medium);
+    --color-low:           var(--status-low);
+    --color-info:          var(--status-info);
+    --color-healthy:       var(--health-ok);
+    --color-degraded:      var(--health-degraded);
+    --color-offline:       var(--health-offline);
+    --color-unknown:       var(--health-unknown);
+    --color-border:        var(--edge);
+    --color-border-active: var(--accent);
+  }
+
+  /* Forced colours: let the OS palette win; keep meaning-bearing borders. */
+  @media (forced-colors: active) {
+    :root {
+      --edge: CanvasText;
+      --edge-strong: CanvasText;
+      --edge-focus: Highlight;
+    }
+  }
+}

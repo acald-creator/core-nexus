@@ -1,0 +1,9 @@
+.card {
+  inline-size: min(100%, 22.5rem);
+  --gap: var(--space-4);
+}
+
+.title {
+  color: var(--accent);
+  margin-block-end: var(--space-2);
+}

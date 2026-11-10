@@ -1,28 +1,26 @@
 .layout {
-  display: flex;
-  min-height: 100vh;
+  /* Pin the shell to the viewport so its grid rows (incl. the top bar) split
+     100dvh and .main fills its row — otherwise a 100dvh .main would overflow
+     the topbar layout and push the approval dock below the fold. */
+  block-size: 100dvh;
+  min-block-size: 0;
 }
 
 .main {
-  flex: 1;
-  margin-left: var(--sidebar-width);
-  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  min-block-size: 0;
+  overflow: hidden;
+  padding: 0;
+  transition: padding var(--motion-base) var(--ease-out);
+}
+
+.content {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
-  transition: margin-left var(--transition-normal);
+  padding: var(--gutter);
+  --gap: var(--space-6);
 }
 
-@media (max-width: 768px) {
-  .main {
-    margin-left: var(--sidebar-collapsed-width);
-    padding: var(--space-4);
-  }
-}
-
-@media (min-width: 1200px) {
-  .main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-6);
-    align-content: start;
-  }
-}
+/* Panels that opt out of the two-column area keep their own `grid-column`. */

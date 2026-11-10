@@ -1,11 +1,14 @@
+import type { KeyboardEvent } from 'react';
 import type { OPAREvent } from '../../../api/types/opar-events';
 import { formatTimestamp } from '../../../utils/formatters';
 import styles from './AgentFeed.module.css';
 
 interface EventRowProps {
   event: OPAREvent;
-  selected: boolean;
-  onSelect: () => void;
+  selected?: boolean;
+  onSelect?: () => void;
+  /** Interactive (focusable, selectable) row. Off for read-only lists. */
+  interactive?: boolean;
 }
 
 const PHASE_LABELS: Record<string, string> = {
@@ -15,14 +18,21 @@ const PHASE_LABELS: Record<string, string> = {
   reflect: 'REFLECT',
 };
 
-export function EventRow({ event, selected, onSelect }: EventRowProps) {
+export function EventRow({ event, selected = false, onSelect, interactive = true }: EventRowProps) {
+  const interactiveProps = interactive
+    ? {
+        onClick: onSelect,
+        role: 'button' as const,
+        tabIndex: 0,
+        onKeyDown: (e: KeyboardEvent) => {
+          if (e.key === 'Enter') onSelect?.();
+        },
+      }
+    : {};
   return (
     <div
       className={`${styles.row} ${selected ? styles.selected : ''}`}
-      onClick={onSelect}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => e.key === 'Enter' && onSelect()}
+      {...interactiveProps}
     >
       <span className={styles.timestamp}>{formatTimestamp(event.timestamp)}</span>
       <span className={`${styles.phase} ${styles[event.phase]}`}>

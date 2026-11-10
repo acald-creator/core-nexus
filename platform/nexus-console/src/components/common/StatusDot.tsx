@@ -1,16 +1,23 @@
-import styles from './StatusDot.module.css';
-
 type Status = 'healthy' | 'degraded' | 'offline' | 'unknown';
 
 interface StatusDotProps {
   status: Status;
   label?: string;
+  /** Pulse to show a live feed. Honours prefers-reduced-motion. */
+  live?: boolean;
 }
 
-export function StatusDot({ status, label }: StatusDotProps) {
+/**
+ * Health indicator. Each status has its own colour AND shape (● ▲ ◆ ◌) so the
+ * state survives red-green colour-vision deficiency; the label is the word.
+ */
+export function StatusDot({ status, label, live }: StatusDotProps) {
   return (
     <span
-      className={`${styles.dot} ${styles[status]}`}
+      className="ds-dot"
+      data-status={status}
+      data-live={live || undefined}
+      role="img"
       aria-label={label || status}
       title={label || status}
     />

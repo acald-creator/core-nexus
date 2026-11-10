@@ -3,6 +3,7 @@ import { useConfig } from '../config/ConfigContext';
 import { HealthSummaryBar } from '../components/panels/Health/HealthSummaryBar';
 import { StatusDot } from '../components/common/StatusDot';
 import { useHealthMonitor } from '../hooks/useHealthMonitor';
+import { AppearanceSettings } from '../components/settings/AppearanceSettings';
 import { formatUnixSeconds, summarizeToken } from '../utils/tokenInfo';
 import styles from './SettingsPage.module.css';
 
@@ -21,6 +22,16 @@ export default function SettingsPage() {
 
   return (
     <div className={styles.page}>
+      <section className={styles.section} aria-labelledby="settings-appearance">
+        <h2 id="settings-appearance" className={styles.heading}>Appearance</h2>
+        <p className={styles.lede}>
+          Saved in this browser only. Colours follow the design-system tokens
+          (<code className={styles.mono}>src/design-system</code>); see
+          <a href="/design-system.html" target="_blank" rel="noopener noreferrer"> the style guide</a>.
+        </p>
+        <AppearanceSettings />
+      </section>
+
       <section className={styles.section} aria-labelledby="settings-config">
         <h2 id="settings-config" className={styles.heading}>Configuration</h2>
         <p className={styles.lede}>

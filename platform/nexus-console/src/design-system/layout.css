@@ -1,0 +1,96 @@
+/*
+ * Layout primitives. Composable, content-agnostic, driven by custom properties.
+ * Each class takes its knobs as --vars so a module can tune without overriding.
+ *
+ *   .ds-stack     vertical rhythm             --gap
+ *   .ds-cluster   wrapping inline group       --gap, --justify, --align
+ *   .ds-grid      auto-fit card grid          --min (column min), --gap
+ *   .ds-split     two panes, collapses        --left (first pane), --gap, --at (collapse width)
+ *   .ds-center    centre a block              --max (measure)
+ *   .ds-cover     full-height vertical centre --min-h
+ *   .ds-panels    dashboard panel area; 1 col, 2 cols once its container is wide
+ *   .ds-region    sticky-header section
+ */
+@layer ds.layout {
+  .ds-stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap, var(--space-4));
+  }
+
+  .ds-cluster {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--gap, var(--space-3));
+    justify-content: var(--justify, flex-start);
+    align-items: var(--align, center);
+  }
+
+  .ds-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--min, 14rem), 100%), 1fr));
+    gap: var(--gap, var(--space-4));
+  }
+
+  .ds-split {
+    display: grid;
+    grid-template-columns: minmax(0, var(--left, 18rem)) minmax(0, 1fr);
+    gap: var(--gap, var(--space-4));
+    container-type: inline-size;
+  }
+  @container (inline-size < 44rem) {
+    .ds-split { grid-template-columns: minmax(0, 1fr); }
+  }
+
+  .ds-center {
+    box-sizing: content-box;
+    max-inline-size: var(--max, var(--measure));
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  .ds-cover {
+    min-block-size: var(--min-h, 100dvh);
+    display: grid;
+    place-items: center;
+    padding: var(--gutter);
+  }
+
+  .ds-panels {
+    container: panels / inline-size;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap, var(--space-6));
+    align-content: start;
+    inline-size: min(100%, var(--content-current));
+    margin-inline: auto;
+  }
+  @container panels (inline-size >= 64rem) {
+    .ds-panels { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  .ds-panels > .ds-span { grid-column: 1 / -1; }
+
+  .ds-region > .ds-region-head {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 1;
+    background: var(--bg-ground);
+    padding-block: var(--space-2);
+  }
+
+  /* ---- App shell. The grid changes with data-layout on <html>. ---- */
+  .ds-shell {
+    display: grid;
+    grid-template-columns: var(--nav-current) minmax(0, 1fr);
+    min-block-size: 100dvh;
+  }
+  :root[data-layout="topbar"] .ds-shell {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .ds-shell > .ds-main {
+    container: main / inline-size;
+    min-inline-size: 0;
+    padding: var(--gutter);
+  }
+}

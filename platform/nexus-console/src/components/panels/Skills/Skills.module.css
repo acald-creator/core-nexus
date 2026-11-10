@@ -22,12 +22,12 @@
 
 .splitView { display: grid; grid-template-columns: 300px 1fr; gap: var(--space-4); min-height: 400px; }
 
-@media (max-width: 900px) {
+@media (width < 56.25rem) {
   .splitView { grid-template-columns: 1fr; }
 }
 
-.listPane { overflow-y: auto; max-height: 60vh; }
-.previewPane { overflow-y: auto; max-height: 60vh; }
+.listPane { overflow-y: auto; max-block-size: 60dvh; }
+.previewPane { overflow-y: auto; max-block-size: 60dvh; }
 
 .list { display: flex; flex-direction: column; gap: 1px; }
 
@@ -38,7 +38,7 @@
   transition: background var(--transition-fast);
 }
 .listItem:hover { background: var(--color-bg-tertiary); }
-.listItemActive { background: var(--color-accent-muted); border-left: 3px solid var(--color-accent); }
+.listItemActive { background: var(--color-accent-muted); border-inline-start: 3px solid var(--color-accent); }
 
 .skillName { display: block; font-weight: 600; font-size: var(--font-size-sm); margin-bottom: 2px; }
 .skillDesc { display: block; font-size: var(--font-size-xs); color: var(--color-text-secondary); margin-bottom: var(--space-1); }
@@ -63,7 +63,7 @@
 }
 
 .preview h1, .preview h2, .preview h3 { margin-top: var(--space-4); margin-bottom: var(--space-2); }
-.preview ul, .preview ol { padding-left: var(--space-6); }
+.preview ul, .preview ol { padding-inline-start: var(--space-6); }
 .preview code { background: var(--color-bg-tertiary); padding: 1px 4px; border-radius: 3px; }
 
 .empty { padding: var(--space-6); text-align: center; color: var(--color-text-muted); }

@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexus design system</title>
+    <script type="module" src="/src/design-system/preview/preview.ts"></script>
+  </head>
+  <body>
+    <div class="ds-shell">
+      <aside class="sg-nav">
+        <div class="sg-nav-head"><span class="sg-brand">⚡ Nexus</span> <span class="ds-tag">design system</span></div>
+        <nav class="ds-stack" style="--gap: 2px" aria-label="Sections">
+          <a href="#colour">Colour</a>
+          <a href="#type">Type &amp; space</a>
+          <a href="#layout">Layout</a>
+          <a href="#components">Components</a>
+          <a href="#status">Status &amp; severity</a>
+        </nav>
+      </aside>
+
+      <main class="ds-main">
+        <div class="ds-panels" style="--gap: var(--space-10)">
+          <header class="ds-span ds-stack" style="--gap: var(--space-3)">
+            <h1 style="font-size: var(--text-2xl)">Design system</h1>
+            <p class="ds-secondary" style="max-inline-size: var(--measure)">
+              OKLCH tokens, one lightness ladder across themes, layout chosen by attributes on
+              <code>&lt;html&gt;</code>. Everything on this page is a live render of
+              <code>src/design-system/*.css</code>. Flip the controls to see the tokens respond.
+            </p>
+            <div class="ds-cluster" style="--gap: var(--space-4)" id="controls">
+              <fieldset class="ds-field" style="border:0"><legend class="ds-eyebrow">Theme</legend>
+                <div class="ds-segmented" data-pref="theme">
+                  <label><input type="radio" name="theme" value="dark">Dark</label>
+                  <label><input type="radio" name="theme" value="light">Light</label>
+                  <label><input type="radio" name="theme" value="system">System</label>
+                </div></fieldset>
+              <fieldset class="ds-field" style="border:0"><legend class="ds-eyebrow">Navigation</legend>
+                <div class="ds-segmented" data-pref="layout">
+                  <label><input type="radio" name="layout" value="sidebar">Sidebar</label>
+                  <label><input type="radio" name="layout" value="rail">Rail</label>
+                  <label><input type="radio" name="layout" value="topbar">Top bar</label>
+                </div></fieldset>
+              <fieldset class="ds-field" style="border:0"><legend class="ds-eyebrow">Density</legend>
+                <div class="ds-segmented" data-pref="density">
+                  <label><input type="radio" name="density" value="comfortable">Comfortable</label>
+                  <label><input type="radio" name="density" value="compact">Compact</label>
+                </div></fieldset>
+              <fieldset class="ds-field" style="border:0"><legend class="ds-eyebrow">Width</legend>
+                <div class="ds-segmented" data-pref="width">
+                  <label><input type="radio" name="width" value="fluid">Fluid</label>
+                  <label><input type="radio" name="width" value="contained">Contained</label>
+                </div></fieldset>
+            </div>
+          </header>
+
+          <!-- ============ Colour ============ -->
+          <section id="colour" class="ds-span ds-stack" style="--gap: var(--space-6)">
+            <h2>Colour</h2>
+            <p class="ds-secondary" style="max-inline-size: var(--measure)">
+              Roles, not hues. Grounds step up a lightness ladder (dark: 0.14 → 0.30; light: 0.935 → 0.995),
+              inks sit at the far end, and the accent is the Nexus violet at the lightness that carries text.
+              Every text/ground pair in <code>pairs.json</code> passes WCAG 2.2 AA in both themes.
+            </p>
+
+            <h3 class="ds-eyebrow">Grounds</h3>
+            <div class="ds-grid sg-swatches" style="--min: 9rem" data-swatches="bg-inset bg-ground bg-surface bg-raised bg-overlay"></div>
+
+            <h3 class="ds-eyebrow">Inks</h3>
+            <div class="ds-grid sg-swatches" style="--min: 9rem" data-swatches="ink ink-2 ink-muted ink-faint ink-on-accent"></div>
+
+            <h3 class="ds-eyebrow">Accent &amp; edges</h3>
+            <div class="ds-grid sg-swatches" style="--min: 9rem" data-swatches="accent accent-hover accent-wash edge edge-strong"></div>
+
+            <h3 class="ds-eyebrow">Severity · health · OPAR phase</h3>
+            <div class="ds-grid sg-swatches" style="--min: 9rem" data-swatches="status-critical status-high status-medium status-low status-info phase-observe phase-plan phase-act phase-reflect"></div>
+
+            <h3 class="ds-eyebrow">Primitive scales (chart and one-off use)</h3>
+            <div class="ds-stack" style="--gap: var(--space-2)" id="scales"></div>
+          </section>
+
+          <!-- ============ Type & space ============ -->
+          <section id="type" class="ds-span ds-stack" style="--gap: var(--space-6)">
+            <h2>Type &amp; space</h2>
+            <div class="ds-split" style="--left: 1fr">
+              <div class="ds-card ds-stack" style="--gap: var(--space-3)">
+                <p style="font-size: var(--text-2xl); line-height: var(--leading-tight); font-weight: var(--weight-semibold)">2xl · Page title</p>
+                <p style="font-size: var(--text-xl); line-height: var(--leading-tight); font-weight: var(--weight-semibold)">xl · Section heading</p>
+                <p style="font-size: var(--text-lg); font-weight: var(--weight-semibold)">lg · Panel heading</p>
+                <p style="font-size: var(--text-md)">md · Body copy. The quick brown fox jumps over the lazy dog.</p>
+                <p style="font-size: var(--text-sm)" class="ds-secondary">sm · Secondary text, table cells, labels.</p>
+                <p style="font-size: var(--text-xs)" class="ds-muted">xs · Timestamps, badges, hints.</p>
+                <p class="ds-mono">mono · 2026-11-08T14:03:22Z · 10.0.4.17 · 1,024 ms</p>
+              </div>
+              <div class="ds-card ds-stack" style="--gap: var(--space-2)" id="space-ramp"></div>
+            </div>
+          </section>
+
+          <!-- ============ Layout ============ -->
+          <section id="layout" class="ds-span ds-stack" style="--gap: var(--space-6)">
+            <h2>Layout primitives</h2>
+            <p class="ds-secondary" style="max-inline-size: var(--measure)">
+              Each primitive takes its knobs as custom properties on the element, so a module tunes without
+              overriding. <code>.ds-panels</code> and <code>.ds-split</code> use container queries, so they
+              respond to the space they are given, not the viewport.
+            </p>
+            <div class="ds-grid" style="--min: 20rem">
+              <figure class="ds-card ds-stack">
+                <figcaption class="ds-eyebrow">.ds-stack · --gap</figcaption>
+                <div class="ds-stack sg-demo" style="--gap: var(--space-2)"><i></i><i></i><i></i></div>
+              </figure>
+              <figure class="ds-card ds-stack">
+                <figcaption class="ds-eyebrow">.ds-cluster · wraps</figcaption>
+                <div class="ds-cluster sg-demo"><i style="inline-size:5rem"></i><i style="inline-size:3rem"></i><i style="inline-size:7rem"></i><i style="inline-size:4rem"></i><i style="inline-size:6rem"></i></div>
+              </figure>
+              <figure class="ds-card ds-stack">
+                <figcaption class="ds-eyebrow">.ds-grid · --min: 5rem</figcaption>
+                <div class="ds-grid sg-demo" style="--min: 5rem; --gap: var(--space-2)"><i></i><i></i><i></i><i></i><i></i></div>
+              </figure>
+              <figure class="ds-card ds-stack">
+                <figcaption class="ds-eyebrow">.ds-split · --left: 6rem · collapses under 44rem</figcaption>
+                <div class="ds-split sg-demo" style="--left: 6rem; --gap: var(--space-2)"><i style="block-size:4rem"></i><i style="block-size:4rem"></i></div>
+              </figure>
+            </div>
+
+            <h3 class="ds-eyebrow">Shell modes</h3>
+            <div class="ds-grid" style="--min: 14rem">
+              <figure class="ds-card ds-stack" style="--gap: var(--space-2)">
+                <svg viewBox="0 0 160 100" class="sg-shell"><rect x="0" y="0" width="40" height="100" class="nav"/><rect x="48" y="8" width="104" height="36" class="pane"/><rect x="48" y="52" width="48" height="40" class="pane"/><rect x="104" y="52" width="48" height="40" class="pane"/></svg>
+                <figcaption><strong>Sidebar</strong> <span class="ds-muted">· default, 15rem</span></figcaption>
+              </figure>
+              <figure class="ds-card ds-stack" style="--gap: var(--space-2)">
+                <svg viewBox="0 0 160 100" class="sg-shell"><rect x="0" y="0" width="14" height="100" class="nav"/><rect x="22" y="8" width="130" height="36" class="pane"/><rect x="22" y="52" width="61" height="40" class="pane"/><rect x="91" y="52" width="61" height="40" class="pane"/></svg>
+                <figcaption><strong>Rail</strong> <span class="ds-muted">· icons only, 3.5rem; automatic under 48rem</span></figcaption>
+              </figure>
+              <figure class="ds-card ds-stack" style="--gap: var(--space-2)">
+                <svg viewBox="0 0 160 100" class="sg-shell"><rect x="0" y="0" width="160" height="14" class="nav"/><rect x="8" y="22" width="144" height="30" class="pane"/><rect x="8" y="60" width="68" height="32" class="pane"/><rect x="84" y="60" width="68" height="32" class="pane"/></svg>
+                <figcaption><strong>Top bar</strong> <span class="ds-muted">· horizontal nav, full-width content</span></figcaption>
+              </figure>
+            </div>
+          </section>
+
+          <!-- ============ Components ============ -->
+          <section id="components" class="ds-span ds-stack" style="--gap: var(--space-6)">
+            <h2>Components</h2>
+            <div class="ds-grid" style="--min: 18rem">
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Buttons</h3>
+                <div class="ds-cluster">
+                  <button class="ds-btn" data-tone="primary">Approve</button>
+                  <button class="ds-btn">Secondary</button>
+                  <button class="ds-btn" data-tone="danger">Reject</button>
+                  <button class="ds-btn" data-tone="ghost">Ghost</button>
+                  <button class="ds-btn" data-size="sm">Small</button>
+                  <button class="ds-btn" data-size="icon" aria-label="Collapse">←</button>
+                  <button class="ds-btn" data-tone="primary" disabled>Disabled</button>
+                </div>
+              </div>
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Badges &amp; tags</h3>
+                <div class="ds-cluster">
+                  <span class="ds-badge">12</span>
+                  <span class="ds-badge" data-tone="critical">3</span>
+                  <span class="ds-badge" data-tone="warning">99+</span>
+                  <span class="ds-badge" data-tone="neutral">7</span>
+                  <span class="ds-tag">jwt</span>
+                  <span class="ds-tag" data-tone="accent">Athena · sqli-01</span>
+                </div>
+              </div>
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Field</h3>
+                <div class="ds-field"><label for="f1">Username</label><input id="f1" placeholder="analyst"></div>
+                <div class="ds-field"><label for="f2">Transport</label><select id="f2"><option>sse</option><option>websocket</option></select><span class="ds-hint">Set VITE_AGENT_FEED_TRANSPORT to change the default.</span></div>
+              </div>
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Banners</h3>
+                <div class="ds-banner" data-tone="critical"><span class="ds-banner-body">Gateway unreachable.</span><button class="ds-btn" data-tone="danger" data-size="sm">Retry</button></div>
+                <div class="ds-banner" data-tone="warning"><span class="ds-banner-body">2 services degraded.</span></div>
+                <div class="ds-banner" data-tone="info"><span class="ds-banner-body">Dev auth bypass is on.</span></div>
+                <div class="ds-banner" data-tone="success"><span class="ds-banner-body">Approval recorded.</span></div>
+              </div>
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Tabs &amp; segmented</h3>
+                <div class="ds-tabs" role="tablist"><button class="ds-tab" role="tab" aria-selected="true">Reports</button><button class="ds-tab" role="tab" aria-selected="false">Pcaps</button><button class="ds-tab" role="tab" aria-selected="false">Logs</button></div>
+                <div class="ds-segmented"><label><input type="radio" name="sg" checked>Hour</label><label><input type="radio" name="sg">Day</label><label><input type="radio" name="sg">Week</label></div>
+              </div>
+              <div class="ds-card ds-stack" data-interactive tabindex="0">
+                <h3 class="ds-eyebrow">Interactive card · hover me</h3>
+                <p class="ds-secondary" style="font-size: var(--text-sm)">Border takes the accent edge, surface rises one step, shadow deepens.</p>
+                <dl class="ds-kv"><dt>Target</dt><dd>10.0.4.17</dd><dt>Session</dt><dd class="ds-mono">3f9a1c0e-7b</dd></dl>
+              </div>
+            </div>
+
+            <div class="ds-card" style="padding: 0; overflow: hidden">
+              <table class="ds-table">
+                <thead><tr><th>Time</th><th>Severity</th><th>Source</th><th>Rule</th><th>Host</th></tr></thead>
+                <tbody>
+                  <tr><td class="ds-mono ds-muted">14:03:22</td><td><span class="ds-severity" data-level="critical">critical</span></td><td class="ds-secondary">suricata</td><td>ET WEB_SERVER SQLi in URI</td><td class="ds-mono">10.0.4.17</td></tr>
+                  <tr aria-selected="true"><td class="ds-mono ds-muted">14:02:51</td><td><span class="ds-severity" data-level="high">high</span></td><td class="ds-secondary">suricata</td><td>Directory brute-force (Day 24)</td><td class="ds-mono">10.0.4.9</td></tr>
+                  <tr><td class="ds-mono ds-muted">14:01:07</td><td><span class="ds-severity" data-level="medium">medium</span></td><td class="ds-secondary">zeek</td><td>Long DNS label</td><td class="ds-mono">10.0.2.2</td></tr>
+                  <tr><td class="ds-mono ds-muted">13:58:40</td><td><span class="ds-severity" data-level="low">low</span></td><td class="ds-secondary">falco</td><td>Shell in container</td><td class="ds-mono">node-3</td></tr>
+                  <tr><td class="ds-mono ds-muted">13:57:12</td><td><span class="ds-severity">informational</span></td><td class="ds-secondary">tetragon</td><td>Process exec</td><td class="ds-mono">node-1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ============ Status ============ -->
+          <section id="status" class="ds-span ds-stack" style="--gap: var(--space-6)">
+            <h2>Status &amp; severity</h2>
+            <p class="ds-secondary" style="max-inline-size: var(--measure)">
+              Colour is never the only signal. Health dots differ in shape; severities and phases are
+              printed as words. In the light theme all status inks must sit below L 0.56 to pass as text,
+              which compresses their lightness ladder, so the second cue is doing real work there.
+            </p>
+            <div class="ds-grid" style="--min: 16rem">
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Health · colour + shape</h3>
+                <div class="ds-cluster" style="--gap: var(--space-5)">
+                  <span class="ds-cluster" style="--gap: var(--space-2)"><span class="ds-dot" data-status="healthy"></span> healthy</span>
+                  <span class="ds-cluster" style="--gap: var(--space-2)"><span class="ds-dot" data-status="degraded"></span> degraded</span>
+                  <span class="ds-cluster" style="--gap: var(--space-2)"><span class="ds-dot" data-status="offline"></span> offline</span>
+                  <span class="ds-cluster" style="--gap: var(--space-2)"><span class="ds-dot" data-status="unknown"></span> unknown</span>
+                  <span class="ds-cluster" style="--gap: var(--space-2)"><span class="ds-dot" data-status="healthy" data-live></span> live</span>
+                </div>
+              </div>
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">OPAR phases</h3>
+                <div class="ds-cluster" style="--gap: var(--space-5); font-weight: var(--weight-semibold); font-size: var(--text-xs); letter-spacing: var(--tracking-caps)">
+                  <span style="color: var(--phase-observe)">OBSERVE</span>
+                  <span style="color: var(--phase-plan)">PLAN</span>
+                  <span style="color: var(--phase-act)">ACT</span>
+                  <span style="color: var(--phase-reflect)">REFLECT</span>
+                </div>
+              </div>
+              <div class="ds-card ds-stack">
+                <h3 class="ds-eyebrow">Detail inset &amp; empty state</h3>
+                <div class="ds-detail ds-mono">{"phase":"act","tool":"nmap","outcome":"blocked"}</div>
+                <div class="ds-empty" style="padding: var(--space-4)">No pending approvals<div class="ds-hint">Actions will appear here when an agent needs a human.</div></div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

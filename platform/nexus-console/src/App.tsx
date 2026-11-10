@@ -5,6 +5,7 @@ import { AuthGuard } from './auth/AuthGuard';
 import { AppRouter, AppRoutes } from './routes';
 import { DashboardLayout } from './components/Layout/DashboardLayout';
 import { Sidebar } from './components/Sidebar/Sidebar';
+import { AppearanceProvider } from './design-system/AppearanceContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -18,18 +19,20 @@ const queryClient = new QueryClient({
 
 export default function App() {
   return (
-    <ConfigProvider>
-      <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <AuthGuard>
-            <AppRouter>
-              <DashboardLayout sidebar={<Sidebar />}>
-                <AppRoutes />
-              </DashboardLayout>
-            </AppRouter>
-          </AuthGuard>
-        </AuthProvider>
-      </QueryClientProvider>
-    </ConfigProvider>
+    <AppearanceProvider>
+      <ConfigProvider>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            <AuthGuard>
+              <AppRouter>
+                <DashboardLayout sidebar={<Sidebar />}>
+                  <AppRoutes />
+                </DashboardLayout>
+              </AppRouter>
+            </AuthGuard>
+          </AuthProvider>
+        </QueryClientProvider>
+      </ConfigProvider>
+    </AppearanceProvider>
   );
 }
