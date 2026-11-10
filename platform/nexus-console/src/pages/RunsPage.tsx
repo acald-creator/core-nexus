@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router';
 import { useAgentFeed } from '../hooks/useAgentFeed';
+import { useAlerts } from '../hooks/useAlerts';
 import { ErrorBanner } from '../components/common/ErrorBanner';
 import { SessionSpine } from '../components/panels/Runs/SessionSpine';
 import { RunDetail } from '../components/panels/Runs/RunDetail';
 import { deriveSessions } from '../components/panels/Runs/sessions';
+import { correlateAlertsToRun, runWindow } from '../components/panels/Runs/correlation';
 import styles from '../components/panels/Runs/Runs.module.css';
 
 /**
@@ -15,6 +17,7 @@ import styles from '../components/panels/Runs/Runs.module.css';
 export default function RunsPage() {
   const { sessionId } = useParams();
   const { events, isConnected, connectionError, retry } = useAgentFeed();
+  const { alerts } = useAlerts();
 
   // `now` is seeded once via a lazy initializer and refreshed on an interval,
   // so the render stays pure and sessions age out of the live window over time.
@@ -31,6 +34,11 @@ export default function RunsPage() {
   );
   const active = sessions.find((s) => s.sessionId === sessionId);
 
+  const runAlerts = useMemo(
+    () => (active ? correlateAlertsToRun(active.target, runWindow(sessionEvents), alerts) : []),
+    [active, sessionEvents, alerts],
+  );
+
   return (
     <div className={`ds-span ${styles.runs}`}>
       {connectionError && (
@@ -40,7 +48,7 @@ export default function RunsPage() {
       )}
       <div className={styles.runsBody}>
         <SessionSpine sessions={sessions} isConnected={isConnected} />
-        <RunDetail session={active} events={sessionEvents} />
+        <RunDetail session={active} events={sessionEvents} alerts={runAlerts} />
       </div>
     </div>
   );
