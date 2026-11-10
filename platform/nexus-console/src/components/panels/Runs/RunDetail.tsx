@@ -1,7 +1,8 @@
 import { EventRow } from '../AgentFeed/EventRow';
 import { severityToColor } from '../../../hooks/useAlerts';
 import { timeAgo } from '../../../utils/formatters';
-import { countActs, hostOf } from './correlation';
+import { RunRibbon } from './RunRibbon';
+import { countActs, hostOf, type RunWindow } from './correlation';
 import type { OPAREvent } from '../../../api/types/opar-events';
 import type { SOCAlert } from '../../../api/types/alerts';
 import type { SessionSummary } from './sessions';
@@ -14,6 +15,8 @@ interface RunDetailProps {
   events: OPAREvent[];
   /** SOC alerts correlated to this run (host + time match; see correlation.ts). */
   alerts: SOCAlert[];
+  /** The padded run window shared with correlation, for the timeline ribbon. */
+  window: RunWindow | null;
 }
 
 const PHASE_CLASS: Record<string, string> = {
@@ -54,7 +57,7 @@ function AlertRow({ alert }: { alert: SOCAlert }) {
 }
 
 /** The run view: a red lane (agent actions) beside a blue lane (SOC detections). */
-export function RunDetail({ session, events, alerts }: RunDetailProps) {
+export function RunDetail({ session, events, alerts, window }: RunDetailProps) {
   if (!session) {
     return (
       <div className={styles.detailEmpty}>
@@ -85,6 +88,8 @@ export function RunDetail({ session, events, alerts }: RunDetailProps) {
           <span className={styles.detailId}>{session.sessionId}</span>
         </div>
       </header>
+
+      <RunRibbon events={events} alerts={alerts} window={window} />
 
       <div className={styles.coverage}>
         <span className={styles.coverageStat}>

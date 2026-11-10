@@ -34,9 +34,10 @@ export default function RunsPage() {
   );
   const active = sessions.find((s) => s.sessionId === sessionId);
 
+  const window = useMemo(() => runWindow(sessionEvents), [sessionEvents]);
   const runAlerts = useMemo(
-    () => (active ? correlateAlertsToRun(active.target, runWindow(sessionEvents), alerts) : []),
-    [active, sessionEvents, alerts],
+    () => (active ? correlateAlertsToRun(active.target, window, alerts) : []),
+    [active, window, alerts],
   );
 
   return (
@@ -48,7 +49,7 @@ export default function RunsPage() {
       )}
       <div className={styles.runsBody}>
         <SessionSpine sessions={sessions} isConnected={isConnected} />
-        <RunDetail session={active} events={sessionEvents} alerts={runAlerts} />
+        <RunDetail session={active} events={sessionEvents} alerts={runAlerts} window={window} />
       </div>
     </div>
   );
