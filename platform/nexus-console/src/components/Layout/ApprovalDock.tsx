@@ -4,9 +4,9 @@ import { timeAgo } from '../../utils/formatters';
 import styles from './ApprovalDock.module.css';
 
 /**
- * Persistent approval gate. Mounted in the app shell OUTSIDE the router, so a
- * pending agent-action decision is visible and answerable on every route —
- * never hidden behind the Approvals tab.
+ * Persistent approval gate. Mounted in the app shell outside the route switch
+ * (<Routes>), so a pending agent-action decision is visible and answerable on
+ * every route — never hidden behind the Approvals tab.
  *
  * Three states:
  *  - idle   — no pending decisions; a quiet one-line bar.
@@ -18,7 +18,13 @@ import styles from './ApprovalDock.module.css';
  * flag on the action (see issue #21), key off that field instead of `source`.
  */
 export function ApprovalDock() {
-  const { pending, approve, reject, isSubmitting } = useApprovals();
+  const { pending, approve, reject, isSubmitting, submitError } = useApprovals();
+
+  // The decision mutations reject on failure; swallow the rejection here (the
+  // query's onError already rolls the row back) and surface submitError inline.
+  const decide = (fn: (id: string) => Promise<unknown>, id: string) => {
+    void fn(id).catch(() => {});
+  };
 
   const next = pending[0];
   if (!next) {
@@ -37,7 +43,7 @@ export function ApprovalDock() {
     <div
       className={styles.dock}
       data-state={halted ? 'halted' : 'pending'}
-      role="region"
+      role={halted ? 'alert' : 'status'}
       aria-label="Pending approvals"
     >
       <div className={styles.status}>
@@ -60,7 +66,7 @@ export function ApprovalDock() {
       <div className={styles.actions}>
         <button
           className={styles.approve}
-          onClick={() => approve(next.id)}
+          onClick={() => decide(approve, next.id)}
           disabled={isSubmitting}
           aria-label={`Approve ${next.proposedTool} on ${next.target}`}
         >
@@ -68,7 +74,7 @@ export function ApprovalDock() {
         </button>
         <button
           className={styles.reject}
-          onClick={() => reject(next.id)}
+          onClick={() => decide(reject, next.id)}
           disabled={isSubmitting}
           aria-label={`Reject ${next.proposedTool} on ${next.target}`}
         >
@@ -80,6 +86,12 @@ export function ApprovalDock() {
           </Link>
         )}
       </div>
+
+      {submitError && (
+        <span className={styles.error} role="alert">
+          Decision failed — try again.
+        </span>
+      )}
     </div>
   );
 }

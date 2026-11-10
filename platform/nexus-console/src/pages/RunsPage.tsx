@@ -48,7 +48,7 @@ export default function RunsPage() {
         </div>
       )}
       <div className={styles.runsBody}>
-        <SessionSpine sessions={sessions} isConnected={isConnected} />
+        <SessionSpine sessions={sessions} isConnected={isConnected} feedAtCap={events.length >= 500} />
         <RunDetail session={active} events={sessionEvents} alerts={runAlerts} window={window} />
       </div>
     </div>

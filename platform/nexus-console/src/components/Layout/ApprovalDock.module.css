@@ -148,3 +148,11 @@
 .viewAll:hover {
   color: var(--accent);
 }
+
+.error {
+  flex: 0 0 auto;
+  color: var(--status-critical);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}

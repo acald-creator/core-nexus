@@ -49,15 +49,15 @@ export function RunRibbon({ events, alerts, window }: RunRibbonProps) {
         </div>
         <div className={styles.ribbonAxis} aria-hidden="true" />
         <div className={styles.ribbonRow}>
-          {blueMarks.map((m, i) => (
+          {blueMarks.map((m) => (
             <span
               key={m.id}
               className={`${styles.ribbonMark} ${styles.ribbonMarkBlue}`}
               style={{
                 insetInlineStart: `${m.pct}%`,
-                background: severityToColor(alerts[i].severity),
+                background: severityToColor(m.item.severity),
               }}
-              title={`${alerts[i].ruleName} · ${formatTimestamp(m.timestamp)}`}
+              title={`${m.item.ruleName} · ${formatTimestamp(m.timestamp)}`}
             />
           ))}
         </div>

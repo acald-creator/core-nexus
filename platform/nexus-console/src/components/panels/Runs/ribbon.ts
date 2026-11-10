@@ -1,10 +1,12 @@
 import type { RunWindow } from './correlation';
 
-export interface RibbonMark {
+export interface RibbonMark<T = unknown> {
   id: string;
   /** Left offset across the run window, 0–100, clamped. */
   pct: number;
   timestamp: string;
+  /** The source item, so renderers read its fields instead of re-indexing. */
+  item: T;
 }
 
 /**
@@ -17,13 +19,13 @@ export interface RibbonMark {
 export function placeMarks<T extends { id: string; timestamp: string }>(
   items: T[],
   window: RunWindow | null,
-): RibbonMark[] {
+): RibbonMark<T>[] {
   if (!window) return [];
   const span = window.end - window.start;
   if (span <= 0) return [];
   return items.map((it) => {
     const t = new Date(it.timestamp).getTime();
     const pct = ((t - window.start) / span) * 100;
-    return { id: it.id, pct: Math.max(0, Math.min(100, pct)), timestamp: it.timestamp };
+    return { id: it.id, pct: Math.max(0, Math.min(100, pct)), timestamp: it.timestamp, item: it };
   });
 }

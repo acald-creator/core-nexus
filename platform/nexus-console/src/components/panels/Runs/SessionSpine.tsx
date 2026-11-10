@@ -6,6 +6,8 @@ import styles from './Runs.module.css';
 interface SessionSpineProps {
   sessions: SessionSummary[];
   isConnected: boolean;
+  /** The live feed is at its retention cap, so older runs may be missing. */
+  feedAtCap?: boolean;
 }
 
 const PHASE_CLASS: Record<string, string> = {
@@ -16,7 +18,7 @@ const PHASE_CLASS: Record<string, string> = {
 };
 
 /** The run spine: one row per OPAR session, newest/live first, linking to its detail. */
-export function SessionSpine({ sessions, isConnected }: SessionSpineProps) {
+export function SessionSpine({ sessions, isConnected, feedAtCap = false }: SessionSpineProps) {
   return (
     <nav className={styles.spine} aria-label="Agent runs">
       <div className={styles.spineHeader}>
@@ -38,7 +40,7 @@ export function SessionSpine({ sessions, isConnected }: SessionSpineProps) {
           {sessions.map((s) => (
             <li key={s.sessionId}>
               <NavLink
-                to={`/runs/${s.sessionId}`}
+                to={`/runs/${encodeURIComponent(s.sessionId)}`}
                 className={({ isActive }) =>
                   `${styles.spineItem} ${isActive ? styles.spineItemActive : ''}`
                 }
@@ -60,6 +62,12 @@ export function SessionSpine({ sessions, isConnected }: SessionSpineProps) {
             </li>
           ))}
         </ul>
+      )}
+
+      {feedAtCap && (
+        <p className={styles.spineNote}>
+          Showing the latest 500 events — older runs may not appear.
+        </p>
       )}
     </nav>
   );

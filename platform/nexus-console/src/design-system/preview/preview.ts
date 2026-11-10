@@ -68,7 +68,7 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderSwat
 const STEPS = [50, 100, 200, 300, 400, 500, 600, 700, 800, 900, 950];
 const scales = document.getElementById('scales');
 if (scales) {
-  for (const hue of ['neutral', 'green', 'red', 'orange', 'amber', 'blue', 'violet']) {
+  for (const hue of ['neutral', 'green', 'red', 'orange', 'amber', 'blue', 'brand']) {
     const row = document.createElement('div');
     row.className = 'sg-scale';
     row.innerHTML = `<span class="sg-scale-name ds-mono">${hue}</span>` +

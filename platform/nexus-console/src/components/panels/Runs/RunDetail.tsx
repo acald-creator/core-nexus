@@ -113,7 +113,7 @@ export function RunDetail({ session, events, alerts, window }: RunDetailProps) {
           ) : (
             <div className={styles.timeline}>
               {redEvents.map((event) => (
-                <EventRow key={event.id} event={event} selected={false} onSelect={() => {}} />
+                <EventRow key={event.id} event={event} interactive={false} />
               ))}
             </div>
           )}

@@ -27,15 +27,15 @@ first, override second.
 Authored in `oklch()`. Lightness carries contrast, so each role has a fixed
 lightness in each theme and the hue is a variable (`--hue-brand`, `--hue-neutral`
 …). Neutrals are tinted toward the brand ground's cool slate (hue 250, chroma
-0.018) so grey never looks dead beside the green.
+0.018) so grey never looks dead beside the violet accent.
 
 | Role | Dark L | Light L | Notes |
 |---|---|---|---|
 | `--bg-inset / ground / surface / raised / overlay` | 0.14 / 0.17 / 0.21 / 0.26 / 0.30 | 0.935 / 0.965 / 0.99 / 0.995 / 0.995 | Dark elevates by lightness; light by shadow |
-| `--ink / ink-2 / ink-muted / ink-faint` | 0.95 / 0.78 / 0.68 / 0.54 | 0.21 / 0.40 / 0.52 / 0.64 | `ink-faint` is placeholder-only (non-text 3:1) |
-| `--accent` | 0.78, C 0.155 | 0.50, C 0.115 | Dark accent carries `--ink-on-accent` (dark); light accent carries near-white |
+| `--ink / ink-2 / ink-muted / ink-faint` | 0.95 / 0.78 / 0.68 / 0.54 | 0.21 / 0.40 / 0.52 / 0.64 | placeholder text uses `ink-muted` (AA); `ink-faint` is disabled-hint only (non-text) |
+| `--accent` (brand violet, hue 312) | 0.78, C 0.15 | 0.50, C 0.115 | Dark accent carries `--ink-on-accent` (dark); light accent carries near-white |
 | `--status-critical / high / medium / low` | 0.68 / 0.78 / 0.88 / 0.66 | 0.44 / 0.555 / 0.54 / 0.47 | All pass 4.5:1 as text on every ground |
-| `--phase-plan` | 0.82, violet 309 | 0.52 | Violet is the split-complement of the brand hue |
+| `--phase-plan` | 0.82, green 159 | 0.52 | Green; `--phase-reflect` is the violet accent (≈split-complement) |
 
 Derived values come from the base token, never a second literal:
 `--accent-wash: color-mix(in oklch, var(--accent) 14%, transparent)`.

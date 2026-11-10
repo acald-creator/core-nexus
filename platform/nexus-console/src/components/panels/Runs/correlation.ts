@@ -43,12 +43,13 @@ export function correlateAlertsToRun(
   window: RunWindow | null,
   alerts: SOCAlert[],
 ): SOCAlert[] {
+  // No run span means no run to correlate against — host-only matching would be
+  // unbounded in time, so return nothing rather than every alert for the host.
+  if (!window) return [];
   const targetHost = hostOf(target);
   return alerts.filter((a) => {
-    if (window) {
-      const t = new Date(a.timestamp).getTime();
-      if (t < window.start || t > window.end) return false;
-    }
+    const t = new Date(a.timestamp).getTime();
+    if (t < window.start || t > window.end) return false;
     return !!targetHost && hostOf(a.affectedHost) === targetHost;
   });
 }

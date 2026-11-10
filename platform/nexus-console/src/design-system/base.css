@@ -90,7 +90,9 @@
     accent-color: var(--accent);
     transition: border-color var(--motion-fast) var(--ease-out),
                 box-shadow var(--motion-fast) var(--ease-out);
-    &::placeholder { color: var(--ink-faint); }
+    /* --ink-muted, not --ink-faint: placeholder is text and must clear AA 4.5:1
+       on --bg-inset in both themes (faint is ~2.8:1 light / ~3.9:1 dark). */
+    &::placeholder { color: var(--ink-muted); }
     &:focus-visible {
       outline: none;
       border-color: var(--accent);

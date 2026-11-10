@@ -61,6 +61,15 @@
   margin: 0;
 }
 
+.spineNote {
+  color: var(--ink-faint);
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  padding: var(--space-2) var(--space-3);
+  margin: 0;
+  border-block-start: 0.5px solid var(--edge);
+}
+
 .spineList {
   list-style: none;
   margin: 0;

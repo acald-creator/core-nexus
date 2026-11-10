@@ -1,5 +1,5 @@
 {
-  "$comment": "Accessibility contract for tokens/semantic.css. Values here mirror the role tokens; change both. Run: node <color-accessibility>/scripts/audit-pairs.mjs src/design-system/pairs.json",
+  "$comment": "Accessibility contract for tokens/semantic.css. Values here mirror the role tokens; change both. The @media (color-gamut: p3) accent override only raises chroma at the same L (0.50 light / 0.78 dark), so its contrast is identical to the sRGB accent audited here. Run: node <color-accessibility>/scripts/audit-pairs.mjs src/design-system/pairs.json",
   "themes": {
     "dark": {
       "ground": "oklch(0.17 0.016 250)",
@@ -13,16 +13,16 @@
       "ink-faint": "oklch(0.54 0.016 250)",
       "border": "oklch(0.34 0.02 250)",
       "border-strong": "oklch(0.535 0.022 250)",
-      "accent": "oklch(0.78 0.155 159)",
-      "accent-hover": "oklch(0.84 0.14 159)",
+      "accent": "oklch(0.78 0.15 312)",
+      "accent-hover": "oklch(0.84 0.10 312)",
       "on-accent": "oklch(0.14 0.014 250)",
       "critical": "oklch(0.68 0.19 25)",
       "high": "oklch(0.78 0.14 48)",
       "medium": "oklch(0.88 0.135 86)",
       "low": "oklch(0.66 0.16 260)",
-      "plan": "oklch(0.82 0.11 309)",
-      "accent-wash": "oklch(0.78 0.155 159 / 0.16)",
-      "critical-wash": "oklch(0.68 0.19 25 / 0.14)"
+      "plan": "oklch(0.82 0.11 159)",
+      "accent-wash": "oklch(0.78 0.15 312 / 0.14)",
+      "critical-wash": "oklch(0.68 0.19 25 / 0.13)"
     },
     "light": {
       "ground": "oklch(0.965 0.008 250)",
@@ -36,16 +36,16 @@
       "ink-faint": "oklch(0.64 0.018 250)",
       "border": "oklch(0.87 0.012 250)",
       "border-strong": "oklch(0.64 0.016 250)",
-      "accent": "oklch(0.50 0.115 159)",
-      "accent-hover": "oklch(0.44 0.10 159)",
+      "accent": "oklch(0.50 0.115 312)",
+      "accent-hover": "oklch(0.44 0.10 312)",
       "on-accent": "oklch(0.99 0.004 250)",
       "critical": "oklch(0.44 0.178 25)",
       "high": "oklch(0.555 0.152 48)",
       "medium": "oklch(0.54 0.112 86)",
       "low": "oklch(0.47 0.17 260)",
-      "plan": "oklch(0.52 0.17 309)",
-      "accent-wash": "oklch(0.50 0.115 159 / 0.14)",
-      "critical-wash": "oklch(0.44 0.178 25 / 0.12)"
+      "plan": "oklch(0.52 0.17 159)",
+      "accent-wash": "oklch(0.50 0.115 312 / 0.14)",
+      "critical-wash": "oklch(0.44 0.178 25 / 0.13)"
     }
   },
   "pairs": [
@@ -75,9 +75,11 @@
       "bg": [
         "ground",
         "surface",
-        "raised"
+        "raised",
+        "inset"
       ],
-      "role": "text"
+      "role": "text",
+      "note": "inset covers input ::placeholder"
     },
     {
       "fg": "ink-faint",
@@ -86,7 +88,7 @@
         "surface"
       ],
       "role": "non-text",
-      "note": "placeholder / disabled hint"
+      "note": "disabled hint (placeholder now uses ink-muted)"
     },
     {
       "fg": "accent",

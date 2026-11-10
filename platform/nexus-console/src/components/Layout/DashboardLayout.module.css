@@ -1,12 +1,15 @@
 .layout {
-  /* Shell grid comes from .ds-shell; this module only tunes the main area. */
+  /* Pin the shell to the viewport so its grid rows (incl. the top bar) split
+     100dvh and .main fills its row — otherwise a 100dvh .main would overflow
+     the topbar layout and push the approval dock below the fold. */
+  block-size: 100dvh;
+  min-block-size: 0;
 }
 
 .main {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  min-height: 0;
+  min-block-size: 0;
   overflow: hidden;
   padding: 0;
   transition: padding var(--motion-base) var(--ease-out);
