@@ -13,14 +13,16 @@
 @layer ds.tokens {
   :root {
     /* Hue anchors (OKLCH degrees). Neutrals are tinted toward the cool slate of
-       the brand's dark ground; the accent is the existing Nexus green. */
+       the brand's dark ground; the accent is the Nexus violet (purple-team
+       identity: the red/blue range makes purple). Green is kept — freed by the
+       brand move — as the OPAR "plan" phase, so no two phases share a hue. */
     --hue-neutral: 250;
-    --hue-brand: 159;
+    --hue-brand: 312;
+    --hue-green: 159;
     --hue-red: 25;
     --hue-orange: 48;
     --hue-amber: 86;
     --hue-blue: 260;
-    --hue-violet: 309;
 
     /* neutral · flat chroma 0.018 */
     --neutral-50:  oklch(0.975 0.012 var(--hue-neutral));
@@ -35,18 +37,19 @@
     --neutral-900: oklch(0.29  0.018 var(--hue-neutral));
     --neutral-950: oklch(0.21  0.018 var(--hue-neutral));
 
-    /* green (brand) · peak chroma 0.16 */
-    --green-50:  oklch(0.975 0.024 var(--hue-brand));
-    --green-100: oklch(0.94  0.046 var(--hue-brand));
-    --green-200: oklch(0.885 0.073 var(--hue-brand));
-    --green-300: oklch(0.815 0.102 var(--hue-brand));
-    --green-400: oklch(0.72  0.132 var(--hue-brand));
-    --green-500: oklch(0.625 0.144 var(--hue-brand));
-    --green-600: oklch(0.535 0.123 var(--hue-brand));
-    --green-700: oklch(0.45  0.104 var(--hue-brand));
-    --green-800: oklch(0.37  0.085 var(--hue-brand));
-    --green-900: oklch(0.29  0.067 var(--hue-brand));
-    --green-950: oklch(0.21  0.049 var(--hue-brand));
+    /* brand violet · peak chroma 0.155 · regenerated at hue 312 and clamped to
+       sRGB (color-theory scale.mjs). Reads the hue from --hue-brand. */
+    --brand-50:  oklch(0.975 0.016 var(--hue-brand));
+    --brand-100: oklch(0.94  0.04  var(--hue-brand));
+    --brand-200: oklch(0.885 0.071 var(--hue-brand));
+    --brand-300: oklch(0.815 0.099 var(--hue-brand));
+    --brand-400: oklch(0.72  0.127 var(--hue-brand));
+    --brand-500: oklch(0.625 0.146 var(--hue-brand));
+    --brand-600: oklch(0.535 0.154 var(--hue-brand));
+    --brand-700: oklch(0.45  0.154 var(--hue-brand));
+    --brand-800: oklch(0.37  0.145 var(--hue-brand));
+    --brand-900: oklch(0.29  0.13  var(--hue-brand));
+    --brand-950: oklch(0.21  0.106 var(--hue-brand));
 
     /* red · peak chroma 0.20 */
     --red-50:  oklch(0.975 0.012 var(--hue-red));
@@ -100,17 +103,18 @@
     --blue-900: oklch(0.29  0.119 var(--hue-blue));
     --blue-950: oklch(0.21  0.087 var(--hue-blue));
 
-    /* violet · split-complement of the brand green (159 + 150) · peak 0.16 */
-    --violet-50:  oklch(0.975 0.012 var(--hue-violet));
-    --violet-100: oklch(0.94  0.03  var(--hue-violet));
-    --violet-200: oklch(0.885 0.06  var(--hue-violet));
-    --violet-300: oklch(0.815 0.1   var(--hue-violet));
-    --violet-400: oklch(0.72  0.14  var(--hue-violet));
-    --violet-500: oklch(0.625 0.16  var(--hue-violet));
-    --violet-600: oklch(0.535 0.17  var(--hue-violet));
-    --violet-700: oklch(0.45  0.16  var(--hue-violet));
-    --violet-800: oklch(0.37  0.135 var(--hue-violet));
-    --violet-900: oklch(0.29  0.105 var(--hue-violet));
-    --violet-950: oklch(0.21  0.077 var(--hue-violet));
+    /* green · peak chroma 0.16 · the OPAR "plan" phase and general-purpose green.
+       Reads the hue from --hue-green (freed when the brand moved to violet). */
+    --green-50:  oklch(0.975 0.024 var(--hue-green));
+    --green-100: oklch(0.94  0.046 var(--hue-green));
+    --green-200: oklch(0.885 0.073 var(--hue-green));
+    --green-300: oklch(0.815 0.102 var(--hue-green));
+    --green-400: oklch(0.72  0.132 var(--hue-green));
+    --green-500: oklch(0.625 0.144 var(--hue-green));
+    --green-600: oklch(0.535 0.123 var(--hue-green));
+    --green-700: oklch(0.45  0.104 var(--hue-green));
+    --green-800: oklch(0.37  0.085 var(--hue-green));
+    --green-900: oklch(0.29  0.067 var(--hue-green));
+    --green-950: oklch(0.21  0.049 var(--hue-green));
   }
 }

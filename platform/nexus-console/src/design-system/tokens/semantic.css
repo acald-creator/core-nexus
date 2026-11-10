@@ -37,9 +37,10 @@
     --edge-strong: light-dark(oklch(0.64 0.016 var(--hue-neutral)), oklch(0.535 0.022 var(--hue-neutral)));
     --edge-focus:  var(--accent);
 
-    /* ---- Accent (brand green). Light accents carry dark text; dark theme accent is L 0.78. ---- */
-    --accent:       light-dark(oklch(0.50 0.115 var(--hue-brand)), oklch(0.78 0.155 var(--hue-brand)));
-    --accent-hover: light-dark(oklch(0.44 0.10 var(--hue-brand)), oklch(0.84 0.14  var(--hue-brand)));
+    /* ---- Accent (brand violet). Light accents carry dark text; dark theme accent is L 0.78.
+       Chromas are clamped to sRGB at hue 312 — violet gets gamut-tight when light. ---- */
+    --accent:       light-dark(oklch(0.50 0.115 var(--hue-brand)), oklch(0.78 0.15  var(--hue-brand)));
+    --accent-hover: light-dark(oklch(0.44 0.10  var(--hue-brand)), oklch(0.84 0.10  var(--hue-brand)));
     --accent-wash:  color-mix(in oklch, var(--accent) 14%, transparent);
     --accent-edge:  color-mix(in oklch, var(--accent) 45%, transparent);
 
@@ -64,10 +65,10 @@
     --health-offline:  var(--status-critical);
     --health-unknown:  var(--ink-muted);
 
-    /* ---- OPAR phases (observe → plan → act → reflect). Violet is the
-       split-complement of the brand hue, so it sits with the family. ---- */
+    /* ---- OPAR phases (observe → plan → act → reflect). Four distinct hues:
+       observe = blue, plan = green, act = orange, reflect = the violet accent. ---- */
     --phase-observe: var(--status-low);
-    --phase-plan:    light-dark(oklch(0.52 0.17 var(--hue-violet)), oklch(0.82 0.11 var(--hue-violet)));
+    --phase-plan:    light-dark(oklch(0.52 0.17 var(--hue-green)), oklch(0.82 0.11 var(--hue-green)));
     --phase-act:     var(--status-high);
     --phase-reflect: var(--accent);
 
