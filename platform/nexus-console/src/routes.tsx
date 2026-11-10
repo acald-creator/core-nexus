@@ -11,6 +11,7 @@ const ApprovalsPage = lazy(() => import('./pages/ApprovalsPage'));
 const SkillsPage = lazy(() => import('./pages/SkillsPage'));
 const ArtifactsPage = lazy(() => import('./pages/ArtifactsPage'));
 const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const RunsPage = lazy(() => import('./pages/RunsPage'));
 
 function PageLoader() {
   return (
@@ -26,6 +27,8 @@ export function AppRoutes() {
       <Routes>
         <Route path="/" element={<OverviewPage />} />
         <Route path="/agent-feed" element={<AgentFeedPage />} />
+        <Route path="/runs" element={<RunsPage />} />
+        <Route path="/runs/:sessionId" element={<RunsPage />} />
         <Route path="/alerts" element={<AlertsPage />} />
         <Route path="/approvals" element={<ApprovalsPage />} />
         <Route path="/skills" element={<SkillsPage />} />

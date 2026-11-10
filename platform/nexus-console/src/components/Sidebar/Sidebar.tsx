@@ -16,6 +16,7 @@ export function Sidebar() {
   const navItems: NavItem[] = [
     { id: 'overview', label: 'Overview', icon: '⚡', path: '/' },
     { id: 'agent-feed', label: 'Agent Feed', icon: '🤖', path: '/agent-feed' },
+    { id: 'runs', label: 'Runs', icon: '▸', path: '/runs' },
     { id: 'alerts', label: 'Alerts', icon: '🔔', path: '/alerts', badge: unacknowledgedCriticalHighCount },
     { id: 'approvals', label: 'Approvals', icon: '✋', path: '/approvals', badge: pendingCount },
     { id: 'skills', label: 'Skills', icon: '📚', path: '/skills' },
